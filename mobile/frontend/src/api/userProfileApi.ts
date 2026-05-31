@@ -126,7 +126,10 @@ export const paymentMethodApi = {
     const response = await fetch(`${API_BASE_URL}/payment-method/${id}`, {
       method: 'DELETE',
     });
-    if (!response.ok) throw new Error('Failed to delete payment method');
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Failed to delete payment method');
+    }
     return response.json();
   },
 

@@ -36,7 +36,8 @@ export class PaymentMethodService {
   async getAvailablePaymentMethods(userId: number): Promise<string[]> {
     const account = await this.accountRepository.findById(userId);
     if (!account) {
-      throw new BadRequestException('Account not found');
+      // Return default available methods if account doesn't exist
+      return ['cash', 'card', 'bank_transfer', 'momo', 'zalopay'];
     }
 
     const settings = account.payment_settings || { show_only_prepayment: false, show_both_options: true };
@@ -55,13 +56,26 @@ export class PaymentMethodService {
       }
     }
 
+    // Always include basic payment methods
+    if (availableMethods.length === 0) {
+      availableMethods.push('cash', 'card', 'bank_transfer', 'momo', 'zalopay');
+    }
+
     return availableMethods;
   }
 
   async getAccountPaymentSettings(userId: number): Promise<AccountPaymentSettings> {
     const account = await this.accountRepository.findById(userId);
     if (!account) {
-      throw new BadRequestException('Account not found');
+      // Return default settings if account doesn't exist
+      return {
+        prepayment_enabled: 1,
+        cash_on_delivery_enabled: 1,
+        payment_settings: {
+          show_only_prepayment: false,
+          show_both_options: true,
+        },
+      };
     }
 
     return {
@@ -74,7 +88,8 @@ export class PaymentMethodService {
   async updateAccountPaymentSettings(userId: number, settings: Partial<AccountPaymentSettings>): Promise<AccountPaymentSettings> {
     const account = await this.accountRepository.findById(userId);
     if (!account) {
-      throw new BadRequestException('Account not found');
+      // Create account if it doesn't exist
+      throw new BadRequestException('Account not found. Please create an account first.');
     }
 
     const updateData: any = {};
@@ -132,6 +147,24 @@ export class PaymentMethodService {
     if (!payment) {
       throw new BadRequestException('Payment method not found');
     }
+
+    // Check if this is the default payment method
+    if (payment.is_default === 1) {
+      // Get all payment methods for this user
+      const userPayments = await this.paymentMethodRepository.findByUserId(payment.user_id!);
+      
+      // If this is the only payment method, prevent deletion
+      if (userPayments.length === 1) {
+        throw new BadRequestException('Cannot delete the only payment method. Please add another payment method first.');
+      }
+      
+      // Set another payment method as default before deleting this one
+      const otherPayment = userPayments.find(p => p.id !== id);
+      if (otherPayment) {
+        await this.paymentMethodRepository.setDefaultPaymentMethod(payment.user_id!, otherPayment.id!);
+      }
+    }
+
     await this.paymentMethodRepository.deletePaymentMethod(id);
   }
 

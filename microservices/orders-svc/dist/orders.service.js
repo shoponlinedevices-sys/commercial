@@ -106,7 +106,7 @@ let OrdersService = class OrdersService {
             relations: ['cartLines'],
         });
         if (!cart) {
-            throw new Error('Cart not found');
+            return { cart: null };
         }
         return { cart };
     }

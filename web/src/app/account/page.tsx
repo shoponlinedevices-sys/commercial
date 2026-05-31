@@ -51,6 +51,36 @@ export default function AccountPage() {
 
           <Card>
             <CardHeader>
+              <CardTitle>Account Settings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => router.push('/account/personal-info')}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Personal Information
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => router.push('/account/delivery-address')}
+              >
+                📍 Delivery Addresses
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => router.push('/account/payment-method')}
+              >
+                💳 Payment Methods
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">

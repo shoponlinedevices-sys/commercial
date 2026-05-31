@@ -126,7 +126,7 @@ export class OrdersService {
     });
 
     if (!cart) {
-      throw new Error('Cart not found');
+      return { cart: null };
     }
 
     return { cart };

@@ -25,6 +25,7 @@ __decorate([
 ], PaymentMethodEntity.prototype, "user_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
+        name: 'type',
         type: 'enum',
         enum: ['cash', 'card', 'bank_transfer', 'momo', 'zalopay', 'prepayment', 'cash_on_delivery'],
     }),
@@ -60,6 +61,7 @@ __decorate([
 ], PaymentMethodEntity.prototype, "updated_at", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => account_entity_1.AccountEntity),
+    (0, typeorm_1.JoinColumn)({ name: 'user_id' }),
     __metadata("design:type", account_entity_1.AccountEntity)
 ], PaymentMethodEntity.prototype, "account", void 0);
 exports.PaymentMethodEntity = PaymentMethodEntity = __decorate([

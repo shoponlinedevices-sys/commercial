@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { productService } from '@/services/product.service';
 import { Product } from '@/types';
@@ -13,12 +14,16 @@ import Navigation from '@/components/Navigation';
 import Image from 'next/image';
 
 export default function ProductsPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [showFlashSale, setShowFlashSale] = useState(true);
+  const [showPromotion, setShowPromotion] = useState(true);
+  const [flashSaleTime, setFlashSaleTime] = useState(24 * 60 * 60); // 24 hours in seconds
 
   useEffect(() => {
     loadProducts();
@@ -27,6 +32,20 @@ export default function ProductsPage() {
   useEffect(() => {
     filterProducts();
   }, [products, searchQuery, selectedCategory]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setFlashSaleTime(prev => prev > 0 ? prev - 1 : 0);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const loadProducts = async () => {
     try {
@@ -59,6 +78,7 @@ export default function ProductsPage() {
   };
 
   const categories = Array.from(new Set(products.map((p) => p.category).filter(Boolean)));
+  const flashSaleProducts = filteredProducts.slice(0, 4);
 
   const addToCart = async (productId: number) => {
     try {
@@ -124,6 +144,86 @@ export default function ProductsPage() {
             ))}
           </div>
         </div>
+
+        {/* Promotion Banner */}
+        {!searchQuery && showPromotion && (
+          <Card className="mb-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="flex-1">
+                  <Badge className="mb-2 bg-white text-blue-600">B2B</Badge>
+                  <h2 className="text-2xl font-bold mb-2">Giảm tới 20%</h2>
+                  <p className="text-blue-100">Khuyến mãi mùa hè cho đơn hàng lớn</p>
+                  <p className="text-sm text-blue-200 mt-1">Ưu đãi dành cho đơn vị mua sỉ, thời gian có hạn.</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-6xl">🛒</div>
+                  <Button
+                    variant="secondary"
+                    onClick={() => router.push('/cart')}
+                  >
+                    Mua ngay
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Flash Sale Section */}
+        {!searchQuery && showFlashSale && (
+          <div className="mb-8">
+            <Card className="mb-4 overflow-hidden">
+              <div className="relative h-48 bg-gradient-to-r from-orange-500 to-red-600">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <Badge className="mb-2 bg-white text-orange-600 text-lg px-4 py-1">⚡ FLASH SALE</Badge>
+                    <h2 className="text-3xl font-bold">Giảm giá sốc</h2>
+                    <p className="text-orange-100">Thời gian có hạn!</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Flash Sale</h2>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Kết thúc trong:</span>
+                <Badge variant="destructive" className="text-lg px-4 py-2">
+                  {formatTime(flashSaleTime)}
+                </Badge>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {flashSaleProducts.map((product) => (
+                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="relative h-40 bg-muted">
+                    {product.image ? (
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-muted-foreground">
+                        No image
+                      </div>
+                    )}
+                    {product.badge && (
+                      <Badge className="absolute top-2 right-2 bg-orange-500">{product.badge}</Badge>
+                    )}
+                  </div>
+                  <CardContent className="p-3">
+                    <h3 className="font-semibold text-sm mb-1 line-clamp-2">{product.name}</h3>
+                    <p className="text-lg font-bold text-orange-600">
+                      ${product.price}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12">

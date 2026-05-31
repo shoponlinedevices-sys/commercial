@@ -50,6 +50,7 @@ const PaymentMethodScreen: React.FC<Props> = ({ navigation, route }) => {
   const [formData, setFormData] = useState<PaymentMethod>({});
   const [accountSettings, setAccountSettings] = useState<AccountPaymentSettings>({});
   const [availablePaymentTypes, setAvailablePaymentTypes] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const allPaymentTypes = [
     { id: 'cash', label: 'Tiền mặt', icon: '💵' },
@@ -73,10 +74,12 @@ const PaymentMethodScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const loadPaymentMethods = async () => {
     try {
+      setError(null);
       const data = await paymentMethodApi.getPaymentMethods(user.id);
       setPaymentMethods(data);
     } catch (error) {
       console.error('Error loading payment methods:', error);
+      setError(`Error loading payment methods: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
@@ -89,6 +92,7 @@ const PaymentMethodScreen: React.FC<Props> = ({ navigation, route }) => {
       setAvailablePaymentTypes(available);
     } catch (error) {
       console.error('Error loading account settings:', error);
+      setError(`Error loading account settings: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
@@ -121,7 +125,8 @@ const PaymentMethodScreen: React.FC<Props> = ({ navigation, route }) => {
               loadPaymentMethods();
               Alert.alert('Thành công', 'Phương thức thanh toán đã được xóa');
             } catch (error) {
-              Alert.alert('Lỗi', 'Không thể xóa phương thức thanh toán');
+              const errorMessage = error instanceof Error ? error.message : 'Không thể xóa phương thức thanh toán';
+              Alert.alert('Lỗi', errorMessage);
             }
           },
         },
@@ -235,6 +240,12 @@ const PaymentMethodScreen: React.FC<Props> = ({ navigation, route }) => {
       <TouchableOpacity style={styles.settingsButton} onPress={() => setSettingsModalVisible(true)}>
         <Text style={styles.settingsButtonText}>⚙️ Cài đặt thanh toán</Text>
       </TouchableOpacity>
+
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
 
       <Modal
         visible={modalVisible}
@@ -647,6 +658,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
+  },
+  errorContainer: {
+    backgroundColor: '#fef2f2',
+    margin: 16,
+    marginTop: 0,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fecaca',
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#dc2626',
   },
 });
 

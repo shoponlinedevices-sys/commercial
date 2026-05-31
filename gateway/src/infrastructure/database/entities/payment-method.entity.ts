@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { AccountEntity } from './account.entity';
 
 @Entity('tbl_payment_method')
@@ -10,6 +10,7 @@ export class PaymentMethodEntity {
   user_id?: number;
 
   @Column({
+    name: 'type',
     type: 'enum',
     enum: ['cash', 'card', 'bank_transfer', 'momo', 'zalopay', 'prepayment', 'cash_on_delivery'],
   })
@@ -37,5 +38,6 @@ export class PaymentMethodEntity {
   updated_at?: Date;
 
   @ManyToOne(() => AccountEntity)
+  @JoinColumn({ name: 'user_id' })
   account?: AccountEntity;
 }
