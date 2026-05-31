@@ -1,0 +1,122 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { orderService } from '@/services/order.service';
+import { Order } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import Navigation from '@/components/Navigation';
+
+export default function OrdersPage() {
+  const { user } = useAuth();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadOrders();
+  }, [user]);
+
+  const loadOrders = async () => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      const data = await orderService.getUserOrders(user.id.toString());
+      setOrders(data);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      case 'processing':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <Navigation />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading orders...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">My Orders</h1>
+        {orders.length === 0 ? (
+          <Card>
+            <CardContent className="text-center py-12">
+              <p className="text-muted-foreground mb-4">No orders yet</p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {orders.map((order) => (
+              <Card key={order.id}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle>Order #{order.id}</CardTitle>
+                    <Badge className={getStatusColor(order.status)}>
+                      {order.status}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Total Amount:</span>
+                      <span className="font-semibold">${order.totalAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Order Date:</span>
+                      <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    {order.shippingAddress && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Shipping Address:</span>
+                        <span className="text-right max-w-xs">{order.shippingAddress}</span>
+                      </div>
+                    )}
+                    {order.orderLines && order.orderLines.length > 0 && (
+                      <div className="mt-4 pt-4 border-t">
+                        <p className="font-semibold mb-2">Items:</p>
+                        <ul className="space-y-1">
+                          {order.orderLines.map((line: any, index: number) => (
+                            <li key={index} className="text-sm text-muted-foreground">
+                              {line.quantity}x Product #{line.productId} - ${line.unitPrice}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

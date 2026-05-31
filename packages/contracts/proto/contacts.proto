@@ -1,0 +1,219 @@
+syntax = "proto3";
+
+package contacts;
+
+service ContactsService {
+  // User Profile
+  rpc GetUserProfile (GetUserProfileRequest) returns (GetUserProfileResponse);
+  rpc UpdateUserProfile (UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
+  
+  // Delivery Address
+  rpc GetDeliveryAddresses (GetDeliveryAddressesRequest) returns (GetDeliveryAddressesResponse);
+  rpc GetDeliveryAddress (GetDeliveryAddressRequest) returns (GetDeliveryAddressResponse);
+  rpc GetDefaultDeliveryAddress (GetDefaultDeliveryAddressRequest) returns (GetDefaultDeliveryAddressResponse);
+  rpc CreateDeliveryAddress (CreateDeliveryAddressRequest) returns (CreateDeliveryAddressResponse);
+  rpc UpdateDeliveryAddress (UpdateDeliveryAddressRequest) returns (UpdateDeliveryAddressResponse);
+  rpc DeleteDeliveryAddress (DeleteDeliveryAddressRequest) returns (DeleteDeliveryAddressResponse);
+  rpc SetDefaultDeliveryAddress (SetDefaultDeliveryAddressRequest) returns (SetDefaultDeliveryAddressResponse);
+  
+  // Payment Method
+  rpc GetPaymentMethods (GetPaymentMethodsRequest) returns (GetPaymentMethodsResponse);
+  rpc GetPaymentMethod (GetPaymentMethodRequest) returns (GetPaymentMethodResponse);
+  rpc GetDefaultPaymentMethod (GetDefaultPaymentMethodRequest) returns (GetDefaultPaymentMethodResponse);
+  rpc CreatePaymentMethod (CreatePaymentMethodRequest) returns (CreatePaymentMethodResponse);
+  rpc UpdatePaymentMethod (UpdatePaymentMethodRequest) returns (UpdatePaymentMethodResponse);
+  rpc DeletePaymentMethod (DeletePaymentMethodRequest) returns (DeletePaymentMethodResponse);
+  rpc SetDefaultPaymentMethod (SetDefaultPaymentMethodRequest) returns (SetDefaultPaymentMethodResponse);
+}
+
+// User Profile Messages
+message GetUserProfileRequest {
+  int32 userId = 1;
+}
+
+message GetUserProfileResponse {
+  UserProfile userProfile = 1;
+}
+
+message UpdateUserProfileRequest {
+  int32 userId = 1;
+  string fullName = 2;
+  string phone = 3;
+  string email = 4;
+  string avatar = 5;
+}
+
+message UpdateUserProfileResponse {
+  UserProfile userProfile = 1;
+}
+
+message UserProfile {
+  int32 id = 1;
+  string username = 2;
+  string fullName = 3;
+  string phone = 4;
+  string email = 5;
+  string avatar = 6;
+}
+
+// Delivery Address Messages
+message GetDeliveryAddressesRequest {
+  int32 userId = 1;
+}
+
+message GetDeliveryAddressesResponse {
+  repeated DeliveryAddress addresses = 1;
+}
+
+message GetDeliveryAddressRequest {
+  int32 id = 1;
+}
+
+message GetDeliveryAddressResponse {
+  DeliveryAddress address = 1;
+}
+
+message GetDefaultDeliveryAddressRequest {
+  int32 userId = 1;
+}
+
+message GetDefaultDeliveryAddressResponse {
+  DeliveryAddress address = 1;
+}
+
+message CreateDeliveryAddressRequest {
+  int32 userId = 1;
+  string recipientName = 2;
+  string phone = 3;
+  string address = 4;
+  string city = 5;
+  string district = 6;
+  string ward = 7;
+  bool isDefault = 8;
+}
+
+message CreateDeliveryAddressResponse {
+  DeliveryAddress address = 1;
+}
+
+message UpdateDeliveryAddressRequest {
+  int32 id = 1;
+  string recipientName = 2;
+  string phone = 3;
+  string address = 4;
+  string city = 5;
+  string district = 6;
+  string ward = 7;
+  bool isDefault = 8;
+}
+
+message UpdateDeliveryAddressResponse {
+  DeliveryAddress address = 1;
+}
+
+message DeleteDeliveryAddressRequest {
+  int32 id = 1;
+}
+
+message DeleteDeliveryAddressResponse {
+  bool success = 1;
+}
+
+message SetDefaultDeliveryAddressRequest {
+  int32 userId = 1;
+  int32 addressId = 2;
+}
+
+message SetDefaultDeliveryAddressResponse {
+  bool success = 1;
+}
+
+message DeliveryAddress {
+  int32 id = 1;
+  int32 userId = 2;
+  string recipientName = 3;
+  string phone = 4;
+  string address = 5;
+  string city = 6;
+  string district = 7;
+  string ward = 8;
+  bool isDefault = 9;
+}
+
+// Payment Method Messages
+message GetPaymentMethodsRequest {
+  int32 userId = 1;
+}
+
+message GetPaymentMethodsResponse {
+  repeated PaymentMethod paymentMethods = 1;
+}
+
+message GetPaymentMethodRequest {
+  int32 id = 1;
+}
+
+message GetPaymentMethodResponse {
+  PaymentMethod paymentMethod = 1;
+}
+
+message GetDefaultPaymentMethodRequest {
+  int32 userId = 1;
+}
+
+message GetDefaultPaymentMethodResponse {
+  PaymentMethod paymentMethod = 1;
+}
+
+message CreatePaymentMethodRequest {
+  int32 userId = 1;
+  string type = 2;
+  string provider = 3;
+  string accountNumber = 4;
+  string accountName = 5;
+  bool isDefault = 6;
+}
+
+message CreatePaymentMethodResponse {
+  PaymentMethod paymentMethod = 1;
+}
+
+message UpdatePaymentMethodRequest {
+  int32 id = 1;
+  string type = 2;
+  string provider = 3;
+  string accountNumber = 4;
+  string accountName = 5;
+  bool isDefault = 6;
+}
+
+message UpdatePaymentMethodResponse {
+  PaymentMethod paymentMethod = 1;
+}
+
+message DeletePaymentMethodRequest {
+  int32 id = 1;
+}
+
+message DeletePaymentMethodResponse {
+  bool success = 1;
+}
+
+message SetDefaultPaymentMethodRequest {
+  int32 userId = 1;
+  int32 paymentMethodId = 2;
+}
+
+message SetDefaultPaymentMethodResponse {
+  bool success = 1;
+}
+
+message PaymentMethod {
+  int32 id = 1;
+  int32 userId = 2;
+  string type = 3;
+  string provider = 4;
+  string accountNumber = 5;
+  string accountName = 6;
+  bool isDefault = 7;
+}

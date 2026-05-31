@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2021",
+    "types": ["node"],
+    // "baseUrl": ".",
+    // "paths": {
+    //   "@app/contracts": ["packages/contracts/src"],
+    //   "@app/contracts/*": ["packages/contracts/src/*"]
+    // }
+  }
+}
