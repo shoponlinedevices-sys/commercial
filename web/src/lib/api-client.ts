@@ -1,7 +1,10 @@
 import { API_BASE_URL } from './api-config';
+import { authService } from '../services/auth.service';
 
 class ApiClient {
   private accessToken: string | null = null;
+  private isRefreshing = false;
+  private refreshPromise: Promise<string | null> | null = null;
 
   setAccessToken(token: string) {
     this.accessToken = token;
@@ -38,6 +41,25 @@ class ApiClient {
     return headers;
   }
 
+  private async refreshAccessToken(): Promise<string | null> {
+    if (typeof window === 'undefined') return null;
+
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) return null;
+
+    try {
+      const response = await authService.refreshToken(refreshToken);
+      return response.access_token;
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      this.clearTokens();
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+      return null;
+    }
+  }
+
   async request<T>(
     endpoint: string,
     options: RequestInit = {},
@@ -50,12 +72,44 @@ class ApiClient {
       headers: {
         ...this.getHeaders(),
         ...options.headers,
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
       },
     };
 
     const response = await fetch(url, config);
     const text = await response.text();
     const data = text ? JSON.parse(text) : null;
+
+    if (response.status === 401) {
+      if (!this.isRefreshing) {
+        this.isRefreshing = true;
+        this.refreshPromise = this.refreshAccessToken();
+      }
+
+      const newToken = await this.refreshPromise;
+      this.isRefreshing = false;
+      this.refreshPromise = null;
+
+      if (newToken) {
+        this.setAccessToken(newToken);
+        config.headers = {
+          ...this.getHeaders(),
+          ...options.headers,
+        };
+        const retryResponse = await fetch(url, config);
+        const retryText = await retryResponse.text();
+        const retryData = retryText ? JSON.parse(retryText) : null;
+
+        if (!retryResponse.ok) {
+          throw new Error(retryData?.message || retryResponse.statusText || 'API request failed');
+        }
+
+        return retryData as T;
+      } else {
+        throw new Error('Authentication failed');
+      }
+    }
 
     if (!response.ok) {
       throw new Error(data?.message || response.statusText || 'API request failed');

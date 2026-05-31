@@ -188,14 +188,39 @@ const CartScreen: React.FC<Props> = ({
         fcmToken: fcmToken || undefined,
       });
 
-      await createNotification({
-        userId: String(userInfo?.id),
-        title: 'Đặt hàng thành công',
-        message: `Đơn hàng của bạn với tổng giá ${totalAmount.toLocaleString('vi-VN')} ₫ đã được đặt thành công.`,
-        type: 'order',
-        isRead: false,
-        metadata: { orderId: orderResponse.id },
-      });
+      // Create notification (non-blocking)
+      try {
+        console.log('[Notification] Preparing notification data, userInfo:', userInfo, 'orderResponse:', orderResponse);
+        
+        if (!userInfo?.id) {
+          console.warn('[Notification] Skipping notification - user ID is missing');
+        } else {
+          const notificationData: any = {
+            userId: String(userInfo.id),
+            title: 'Đặt hàng thành công',
+            message: `Đơn hàng của bạn với tổng giá ${totalAmount.toLocaleString('vi-VN')} ₫ đã được đặt thành công.`,
+            type: 'order',
+          };
+          
+          // Only add orderId if it exists
+          if (orderResponse?.id) {
+            notificationData.metadata = { orderId: orderResponse.id };
+          }
+          
+          console.log('[Notification] Sending notification request:', notificationData);
+          const notificationResponse = await createNotification(notificationData);
+          console.log('[Notification] Notification created successfully:', notificationResponse);
+        }
+      } catch (notificationError: any) {
+        console.error('[Notification] Failed to create notification:', notificationError);
+        console.error('[Notification] Error details:', {
+          message: notificationError?.message,
+          stack: notificationError?.stack,
+          userInfo: userInfo,
+          orderResponse: orderResponse,
+        });
+        // Don't block order placement if notification fails
+      }
 
       await clearCartByUserId(userInfo?.id || 0);
 
@@ -206,7 +231,7 @@ const CartScreen: React.FC<Props> = ({
 
       setCartItems([]);
     } catch (error) {
-      console.log(error);
+      console.error('[Order] Failed to place order:', error);
       Alert.alert(
         'Lỗi',
         'Không thể đặt hàng',

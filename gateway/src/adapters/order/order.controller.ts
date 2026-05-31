@@ -16,6 +16,9 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @Get('user/:userId')
   async getOrdersByUserId(@Param('userId') userId: string) {
-    return this.orderService.findByUserId(parseInt(userId, 10));
+    console.log(`[OrderController] getOrdersByUserId called with userId: ${userId}`);
+    const parsedUserId = parseInt(userId, 10);
+    console.log(`[OrderController] Parsed userId: ${parsedUserId}`);
+    return this.orderService.findByUserId(parsedUserId);
   }
 }

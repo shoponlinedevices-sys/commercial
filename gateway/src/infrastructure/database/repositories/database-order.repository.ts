@@ -65,7 +65,10 @@ export class DatabaseOrderRepository implements OrderRepository {
   }
 
   async findByUserId(userId: number): Promise<Order[]> {
+    console.log(`[DatabaseOrderRepository] Querying orders for userId: ${userId}`);
     const orders = await this.orderRepo.find({ where: { userId } });
+    console.log(`[DatabaseOrderRepository] Query result: ${orders.length} orders found`);
+    console.log(`[DatabaseOrderRepository] Orders:`, JSON.stringify(orders, null, 2));
     return orders.map(
       (order) =>
         new Order(

@@ -62,6 +62,9 @@ export class OrderService {
   }
 
   async findByUserId(userId: number): Promise<Order[]> {
-    return this.orderRepository.findByUserId(userId);
+    console.log(`[OrderService] Finding orders for userId: ${userId}`);
+    const orders = await this.orderRepository.findByUserId(userId);
+    console.log(`[OrderService] Found ${orders.length} orders for userId: ${userId}`);
+    return orders;
   }
 }
