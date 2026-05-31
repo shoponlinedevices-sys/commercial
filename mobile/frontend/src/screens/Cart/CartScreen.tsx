@@ -18,6 +18,7 @@ import {
   clearCartByUserId,
 } from '../../api/cartApi';
 import { createOrder } from '../../api/orderApi';
+import { createNotification } from '../../api/notificationApi';
 import { getFcmToken } from '../../api/tokenStorage';
 import { useAuth } from '../../context/AuthContext';
 
@@ -180,11 +181,20 @@ const CartScreen: React.FC<Props> = ({
         0,
       );
 
-      await createOrder({
+      const orderResponse = await createOrder({
         userId: String(userInfo?.id),
         totalAmount,
         orderLines,
         fcmToken: fcmToken || undefined,
+      });
+
+      await createNotification({
+        userId: String(userInfo?.id),
+        title: 'Đặt hàng thành công',
+        message: `Đơn hàng của bạn với tổng giá ${totalAmount.toLocaleString('vi-VN')} ₫ đã được đặt thành công.`,
+        type: 'order',
+        isRead: false,
+        metadata: { orderId: orderResponse.id },
       });
 
       await clearCartByUserId(userInfo?.id || 0);

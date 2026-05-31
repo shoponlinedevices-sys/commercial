@@ -408,65 +408,66 @@ const ProductScreen: React.FC<Props> = ({
       >
         {/* HEADER */}
         <View style={styles.headerCard}>
-          <View style={styles.headerLeft}>
-            <Image
-              source={require('../../asset/Logo.png')}
-              style={styles.companyLogo}
-              resizeMode="contain"
-            />
+          <View style={styles.headerContent}>
+            <View style={styles.headerLeft}>
+              <Image
+                source={require('../../asset/Logo.png')}
+                style={styles.companyLogo}
+                resizeMode="contain"
+              />
 
-            <View style={styles.greetingWrapper}>
-              <Text style={styles.companyName}>
-                Cửa hàng thiết bị online
-              </Text>
+              <View style={styles.greetingWrapper}>
+                <Text style={styles.companyName}>
+                  Cửa hàng thiết bị online
+                </Text>
+                <Text style={styles.greetingTitle}>
+                  Xin chào, {userName}
+                </Text>
 
-              <Text style={styles.greetingTitle}>
-                Xin chào, {userName}
-              </Text>
-
-              <Text style={styles.greetingSubtitle}>
-                Quản lý đặt hàng & thiết bị
-              </Text>
+                <Text style={styles.greetingSubtitle}>
+                  Quản lý đặt hàng & thiết bị
+                </Text>
+              </View>
             </View>
-          </View>
 
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={styles.iconButton}
-              onPress={() =>
-                navigation.navigate('Notifications')
-              }
-            >
-              <Text style={styles.iconSymbol}>
-                🔔
-              </Text>
+            <View style={styles.headerActions}>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() =>
+                  navigation.navigate('Notifications')
+                }
+              >
+                <Text style={styles.iconSymbol}>
+                  🔔
+                </Text>
 
-              {unreadCount > 0 && (
-                <View style={styles.notificationDot}>
-                  <Text style={styles.notificationDotText}>
-                    {unreadCount}
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
+                {unreadCount > 0 && (
+                  <View style={styles.notificationDot}>
+                    <Text style={styles.notificationDotText}>
+                      {unreadCount}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.iconButton}
-              onPress={() =>
-                navigation.navigate('Cart')
-              }
-            >
-              <Text style={styles.iconSymbol}>
-                🛒
-              </Text>
-               {cartLinesCount > 0 && (
-                <View style={styles.notificationDot}>
-                  <Text style={styles.notificationDotText}>
-                    {cartLinesCount}
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() =>
+                  navigation.navigate('Cart')
+                }
+              >
+                <Text style={styles.iconSymbol}>
+                  🛒
+                </Text>
+                 {cartLinesCount > 0 && (
+                  <View style={styles.notificationDot}>
+                    <Text style={styles.notificationDotText}>
+                      {cartLinesCount}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -974,27 +975,34 @@ const styles = StyleSheet.create({
   headerCard: {
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 18,
+    padding: 16,
     marginBottom: 18,
     elevation: 4,
+  },
+
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
 
   companyLogo: {
-    width: 60,
-    height: 60,
-    marginRight: 14,
+    width: 50,
+    height: 50,
+    marginRight: 12,
   },
 
   companyName: {
     color: '#007bff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '900',
-    marginBottom: 2,
+    marginBottom: 4,
   },
 
   avatar: {
@@ -1019,31 +1027,31 @@ const styles = StyleSheet.create({
 
   greetingTitle: {
     color: '#0d1b2a',
-    fontSize: 18,
-    fontWeight: '900',
-    marginBottom: 4,
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 2,
   },
 
   greetingSubtitle: {
     color: '#64748b',
-    fontSize: 13,
+    fontSize: 12,
   },
 
   headerActions: {
     flexDirection: 'row',
-    marginTop: 8,
-    justifyContent: 'space-between',
-    width: '50%',
+    alignItems: 'center',
+    gap: 12,
   },
 
   iconButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    backgroundColor: '#fff',
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#f8fafc',
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
 
   iconSymbol: {

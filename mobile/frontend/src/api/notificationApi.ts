@@ -67,3 +67,10 @@ export async function markNotificationAsRead(notificationId: string): Promise<IN
     method: 'POST',
   });
 }
+
+export async function createNotification(notification: Omit<INotification, 'id' | 'createdAt' | 'updatedAt' | 'readAt'>): Promise<INotification> {
+  return await notificationAuthorizedRequest<INotification>('/notifications', {
+    method: 'POST',
+    body: JSON.stringify(notification),
+  });
+}

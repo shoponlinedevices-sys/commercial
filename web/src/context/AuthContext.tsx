@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserInfo } from '@/types';
 import { authService } from '@/services/auth.service';
+import { apiClient } from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
@@ -26,6 +27,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const currentUser = authService.getCurrentUser();
     if (currentUser) {
       setUser(currentUser);
+      // Restore access token from localStorage to apiClient
+      const accessToken = localStorage.getItem('access_token');
+      if (accessToken) {
+        apiClient.setAccessToken(accessToken);
+      }
     }
     setLoading(false);
   }, []);

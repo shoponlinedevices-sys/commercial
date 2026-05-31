@@ -9,6 +9,6 @@ exports.default = (0, config_1.registerAs)('database', () => ({
     password: process.env.DB_PASSWORD || '06081990',
     database: process.env.DB_DATABASE || 'commercial',
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: true,
+    synchronize: false,
 }));
 //# sourceMappingURL=database.config.js.map

@@ -25,5 +25,5 @@ export const CART_BASE_URL = API_CONFIG.GATEWAY_URL;
 // Use gateway for orders (matching mobile app behavior - order endpoints are on gateway)
 export const ORDERS_BASE_URL = API_CONFIG.GATEWAY_URL;
 
-// Use notification service directly for notifications (matching mobile app behavior)
-export const NOTIFICATION_BASE_URL = API_CONFIG.NOTIFICATION_SERVICE_URL;
+// Use gateway for notifications (gateway has notification endpoints and database access)
+export const NOTIFICATION_BASE_URL = API_CONFIG.GATEWAY_URL;
