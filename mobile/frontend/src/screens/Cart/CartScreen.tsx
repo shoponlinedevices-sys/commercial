@@ -19,6 +19,7 @@ import {
 } from '../../api/cartApi';
 import { createOrder } from '../../api/orderApi';
 import { createNotification } from '../../api/notificationApi';
+import { sendOrderConfirmationEmail } from '../../api/emailApi';
 import { getFcmToken } from '../../api/tokenStorage';
 import { useAuth } from '../../context/AuthContext';
 
@@ -167,6 +168,31 @@ const CartScreen: React.FC<Props> = ({
       return;
     }
 
+    // Check if user has email
+    const hasEmail = userInfo?.email && userInfo.email.trim() !== '';
+    
+    if (!hasEmail) {
+      Alert.alert(
+        'Thông báo',
+        'Bạn chưa có email trong tài khoản. Vui lòng cập nhật email để nhận thông báo về đơn hàng.',
+        [
+          {
+            text: 'Đặt hàng ngay',
+            onPress: () => proceedWithOrder(),
+          },
+          {
+            text: 'Cập nhật email sau',
+            onPress: () => proceedWithOrder(),
+            style: 'cancel',
+          },
+        ],
+      );
+    } else {
+      proceedWithOrder();
+    }
+  };
+
+  const proceedWithOrder = async () => {
     try {
       const fcmToken = await getFcmToken();
 
@@ -220,6 +246,22 @@ const CartScreen: React.FC<Props> = ({
           orderResponse: orderResponse,
         });
         // Don't block order placement if notification fails
+      }
+
+      // Send email notification if user has email (non-blocking)
+      if (userInfo?.email && userInfo.email.trim() !== '' && orderResponse?.id) {
+        try {
+          console.log('[Email] Sending order confirmation email to:', userInfo.email);
+          const emailResponse = await sendOrderConfirmationEmail(
+            userInfo.email,
+            orderResponse.id,
+            totalAmount,
+          );
+          console.log('[Email] Email sent successfully:', emailResponse);
+        } catch (emailError: any) {
+          console.error('[Email] Failed to send email:', emailError);
+          // Don't block order placement if email sending fails
+        }
       }
 
       await clearCartByUserId(userInfo?.id || 0);

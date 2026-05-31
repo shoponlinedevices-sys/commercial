@@ -8,8 +8,9 @@ import { NotificationModule } from './notification/notification.module';
 import { UserProfileModule } from './user-profile/user-profile.module';
 import { DeliveryAddressModule } from './delivery-address/delivery-address.module';
 import { PaymentMethodModule } from './payment-method/payment-method.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
-  imports: [CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule],
+  imports: [CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule],
 })
 export class AppModule {}

@@ -44,6 +44,7 @@ export const PRODUCTS_SERVICE_BASE_URL = getApiBaseUrl(3003); // products-svc (p
 export const SALES_SERVICE_BASE_URL = getApiBaseUrl(3001); // sales-svc (orders endpoints)
 export const ORDERS_SERVICE_BASE_URL = getApiBaseUrl(3001); // sales-svc (orders endpoints)
 export const NOTIFICATION_API_BASE_URL = getApiBaseUrl(3002);
+export const EMAIL_SERVICE_BASE_URL = getApiBaseUrl(3005); // email-svc (email endpoints)
 
 console.log('================================');
 console.log('[API Config]');

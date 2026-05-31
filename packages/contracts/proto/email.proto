@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package email;
+
+service EmailService {
+  rpc SendEmail (SendEmailRequest)
+      returns (SendEmailResponse);
+}
+
+message SendEmailRequest {
+  string to = 1;
+  string subject = 2;
+  string body = 3;
+  string template = 4;
+  map<string, string> templateData = 5;
+}
+
+message SendEmailResponse {
+  bool success = 1;
+  string messageId = 2;
+  int32 emailId = 3;
+  string error = 4;
+}

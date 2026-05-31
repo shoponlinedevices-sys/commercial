@@ -61,7 +61,10 @@ let OrderService = class OrderService {
         return order;
     }
     async findByUserId(userId) {
-        return this.orderRepository.findByUserId(userId);
+        console.log(`[OrderService] Finding orders for userId: ${userId}`);
+        const orders = await this.orderRepository.findByUserId(userId);
+        console.log(`[OrderService] Found ${orders.length} orders for userId: ${userId}`);
+        return orders;
     }
 };
 exports.OrderService = OrderService;
