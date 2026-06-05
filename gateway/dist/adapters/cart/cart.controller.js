@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CartController = void 0;
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 const public_decorator_1 = require("../../domain/identity/public.decorator");
 const cart_dto_1 = require("./dto/cart.dto");
 const cart_service_1 = require("../../application/cart/cart.service");
@@ -91,6 +92,8 @@ exports.CartController = CartController;
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all carts' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of carts retrieved successfully' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -98,6 +101,9 @@ __decorate([
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get cart by ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Cart retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Cart not found' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -106,6 +112,9 @@ __decorate([
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/by-user-id/:userId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get cart by user ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Cart retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Cart not found' }),
     __param(0, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -114,6 +123,9 @@ __decorate([
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Add item to cart' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Item added to cart successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [cart_dto_1.AddToCartDto]),
@@ -122,6 +134,9 @@ __decorate([
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Delete)('/lines/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Remove item from cart' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Item removed successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Item not found' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -130,6 +145,8 @@ __decorate([
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/lines/user/:userId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get cart lines by user ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Cart lines retrieved successfully' }),
     __param(0, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -138,12 +155,15 @@ __decorate([
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Delete)('/user/:userId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Clear cart by user ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Cart cleared successfully' }),
     __param(0, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], CartController.prototype, "clearCartByUserId", null);
 exports.CartController = CartController = __decorate([
+    (0, swagger_1.ApiTags)('Cart'),
     (0, common_1.Controller)('cart'),
     __metadata("design:paramtypes", [cart_service_1.CartService,
         product_service_1.ProductService])

@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './adapters/app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -8,10 +9,20 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
-  // await app.listen(3000);
 
-   await app.listen(3000, '0.0.0.0');
+  // Swagger configuration
+  const config = new DocumentBuilder()
+    .setTitle('API Gateway')
+    .setDescription('API Gateway for ShopOnlineDevices')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+  await app.listen(3000, '0.0.0.0');
 
   console.log('Backend running on port 3000');
+  console.log('Swagger documentation available at http://localhost:3000/api');
 }
 bootstrap();

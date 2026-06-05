@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../../domain/identity/jwt-auth.guard");
 const order_service_1 = require("../../application/order/order.service");
 let OrderController = class OrderController {
@@ -35,6 +36,11 @@ exports.OrderController = OrderController;
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new order' }),
+    (0, swagger_1.ApiBody)({ schema: { example: { userId: 1, cartLines: [{ productId: 1, quantity: 2 }], fcmToken: 'optional_fcm_token' } } }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Order created successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -43,12 +49,17 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('user/:userId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get orders by user ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Orders retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     __param(0, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "getOrdersByUserId", null);
 exports.OrderController = OrderController = __decorate([
+    (0, swagger_1.ApiTags)('Orders'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [order_service_1.OrderService])
 ], OrderController);

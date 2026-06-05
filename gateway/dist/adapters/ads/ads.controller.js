@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdsController = void 0;
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 let AdsController = class AdsController {
     findAll() {
         return [
@@ -34,11 +35,14 @@ let AdsController = class AdsController {
 exports.AdsController = AdsController;
 __decorate([
     (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all advertisements' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of advertisements retrieved successfully' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AdsController.prototype, "findAll", null);
 exports.AdsController = AdsController = __decorate([
+    (0, swagger_1.ApiTags)('Advertisements'),
     (0, common_1.Controller)('ads')
 ], AdsController);
 //# sourceMappingURL=ads.controller.js.map

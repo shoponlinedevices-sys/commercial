@@ -1,25 +1,38 @@
 import { Controller, Get, UseGuards, Param } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductService } from '../../application/product/product.service';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
 
+@ApiTags('Products')
+@ApiBearerAuth()
 @Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()
+  @ApiOperation({ summary: 'Get all products' })
+  @ApiResponse({ status: 200, description: 'List of products retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   findAll() {
     return this.productService.findAll();
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
+  @ApiOperation({ summary: 'Get product by ID' })
+  @ApiResponse({ status: 200, description: 'Product retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Product not found' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   findOne(@Param('id') id: string) {
     return this.productService.findOne(parseInt(id, 10));
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':categoryId/products')
+  @ApiOperation({ summary: 'Get products by category ID' })
+  @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   findByCategory(@Param('categoryId') categoryId: number) {
     return this.productService.findByCategory(categoryId);
   }

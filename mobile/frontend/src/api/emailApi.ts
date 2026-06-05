@@ -1,6 +1,6 @@
 import { rawApiRequest } from './httpClient';
 import { getAccessToken } from './tokenStorage';
-import { EMAIL_SERVICE_BASE_URL } from './config';
+import { API_BASE_URL, EMAIL_SERVICE_BASE_URL } from './config';
 
 async function authorizedEmailRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
   const accessToken = await getAccessToken();
@@ -9,7 +9,7 @@ async function authorizedEmailRequest<T>(path: string, options: RequestInit = {}
     ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
   };
 
-  const url = `${EMAIL_SERVICE_BASE_URL}${path}`;
+  const url = `${API_BASE_URL}${path}`;
   console.log(`[Email API Request] ${options.method || 'GET'} ${url}`);
 
   const response = await fetch(url, {

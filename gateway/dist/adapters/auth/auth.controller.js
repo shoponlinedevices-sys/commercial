@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 const identity_service_1 = require("../../domain/identity/identity.service");
 let AuthController = class AuthController {
     constructor(identityService) {
@@ -55,6 +56,10 @@ let AuthController = class AuthController {
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('login'),
+    (0, swagger_1.ApiOperation)({ summary: 'User login' }),
+    (0, swagger_1.ApiBody)({ schema: { example: { username: 'user123', password: 'password123' } } }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Login successful', schema: { example: { access_token: 'jwt_token', refresh_token: 'refresh_token', user: { id: 1, username: 'user123' } } } }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -62,6 +67,10 @@ __decorate([
 ], AuthController.prototype, "login", null);
 __decorate([
     (0, common_1.Post)('refresh'),
+    (0, swagger_1.ApiOperation)({ summary: 'Refresh access token' }),
+    (0, swagger_1.ApiBody)({ schema: { example: { refresh_token: 'refresh_token_string' } } }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Token refreshed successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Invalid refresh token' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -69,12 +78,17 @@ __decorate([
 ], AuthController.prototype, "refresh", null);
 __decorate([
     (0, common_1.Post)('register'),
+    (0, swagger_1.ApiOperation)({ summary: 'User registration' }),
+    (0, swagger_1.ApiBody)({ schema: { example: { username: 'newuser', password: 'password123' } } }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'User registered successfully', schema: { example: { id: 1, username: 'newuser' } } }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 exports.AuthController = AuthController = __decorate([
+    (0, swagger_1.ApiTags)('Authentication'),
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [identity_service_1.IdentityService])
 ], AuthController);

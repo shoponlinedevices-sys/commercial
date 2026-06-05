@@ -1,26 +1,15 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
-import { join } from 'path';
 import { DataSource } from 'typeorm';
 import { EmailEntity } from '../../infrastructure/database/entities/email.entity';
+import { EmailProvider } from '../../infra/provider/email-provider';
 
 @Injectable()
 export class EmailService {
-  private client: ClientProxy;
-
   constructor(
     @Inject('DATA_SOURCE')
     private readonly dataSource: DataSource,
-  ) {
-    this.client = ClientProxyFactory.create({
-      transport: Transport.GRPC,
-      options: {
-        package: 'email',
-        protoPath: join(__dirname, '../../../../packages/contracts/proto/email.proto'),
-        url: 'localhost:50053',
-      },
-    });
-  }
+    private readonly emailProvider: EmailProvider,
+  ) {}
 
   private get emailRepository() {
     return this.dataSource.getRepository(EmailEntity);
@@ -28,7 +17,7 @@ export class EmailService {
 
   async sendEmail(data: { to: string; subject: string; body: string; template?: string; templateData?: Record<string, any> }) {
     try {
-      return await this.client.send('SendEmail', data).toPromise();
+      return await this.emailProvider.sendEmail(data);
     } catch (error) {
       console.error('Error sending email via microservice:', error);
       throw error;

@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductController = void 0;
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 const product_service_1 = require("../../application/product/product.service");
 const jwt_auth_guard_1 = require("../../domain/identity/jwt-auth.guard");
 let ProductController = class ProductController {
@@ -34,6 +35,9 @@ exports.ProductController = ProductController;
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all products' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of products retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -41,6 +45,10 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get product by ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Product retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Product not found' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -49,12 +57,17 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(':categoryId/products'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get products by category ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Products retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     __param(0, (0, common_1.Param)('categoryId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "findByCategory", null);
 exports.ProductController = ProductController = __decorate([
+    (0, swagger_1.ApiTags)('Products'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('products'),
     __metadata("design:paramtypes", [product_service_1.ProductService])
 ], ProductController);

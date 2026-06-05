@@ -8,18 +8,18 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class NotificationProvider {
+export class EmailProvider {
   constructor(
-    @Inject('GRPC_NOTIFICATIONS_SERVICE')
+    @Inject('GRPC_EMAILS_SERVICE')
     private readonly client: ClientProxy,
   ) {}
 
-  async sendPushNotificationToUser(
+  async sendEmail(
     data: any,
   ) {
     return await firstValueFrom(
       this.client.send(
-        { cmd: 'sendPushNotificationToUser' },
+        { cmd: 'sendEmail' },
         data,
       ),
     );

@@ -1,0 +1,1 @@
+{"version":3,"file":"grpc-emails.options.js","sourceRoot":"","sources":["../../src/infra/grpc-emails.options.ts"],"names":[],"mappings":";;;AAAA,+BAA4B;AAEf,QAAA,uBAAuB,GAAG;IACrC,SAAS,EAAE,CAAC;IACZ,OAAO,EAAE;QACP,OAAO,EAAE,OAAO;QAChB,SAAS,EAAE,IAAA,WAAI,EAAC,SAAS,EAAE,+CAA+C,CAAC;QAC3E,GAAG,EAAE,gBAAgB;KACtB;CACF,CAAC"}

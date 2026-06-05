@@ -20,7 +20,7 @@ const getApiBaseUrl = (port: number): string => {
   if (platform === 'android' && !isDevice) {
     // Android emulator - use machine IP
     console.log(`[API Config] Using Android emulator with machine IP`);
-    return `http://192.168.1.8:${port}`;
+    return `http://192.168.1.9:${port}`;
   }
 
   if (debuggerHost && isDevice) {
@@ -31,7 +31,7 @@ const getApiBaseUrl = (port: number): string => {
 
   // iOS simulator or fallback - use machine IP for consistency
   console.log(`[API Config] Using fallback with machine IP`);
-  return `http://192.168.1.8:${port}`;
+  return `http://192.168.1.9:${port}`;
 };
 
 // Detect current Expo host for logging
@@ -44,7 +44,7 @@ export const PRODUCTS_SERVICE_BASE_URL = getApiBaseUrl(3003); // products-svc (p
 export const SALES_SERVICE_BASE_URL = getApiBaseUrl(3001); // sales-svc (orders endpoints)
 export const ORDERS_SERVICE_BASE_URL = getApiBaseUrl(3001); // sales-svc (orders endpoints)
 export const NOTIFICATION_API_BASE_URL = getApiBaseUrl(3002);
-export const EMAIL_SERVICE_BASE_URL = getApiBaseUrl(3005); // email-svc (email endpoints)
+export const EMAIL_SERVICE_BASE_URL = getApiBaseUrl(3011); // email-svc (email endpoints)
 
 console.log('================================');
 console.log('[API Config]');

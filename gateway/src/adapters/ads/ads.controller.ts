@@ -1,8 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('Advertisements')
 @Controller('ads')
 export class AdsController {
   @Get()
+  @ApiOperation({ summary: 'Get all advertisements' })
+  @ApiResponse({ status: 200, description: 'List of advertisements retrieved successfully' })
   findAll() {
     return [
       {

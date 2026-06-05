@@ -12,22 +12,22 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NotificationProvider = void 0;
+exports.EmailProvider = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
 const rxjs_1 = require("rxjs");
-let NotificationProvider = class NotificationProvider {
+let EmailProvider = class EmailProvider {
     constructor(client) {
         this.client = client;
     }
-    async sendPushNotificationToUser(data) {
-        return await (0, rxjs_1.firstValueFrom)(this.client.send({ cmd: 'sendPushNotificationToUser' }, data));
+    async sendEmail(data) {
+        return await (0, rxjs_1.firstValueFrom)(this.client.send({ cmd: 'sendEmail' }, data));
     }
 };
-exports.NotificationProvider = NotificationProvider;
-exports.NotificationProvider = NotificationProvider = __decorate([
+exports.EmailProvider = EmailProvider;
+exports.EmailProvider = EmailProvider = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)('GRPC_NOTIFICATIONS_SERVICE')),
+    __param(0, (0, common_1.Inject)('GRPC_EMAILS_SERVICE')),
     __metadata("design:paramtypes", [microservices_1.ClientProxy])
-], NotificationProvider);
-//# sourceMappingURL=notification-provider.js.map
+], EmailProvider);
+//# sourceMappingURL=email-provider.js.map

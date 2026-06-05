@@ -14,28 +14,20 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailService = void 0;
 const common_1 = require("@nestjs/common");
-const microservices_1 = require("@nestjs/microservices");
-const path_1 = require("path");
 const typeorm_1 = require("typeorm");
 const email_entity_1 = require("../../infrastructure/database/entities/email.entity");
+const email_provider_1 = require("../../infra/provider/email-provider");
 let EmailService = class EmailService {
-    constructor(dataSource) {
+    constructor(dataSource, emailProvider) {
         this.dataSource = dataSource;
-        this.client = microservices_1.ClientProxyFactory.create({
-            transport: microservices_1.Transport.GRPC,
-            options: {
-                package: 'email',
-                protoPath: (0, path_1.join)(__dirname, '../../../../packages/contracts/proto/email.proto'),
-                url: 'localhost:50053',
-            },
-        });
+        this.emailProvider = emailProvider;
     }
     get emailRepository() {
         return this.dataSource.getRepository(email_entity_1.EmailEntity);
     }
     async sendEmail(data) {
         try {
-            return await this.client.send('SendEmail', data).toPromise();
+            return await this.emailProvider.sendEmail(data);
         }
         catch (error) {
             console.error('Error sending email via microservice:', error);
@@ -63,6 +55,7 @@ exports.EmailService = EmailService;
 exports.EmailService = EmailService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('DATA_SOURCE')),
-    __metadata("design:paramtypes", [typeorm_1.DataSource])
+    __metadata("design:paramtypes", [typeorm_1.DataSource,
+        email_provider_1.EmailProvider])
 ], EmailService);
 //# sourceMappingURL=email.service.js.map
