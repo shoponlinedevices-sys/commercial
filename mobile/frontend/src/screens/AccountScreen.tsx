@@ -120,25 +120,28 @@ const AccountScreen: React.FC<Props> = ({ navigation, route }) => {
         navigation.navigate('DeliveryAddress', { user });
       },
     },
-    {
-      icon: '💳',
-      label: 'Phương thức thanh toán',
-      onPress: () => {
-        navigation.navigate('PaymentMethod', { user });
-      },
-    },
-    {
-      icon: '⚙️',
-      label: 'Cài đặt',
-      onPress: () => {
-        Alert.alert('Cài đặt', 'Tính năng đang phát triển');
-      },
-    },
+    // {
+    //   icon: '💳',
+    //   label: 'Phương thức thanh toán',
+    //   onPress: () => {
+    //     navigation.navigate('PaymentMethod', { user });
+    //   },
+    // },
+    // {
+    //   icon: '⚙️',
+    //   label: 'Cài đặt',
+    //   onPress: () => {
+    //     Alert.alert('Cài đặt', 'Tính năng đang phát triển');
+    //   },
+    // },
     {
       icon: '❓',
       label: 'Trợ giúp & Hỗ trợ',
       onPress: () => {
-        Alert.alert('Trợ giúp & Hỗ trợ', 'Tính năng đang phát triển');
+        Alert.alert(
+          'Trợ giúp & Hỗ trợ',
+          'Số điện thoại: 123456789\nEmail: shoponlinedevices@gmail.com'
+        );
       },
     },
   ];
