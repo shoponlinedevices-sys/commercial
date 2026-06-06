@@ -21,6 +21,12 @@ type ForgotPasswordRequest = {
   username: string;
 };
 
+type ChangePasswordRequest = {
+  userId: number;
+  currentPassword: string;
+  newPassword: string;
+};
+
 type LoginResponse = {
   access_token: string;
   refresh_token: string;
@@ -121,6 +127,37 @@ export class AuthController {
     } catch (error) {
       console.error(`[AuthController] Forgot password error:`, error);
       throw new Error('Không thể gửi mật khẩu. Vui lòng kiểm tra tên đăng nhập và thử lại.');
+    }
+  }
+
+  @Post('change-password')
+  @ApiOperation({ summary: 'Change user password' })
+  @ApiBody({ schema: { example: { userId: 1, currentPassword: 'oldpassword', newPassword: 'newpassword' } } })
+  @ApiResponse({ status: 200, description: 'Password changed successfully' })
+  @ApiResponse({ status: 401, description: 'Current password is incorrect' })
+  async changePassword(@Body() body: ChangePasswordRequest): Promise<{ message: string }> {
+    console.log(`[AuthController] changePassword called for user ID:`, body.userId);
+    const { userId, currentPassword, newPassword } = body;
+
+    try {
+      // Call auth-svc to change password
+      const authResponse = await fetch(`${process.env.AUTH_SERVICE_URL || 'http://localhost:3006'}/auth/change-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, currentPassword, newPassword }),
+      });
+
+      if (!authResponse.ok) {
+        const errorData = await authResponse.json();
+        throw new Error(errorData.message || 'Failed to change password');
+      }
+
+      const authData = await authResponse.json();
+      console.log(`[AuthController] Password changed successfully for user ID: ${userId}`);
+      return { message: 'Mật khẩu đã được thay đổi thành công' };
+    } catch (error) {
+      console.error(`[AuthController] Change password error:`, error);
+      throw error;
     }
   }
 }

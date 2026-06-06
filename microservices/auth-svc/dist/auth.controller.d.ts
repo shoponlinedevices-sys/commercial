@@ -38,4 +38,11 @@ export declare class AuthController {
         email: string;
         temporaryPassword: string;
     }>;
+    changePassword(body: {
+        userId: number;
+        currentPassword: string;
+        newPassword: string;
+    }): Promise<{
+        message: string;
+    }>;
 }

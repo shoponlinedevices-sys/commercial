@@ -31,6 +31,9 @@ let AuthController = class AuthController {
     async forgotPassword(body) {
         return this.authService.forgotPassword(body.username);
     }
+    async changePassword(body) {
+        return this.authService.changePassword(body.userId, body.currentPassword, body.newPassword);
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -61,6 +64,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "forgotPassword", null);
+__decorate([
+    (0, common_1.Post)('auth/change-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "changePassword", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

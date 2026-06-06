@@ -53,3 +53,11 @@ export async function forgotPassword(username: string): Promise<{ message: strin
   }, 0, API_BASE_URL);
   return response;
 }
+
+export async function changePassword(userId: number, currentPassword: string, newPassword: string): Promise<{ message: string }> {
+  const response = await rawApiRequest<{ message: string }>('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ userId, currentPassword, newPassword }),
+  }, 0, API_BASE_URL);
+  return response;
+}

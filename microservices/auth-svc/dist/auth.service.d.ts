@@ -33,4 +33,7 @@ export declare class AuthService {
         temporaryPassword: string;
     }>;
     private generateTemporaryPassword;
+    changePassword(userId: number, currentPassword: string, newPassword: string): Promise<{
+        message: string;
+    }>;
 }

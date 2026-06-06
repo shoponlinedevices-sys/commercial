@@ -14,6 +14,7 @@ import AccountScreen from './src/screens/AccountScreen';
 import PersonalInfoScreen from './src/screens/PersonalInfoScreen';
 import DeliveryAddressScreen from './src/screens/DeliveryAddressScreen';
 import PaymentMethodScreen from './src/screens/PaymentMethodScreen';
+import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
 
 type RootStackParamList = {
   Login: undefined;
@@ -27,6 +28,7 @@ type RootStackParamList = {
   PersonalInfo: { user: { id: number; username: string; email?: string } };
   DeliveryAddress: { user: { id: number; username: string; email?: string } };
   PaymentMethod: { user: { id: number; username: string; email?: string } };
+  ChangePassword: { user: { id: number; username: string; email?: string } };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -86,6 +88,10 @@ const App = () => {
             <Stack.Screen
               name="PaymentMethod"
               component={PaymentMethodScreen}
+            />
+            <Stack.Screen
+              name="ChangePassword"
+              component={ChangePasswordScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>

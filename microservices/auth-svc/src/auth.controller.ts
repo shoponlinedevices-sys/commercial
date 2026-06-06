@@ -24,4 +24,9 @@ export class AuthController {
   async forgotPassword(@Body() body: { username: string }) {
     return this.authService.forgotPassword(body.username);
   }
+
+  @Post('auth/change-password')
+  async changePassword(@Body() body: { userId: number; currentPassword: string; newPassword: string }) {
+    return this.authService.changePassword(body.userId, body.currentPassword, body.newPassword);
+  }
 }

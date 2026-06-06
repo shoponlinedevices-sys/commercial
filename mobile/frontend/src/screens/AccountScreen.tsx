@@ -26,6 +26,7 @@ type RootStackParamList = {
   PersonalInfo: { user: { id: number; username: string; email?: string } };
   DeliveryAddress: { user: { id: number; username: string; email?: string } };
   PaymentMethod: { user: { id: number; username: string; email?: string } };
+  ChangePassword: { user: { id: number; username: string; email?: string } };
 };
 
 const bottomTabs = [
@@ -82,6 +83,13 @@ const AccountScreen: React.FC<Props> = ({ navigation, route }) => {
       label: 'Thông tin cá nhân',
       onPress: () => {
         navigation.navigate('PersonalInfo', { user });
+      },
+    },
+    {
+      icon: '🔑',
+      label: 'Đổi mật khẩu',
+      onPress: () => {
+        navigation.navigate('ChangePassword', { user });
       },
     },
     {

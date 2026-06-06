@@ -83,6 +83,28 @@ let AuthController = class AuthController {
             throw new Error('Không thể gửi mật khẩu. Vui lòng kiểm tra tên đăng nhập và thử lại.');
         }
     }
+    async changePassword(body) {
+        console.log(`[AuthController] changePassword called for user ID:`, body.userId);
+        const { userId, currentPassword, newPassword } = body;
+        try {
+            const authResponse = await fetch(`${process.env.AUTH_SERVICE_URL || 'http://localhost:3006'}/auth/change-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, currentPassword, newPassword }),
+            });
+            if (!authResponse.ok) {
+                const errorData = await authResponse.json();
+                throw new Error(errorData.message || 'Failed to change password');
+            }
+            const authData = await authResponse.json();
+            console.log(`[AuthController] Password changed successfully for user ID: ${userId}`);
+            return { message: 'Mật khẩu đã được thay đổi thành công' };
+        }
+        catch (error) {
+            console.error(`[AuthController] Change password error:`, error);
+            throw error;
+        }
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -129,6 +151,17 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "forgotPassword", null);
+__decorate([
+    (0, common_1.Post)('change-password'),
+    (0, swagger_1.ApiOperation)({ summary: 'Change user password' }),
+    (0, swagger_1.ApiBody)({ schema: { example: { userId: 1, currentPassword: 'oldpassword', newPassword: 'newpassword' } } }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Password changed successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Current password is incorrect' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "changePassword", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('Authentication'),
     (0, common_1.Controller)('auth'),
