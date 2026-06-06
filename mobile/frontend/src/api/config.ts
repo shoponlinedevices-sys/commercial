@@ -20,7 +20,7 @@ const getApiBaseUrl = (port: number): string => {
   if (platform === 'android' && !isDevice) {
     // Android emulator - use machine IP
     console.log(`[API Config] Using Android emulator with machine IP`);
-    return `http://192.168.1.33:${port}`;
+    return `http://192.168.1.8:${port}`;
   }
 
   if (debuggerHost && isDevice) {
@@ -31,7 +31,7 @@ const getApiBaseUrl = (port: number): string => {
 
   // iOS simulator or fallback - use machine IP for consistency
   console.log(`[API Config] Using fallback with machine IP`);
-  return `http://192.168.1.33:${port}`;
+  return `http://192.168.1.8:${port}`;
 };
 
 // Detect current Expo host for logging

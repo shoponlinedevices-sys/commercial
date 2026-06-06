@@ -7,7 +7,8 @@ import { Cart, CartLine } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
-import Navigation from '@/components/Navigation';
+import Sidebar from '@/components/Sidebar';
+import Header from '@/components/Header';
 import Image from 'next/image';
 
 export default function CartPage() {
@@ -108,12 +109,17 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading cart...</p>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Header />
+        <div className="flex flex-1">
+          <Sidebar />
+          <div className="flex-1 lg:ml-64">
+            <div className="container mx-auto px-4 py-8 pt-20 lg:pt-20">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                <p className="mt-4 text-muted-foreground">Loading cart...</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -121,16 +127,19 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <ShoppingBag className="h-6 w-6 mr-2" />
-              Shopping Cart
-            </CardTitle>
-          </CardHeader>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header />
+      <div className="flex flex-1">
+        <Sidebar />
+        <div className="flex-1 lg:ml-64">
+          <div className="container mx-auto px-4 py-8 pt-20 lg:pt-20">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center text-xl lg:text-2xl">
+                <ShoppingBag className="h-6 w-6 mr-2 flex-shrink-0" />
+                <span className="break-words">Shopping Cart</span>
+              </CardTitle>
+            </CardHeader>
           <CardContent>
             {!cart?.cartLines || cart.cartLines.length === 0 ? (
               <div className="text-center py-12">
@@ -217,6 +226,8 @@ export default function CartPage() {
             </CardFooter>
           )}
         </Card>
+        </div>
+      </div>
       </div>
     </div>
   );

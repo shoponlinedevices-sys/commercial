@@ -6,7 +6,8 @@ import { orderService } from '@/services/order.service';
 import { Order } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import Navigation from '@/components/Navigation';
+import Sidebar from '@/components/Sidebar';
+import Header from '@/components/Header';
 
 export default function OrdersPage() {
   const { user } = useAuth();
@@ -47,12 +48,15 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading orders...</p>
+      <div className="min-h-screen flex">
+        <Sidebar />
+        <div className="flex-1 lg:ml-64">
+          <Header />
+          <div className="container mx-auto px-4 py-8 mt-16 lg:mt-0">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Loading orders...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -60,62 +64,65 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">My Orders</h1>
-        {orders.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <p className="text-muted-foreground mb-4">No orders yet</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {orders.map((order) => (
-              <Card key={order.id}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle>Order #{order.id}</CardTitle>
-                    <Badge className={getStatusColor(order.status)}>
-                      {order.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total Amount:</span>
-                      <span className="font-semibold">${Number(order.totalAmount || 0).toFixed(2)}</span>
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar />
+      <div className="flex-1 lg:ml-64">
+        <Header />
+        <div className="container mx-auto px-4 py-8 mt-16 lg:mt-0">
+          <h1 className="text-3xl font-bold mb-6">My Orders</h1>
+          {orders.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <p className="text-muted-foreground mb-4">No orders yet</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {orders.map((order) => (
+                <Card key={order.id}>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle>Order #{order.id}</CardTitle>
+                      <Badge className={getStatusColor(order.status)}>
+                        {order.status}
+                      </Badge>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Order Date:</span>
-                      <span>{new Date(order.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    {order.shippingAddress && (
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Shipping Address:</span>
-                        <span className="text-right max-w-xs">{order.shippingAddress}</span>
+                        <span className="text-muted-foreground">Total Amount:</span>
+                        <span className="font-semibold">${Number(order.totalAmount || 0).toFixed(2)}</span>
                       </div>
-                    )}
-                    {order.orderLines && order.orderLines.length > 0 && (
-                      <div className="mt-4 pt-4 border-t">
-                        <p className="font-semibold mb-2">Items:</p>
-                        <ul className="space-y-1">
-                          {order.orderLines.map((line: any, index: number) => (
-                            <li key={index} className="text-sm text-muted-foreground">
-                              {line.quantity}x Product #{line.productId} - ${line.unitPrice}
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Order Date:</span>
+                        <span>{new Date(order.createdAt).toLocaleDateString()}</span>
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                      {order.shippingAddress && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Shipping Address:</span>
+                          <span className="text-right max-w-xs">{order.shippingAddress}</span>
+                        </div>
+                      )}
+                      {order.orderLines && order.orderLines.length > 0 && (
+                        <div className="mt-4 pt-4 border-t">
+                          <p className="font-semibold mb-2">Items:</p>
+                          <ul className="space-y-1">
+                            {order.orderLines.map((line: any, index: number) => (
+                              <li key={index} className="text-sm text-muted-foreground">
+                                {line.quantity}x Product #{line.productId} - ${line.unitPrice}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

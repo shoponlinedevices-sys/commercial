@@ -38,4 +38,12 @@ export const authService = {
       localStorage.setItem('user', JSON.stringify(user));
     }
   },
+
+  async changePassword(userId: number, currentPassword: string, newPassword: string): Promise<void> {
+    await apiClient.post('/auth/change-password', {
+      userId,
+      currentPassword,
+      newPassword,
+    });
+  },
 };

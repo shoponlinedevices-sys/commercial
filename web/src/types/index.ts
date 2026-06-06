@@ -24,11 +24,15 @@ export interface AdBanner {
 
 export interface NotificationItem {
   id: number;
+  userId?: string;
   title: string;
   message: string;
-  unread: boolean;
+  isRead: boolean;
   type?: string;
+  metadata?: Record<string, any>;
+  readAt?: Date;
   createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface UserInfo {

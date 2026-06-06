@@ -16,15 +16,29 @@ import {
   IOrder,
 } from '../api/orderApi';
 import { useAuth } from '../context/AuthContext';
+import { getCartLinesByUserId } from '../api/cartApi';
+import { getUserNotifications } from '../api/notificationApi';
 
 type RootStackParamList = {
   Orders: undefined;
+  Products: { user: { id: number; username: string; email?: string } };
+  Search: { user: { id: number; username: string; email?: string } };
+  Cart: undefined;
+  Account: { user: { id: number; username: string; email?: string } };
 };
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
   'Orders'
 >;
+
+const bottomTabs = [
+  { icon: '🏠', label: 'Trang chủ' },
+  { icon: '🔍', label: 'Tìm kiếm' },
+  { icon: '🛒', label: 'Giỏ hàng' },
+  { icon: '📦', label: 'Đơn hàng' },
+  { icon: '👤', label: 'Cá nhân' },
+];
 
 const OrderScreen: React.FC<Props> = ({
   navigation,
@@ -34,13 +48,45 @@ const OrderScreen: React.FC<Props> = ({
   const [orders, setOrders] = useState<
     IOrder[]
   >([]);
+  const [cartLines, setCartLines] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   const { user: userInfo } = useAuth();
+
+  const cartLinesCount = (cartLines || []).filter(
+    line => line.status === 1
+  ).length;
+
+  const unreadCount = notifications.filter(
+    item => !item.isRead
+  ).length;
 
   // LOAD ORDERS
   useEffect(() => {
     fetchOrders();
+    loadCartLines();
+    loadNotifications();
   }, [userInfo?.id]);
+
+  const loadCartLines = async () => {
+    if (!userInfo?.id) return;
+    try {
+      const data = await getCartLinesByUserId(userInfo.id);
+      setCartLines(data || []);
+    } catch (error) {
+      console.log('Error loading cart lines:', error);
+    }
+  };
+
+  const loadNotifications = async () => {
+    if (!userInfo?.id) return;
+    try {
+      const data = await getUserNotifications(userInfo.id.toString());
+      setNotifications(data || []);
+    } catch (error) {
+      console.log('Error loading notifications:', error);
+    }
+  };
 
   const fetchOrders = async () => {
     try {
@@ -117,104 +163,153 @@ const OrderScreen: React.FC<Props> = ({
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>
-        📦 Đơn hàng
-      </Text>
+    <View style={styles.screen}>
+      <View style={styles.contentContainer}>
+        <Text style={styles.header}>
+          📦 Đơn hàng
+        </Text>
 
-      {orders.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>
-            📭
-          </Text>
-          <Text style={styles.emptyText}>
-            Bạn chưa có đơn hàng nào
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={orders}
-          keyExtractor={item => String(item.id)}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={['#ff6b00']}
-            />
-          }
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.orderId}>
-                  Đơn hàng #{item.id}
-                </Text>
-                <View style={[
-                  styles.statusBadge,
-                  { backgroundColor: getStatusColor(item.status) + '20' },
-                ]}>
-                  <Text style={[
-                    styles.statusText,
-                    { color: getStatusColor(item.status) },
+        {orders.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyIcon}>
+              📭
+            </Text>
+            <Text style={styles.emptyText}>
+              Bạn chưa có đơn hàng nào
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={orders}
+            keyExtractor={item => String(item.id)}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={['#ff6b00']}
+              />
+            }
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.orderId}>
+                    Đơn hàng #{item.id}
+                  </Text>
+                  <View style={[
+                    styles.statusBadge,
+                    { backgroundColor: getStatusColor(item.status) + '20' },
                   ]}>
-                    {getStatusText(item.status)}
-                  </Text>
+                    <Text style={[
+                      styles.statusText,
+                      { color: getStatusColor(item.status) },
+                    ]}>
+                      {getStatusText(item.status)}
+                    </Text>
+                  </View>
                 </View>
-              </View>
 
-              <View style={styles.cardContent}>
-                <Text style={styles.label}>
-                  Ngày đặt:
-                </Text>
-                <Text style={styles.value}>
-                  {formatDate(item.createdAt)}
-                </Text>
-              </View>
-
-              <View style={styles.cardContent}>
-                <Text style={styles.label}>
-                  Tổng tiền:
-                </Text>
-                <Text style={styles.totalPrice}>
-                  {item.totalAmount.toLocaleString(
-                    'vi-VN',
-                  )}{' '}
-                  ₫
-                </Text>
-              </View>
-
-              {item.orderLines && item.orderLines.length > 0 && (
-                <View style={styles.orderLinesContainer}>
-                  <Text style={styles.orderLinesTitle}>
-                    Sản phẩm ({item.orderLines.length}):
-                  </Text>
-                  {item.orderLines.map((line: any, index: number) => (
-                    <View key={index} style={styles.orderLineItem}>
-                      <Text style={styles.orderLineText}>
-                        • {line.quantity}x Sản phẩm #{line.productId}
-                      </Text>
-                      <Text style={styles.orderLinePrice}>
-                        {(parseFloat(line.unitPrice) * line.quantity).toLocaleString('vi-VN')} ₫
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              )}
-
-              {item.shippingAddress && (
                 <View style={styles.cardContent}>
                   <Text style={styles.label}>
-                    Địa chỉ giao:
+                    Ngày đặt:
                   </Text>
                   <Text style={styles.value}>
-                    {item.shippingAddress}
+                    {formatDate(item.createdAt)}
+                  </Text>
+                </View>
+
+                <View style={styles.cardContent}>
+                  <Text style={styles.label}>
+                    Tổng tiền:
+                  </Text>
+                  <Text style={styles.totalPrice}>
+                    {item.totalAmount.toLocaleString(
+                      'vi-VN',
+                    )}{' '}
+                    ₫
+                  </Text>
+                </View>
+
+                {item.orderLines && item.orderLines.length > 0 && (
+                  <View style={styles.orderLinesContainer}>
+                    <Text style={styles.orderLinesTitle}>
+                      Sản phẩm ({item.orderLines.length}):
+                    </Text>
+                    {item.orderLines.map((line: any, index: number) => (
+                      <View key={index} style={styles.orderLineItem}>
+                        <Text style={styles.orderLineText}>
+                          • {line.quantity}x Sản phẩm #{line.productId}
+                        </Text>
+                        <Text style={styles.orderLinePrice}>
+                          {(parseFloat(line.unitPrice) * line.quantity).toLocaleString('vi-VN')} ₫
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+
+                {item.shippingAddress && (
+                  <View style={styles.cardContent}>
+                    <Text style={styles.label}>
+                      Địa chỉ giao:
+                    </Text>
+                    <Text style={styles.value}>
+                      {item.shippingAddress}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+          />
+        )}
+      </View>
+
+      {/* BOTTOM NAV */}
+      <View style={styles.bottomNav}>
+        {bottomTabs.map(tab => (
+          <TouchableOpacity
+            key={tab.label}
+            style={styles.navItem}
+            onPress={() => {
+              if (tab.label === 'Trang chủ') {
+                navigation.navigate('Products', { user: userInfo });
+              }
+              if (tab.label === 'Tìm kiếm') {
+                navigation.navigate('Search', { user: userInfo });
+              }
+              if (tab.label === 'Giỏ hàng') {
+                navigation.navigate('Cart');
+              }
+              if (tab.label === 'Đơn hàng') {
+                // Already on Orders screen
+              }
+              if (tab.label === 'Cá nhân') {
+                navigation.navigate('Account', { user: userInfo });
+              }
+            }}
+          >
+            <View style={styles.navIconContainer}>
+              <Text style={styles.navIcon}>
+                {tab.icon}
+              </Text>
+              {tab.label === 'Giỏ hàng' && cartLinesCount > 0 && (
+                <View style={styles.bottomNavBadge}>
+                  <Text style={styles.bottomNavBadgeText}>
+                    {cartLinesCount}
                   </Text>
                 </View>
               )}
             </View>
-          )}
-        />
-      )}
+
+            <Text style={[
+              styles.navLabel,
+              tab.label === 'Đơn hàng' && styles.activeNavLabel
+            ]}>
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 };
@@ -222,6 +317,16 @@ const OrderScreen: React.FC<Props> = ({
 export default OrderScreen;
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#F5F6F8',
+  },
+
+  contentContainer: {
+    padding: 16,
+    paddingBottom: 120,
+  },
+
   container: {
     flex: 1,
     backgroundColor: '#F5F6F8',
@@ -346,5 +451,63 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: '#0d1b2a',
+  },
+
+  bottomNav: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    bottom: 16,
+    height: 74,
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    elevation: 6,
+  },
+
+  navItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  navIconContainer: {
+    position: 'relative',
+  },
+
+  navIcon: {
+    fontSize: 18,
+    marginBottom: 2,
+  },
+
+  bottomNavBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -8,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#ef4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+
+  bottomNavBadgeText: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '800',
+  },
+
+  navLabel: {
+    fontSize: 11,
+    color: '#475569',
+  },
+
+  activeNavLabel: {
+    color: '#ff6b00',
+    fontWeight: '700',
   },
 });
