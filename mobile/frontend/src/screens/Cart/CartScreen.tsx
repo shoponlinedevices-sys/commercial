@@ -38,6 +38,7 @@ const CartScreen: React.FC<Props> = ({
   navigation,
 }) => {
   const [loading, setLoading] = useState(true);
+  const [isOrdering, setIsOrdering] = useState(false);
 
   const [cartItems, setCartItems] = useState<
     ICartLine[]
@@ -168,6 +169,8 @@ const CartScreen: React.FC<Props> = ({
       return;
     }
 
+    setIsOrdering(true);
+
     // Check if user has email
     const hasEmail = userInfo?.email && userInfo.email.trim() !== '';
     
@@ -289,6 +292,8 @@ const CartScreen: React.FC<Props> = ({
         'Lỗi',
         'Không thể đặt hàng',
       );
+    } finally {
+      setIsOrdering(false);
     }
   };
 
@@ -402,17 +407,21 @@ const CartScreen: React.FC<Props> = ({
         <TouchableOpacity
           style={[
             styles.checkoutBtn,
-            cartItems.length === 0 && styles.checkoutBtnDisabled,
+            (cartItems.length === 0 || isOrdering) && styles.checkoutBtnDisabled,
           ]}
           onPress={handleOrder}
-          disabled={cartItems.length === 0}
+          disabled={cartItems.length === 0 || isOrdering}
         >
-          <Text style={[
-            styles.checkoutText,
-            cartItems.length === 0 && styles.checkoutTextDisabled,
-          ]}>
-            Đặt hàng
-          </Text>
+          {isOrdering ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : (
+            <Text style={[
+              styles.checkoutText,
+              cartItems.length === 0 && styles.checkoutTextDisabled,
+            ]}>
+              Đặt hàng
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
