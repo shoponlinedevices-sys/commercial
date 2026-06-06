@@ -42,4 +42,40 @@ export class EmailService {
       take: limit,
     });
   }
+
+  async sendOrderConfirmationEmail(data: {
+    to: string;
+    orderId: string;
+    totalAmount: number;
+    orderLines: Array<{
+      productId: string;
+      productName: string;
+      quantity: number;
+      unitPrice: number;
+      totalPrice: number;
+      productImage?: string;
+    }>;
+    shippingAddress?: string;
+    customerName?: string;
+  }) {
+    try {
+      return await this.emailProvider.sendOrderConfirmationEmail(data);
+    } catch (error) {
+      console.error('Error sending order confirmation email via microservice:', error);
+      throw error;
+    }
+  }
+
+  async sendPasswordResetEmail(data: {
+    to: string;
+    username: string;
+    temporaryPassword: string;
+  }) {
+    try {
+      return await this.emailProvider.sendPasswordResetEmail(data);
+    } catch (error) {
+      console.error('Error sending password reset email via microservice:', error);
+      throw error;
+    }
+  }
 }

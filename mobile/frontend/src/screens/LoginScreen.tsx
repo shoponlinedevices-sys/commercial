@@ -9,10 +9,11 @@ import {
   ActivityIndicator,
   ScrollView,
   StatusBar,
+  Modal,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { login, register, UserInfo } from '../api/authApi';
+import { login, register, forgotPassword, UserInfo } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
 import { setLoggingOut } from '../api/apiClient';
 
@@ -29,6 +30,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberLogin, setRememberLogin] = useState(false);
+  const [forgotPasswordModalVisible, setForgotPasswordModalVisible] = useState(false);
+  const [forgotPasswordUsername, setForgotPasswordUsername] = useState('');
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const { setUser, setIsLoggingOut } = useAuth();
 
   // Reset logout flag when login screen mounts
@@ -77,6 +81,29 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       console.error(`[LoginScreen] Register error:`, error);
       setLoading(false);
       Alert.alert('Đăng ký thất bại', error.message || 'Không thể tạo tài khoản');
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!forgotPasswordUsername) {
+      Alert.alert('Lỗi', 'Vui lòng nhập tên đăng nhập');
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    console.log(`[LoginScreen] handleForgotPassword called - username: ${forgotPasswordUsername}`);
+    try {
+      console.log(`[LoginScreen] Calling forgotPassword API with username: ${forgotPasswordUsername.trim()}`);
+      const response = await forgotPassword(forgotPasswordUsername.trim());
+      console.log(`[LoginScreen] Forgot password success:`, response);
+      setForgotPasswordLoading(false);
+      setForgotPasswordModalVisible(false);
+      setForgotPasswordUsername('');
+      Alert.alert('Thành công', response.message || 'Mật khẩu tạm thời đã được gửi đến email của bạn');
+    } catch (error: any) {
+      console.error(`[LoginScreen] Forgot password error:`, error);
+      setForgotPasswordLoading(false);
+      Alert.alert('Lỗi', error.message || 'Không thể gửi mật khẩu. Vui lòng kiểm tra tên đăng nhập và thử lại.');
     }
   };
 
@@ -152,7 +179,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             </View>
             <Text style={styles.checkboxText}>Ghi nhớ đăng nhập</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setForgotPasswordModalVisible(true)}>
             <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
           </TouchableOpacity>
         </View>
@@ -204,6 +231,56 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           Bảo mật thông tin tuyệt đối và không chia sẻ với bên thứ ba.
         </Text>
       </View>
+
+      {/* Forgot Password Modal */}
+      <Modal
+        visible={forgotPasswordModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setForgotPasswordModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Quên mật khẩu</Text>
+              <TouchableOpacity onPress={() => setForgotPasswordModalVisible(false)}>
+                <Ionicons name="close" size={24} color="#64748b" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalContent}>
+              <Text style={styles.modalDescription}>
+                Nhập tên đăng nhập của bạn để nhận mật khẩu tạm thời qua email.
+              </Text>
+
+              <Text style={styles.inputLabel}>Tên đăng nhập</Text>
+              <View style={styles.inputContainer}>
+                <Ionicons name="person-outline" size={20} color="#9ca3af" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nhập tên đăng nhập"
+                  placeholderTextColor="#9ca3af"
+                  value={forgotPasswordUsername}
+                  onChangeText={setForgotPasswordUsername}
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <TouchableOpacity
+                style={[styles.modalButton, forgotPasswordLoading && styles.modalButtonDisabled]}
+                onPress={handleForgotPassword}
+                disabled={forgotPasswordLoading}
+              >
+                {forgotPasswordLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.modalButtonText}>Gửi mật khẩu</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -409,6 +486,68 @@ const styles = StyleSheet.create({
     color: '#64748b',
     fontSize: 12,
     textAlign: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  modalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 10,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1e293b',
+  },
+  modalContent: {
+    padding: 20,
+  },
+  modalDescription: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  modalButton: {
+    backgroundColor: '#3b82f6',
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 10,
+    shadowColor: '#3b82f6',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  modalButtonDisabled: {
+    backgroundColor: '#94a3b8',
+    shadowOpacity: 0,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 

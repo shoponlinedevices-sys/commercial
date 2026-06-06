@@ -25,6 +25,12 @@ let EmailProvider = class EmailProvider {
     async sendEmail(data) {
         return await (0, rxjs_1.firstValueFrom)(this.grpcEmailService.sendEmail(data));
     }
+    async sendOrderConfirmationEmail(data) {
+        return await (0, rxjs_1.firstValueFrom)(this.grpcEmailService.sendOrderConfirmationEmail(data));
+    }
+    async sendPasswordResetEmail(data) {
+        return await (0, rxjs_1.firstValueFrom)(this.grpcEmailService.sendPasswordResetEmail(data));
+    }
 };
 exports.EmailProvider = EmailProvider;
 exports.EmailProvider = EmailProvider = __decorate([

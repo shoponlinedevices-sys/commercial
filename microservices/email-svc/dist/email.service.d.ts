@@ -19,4 +19,39 @@ export declare class EmailService {
     getEmailHistory(limit?: number): Promise<EmailEntity[]>;
     getEmailById(id: number): Promise<EmailEntity>;
     getEmailsByRecipient(to: string, limit?: number): Promise<EmailEntity[]>;
+    sendOrderConfirmationEmail(to: string, orderData: {
+        orderId: string;
+        totalAmount: number;
+        orderLines: Array<{
+            productId: string;
+            productName: string;
+            quantity: number;
+            unitPrice: number;
+            totalPrice: number;
+            productImage?: string;
+        }>;
+        shippingAddress?: string;
+        customerName?: string;
+    }): Promise<{
+        success: boolean;
+        messageId: any;
+        emailId: number;
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        emailId: number;
+        messageId?: undefined;
+    }>;
+    sendPasswordResetEmail(to: string, username: string, temporaryPassword: string): Promise<{
+        success: boolean;
+        messageId: any;
+        emailId: number;
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        emailId: number;
+        messageId?: undefined;
+    }>;
 }

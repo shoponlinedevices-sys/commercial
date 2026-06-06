@@ -20,6 +20,7 @@ exports.EmailModule = EmailModule = __decorate([
         imports: [database_module_1.DatabaseModule, app_module_1.NotificationsModule],
         controllers: [email_controller_1.EmailController],
         providers: [email_service_1.EmailService],
+        exports: [email_service_1.EmailService],
     })
 ], EmailModule);
 //# sourceMappingURL=email.module.js.map

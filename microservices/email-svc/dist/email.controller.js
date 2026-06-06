@@ -23,6 +23,18 @@ let EmailController = class EmailController {
     sendEmail(data) {
         return this.emailService.sendEmail(data.to, data.subject, data.body, data.template, data.templateData);
     }
+    sendOrderConfirmationEmail(data) {
+        return this.emailService.sendOrderConfirmationEmail(data.to, {
+            orderId: data.orderId,
+            totalAmount: data.totalAmount,
+            orderLines: data.orderLines || [],
+            shippingAddress: data.shippingAddress,
+            customerName: data.customerName,
+        });
+    }
+    sendPasswordResetEmail(data) {
+        return this.emailService.sendPasswordResetEmail(data.to, data.username, data.temporaryPassword);
+    }
     async sendEmailRest(body) {
         return this.emailService.sendEmail(body.to, body.subject, body.body, body.template, body.templateData);
     }
@@ -35,6 +47,18 @@ let EmailController = class EmailController {
     async getEmailById(id) {
         return this.emailService.getEmailById(parseInt(id, 10));
     }
+    async sendOrderConfirmationEmailRest(body) {
+        return this.emailService.sendOrderConfirmationEmail(body.to, {
+            orderId: body.orderId,
+            totalAmount: body.totalAmount,
+            orderLines: body.orderLines,
+            shippingAddress: body.shippingAddress,
+            customerName: body.customerName,
+        });
+    }
+    async sendPasswordResetEmailRest(body) {
+        return this.emailService.sendPasswordResetEmail(body.to, body.username, body.temporaryPassword);
+    }
 };
 exports.EmailController = EmailController;
 __decorate([
@@ -43,6 +67,18 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], EmailController.prototype, "sendEmail", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('EmailService', 'SendOrderConfirmationEmail'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], EmailController.prototype, "sendOrderConfirmationEmail", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('EmailService', 'SendPasswordResetEmail'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], EmailController.prototype, "sendPasswordResetEmail", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -70,6 +106,20 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], EmailController.prototype, "getEmailById", null);
+__decorate([
+    (0, common_1.Post)('order-confirmation'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmailController.prototype, "sendOrderConfirmationEmailRest", null);
+__decorate([
+    (0, common_1.Post)('password-reset'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmailController.prototype, "sendPasswordResetEmailRest", null);
 exports.EmailController = EmailController = __decorate([
     (0, common_1.Controller)('emails'),
     (0, microservices_1.GrpcService)(),

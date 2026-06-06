@@ -8,7 +8,7 @@ exports.grpcEmailsClientOptions = {
     options: {
         package: 'email',
         protoPath: (0, path_1.join)(__dirname, '../../../packages/contracts/proto/email.proto'),
-        url: 'localhost:50053',
+        url: 'localhost:3010',
     },
 };
 //# sourceMappingURL=grpc-emails.options.js.map

@@ -1,6 +1,6 @@
 import { rawApiRequest } from './httpClient';
 import { clearTokens, setAccessToken, setTokens } from './tokenStorage';
-import { AUTH_SERVICE_BASE_URL } from './config';
+import { API_BASE_URL, AUTH_SERVICE_BASE_URL } from './config';
 
 export type UserInfo = {
   id: number;
@@ -43,5 +43,13 @@ export async function register(username: string, password: string): Promise<User
     method: 'POST',
     body: JSON.stringify({ username, password }),
   }, 0, AUTH_SERVICE_BASE_URL);
+  return response;
+}
+
+export async function forgotPassword(username: string): Promise<{ message: string }> {
+  const response = await rawApiRequest<{ message: string }>('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ username }),
+  }, 0, API_BASE_URL);
   return response;
 }

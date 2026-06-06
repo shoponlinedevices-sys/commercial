@@ -13,12 +13,13 @@ const auth_service_1 = require("../../application/auth/auth.service");
 const identity_module_1 = require("../identity/identity.module");
 const database_module_1 = require("../../infrastructure/database/database.module");
 const account_repository_1 = require("../../infrastructure/database/repositories/account.repository");
+const email_module_1 = require("../email/email.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule, identity_module_1.IdentityModule],
+        imports: [database_module_1.DatabaseModule, identity_module_1.IdentityModule, email_module_1.EmailModule],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService, account_repository_1.AccountRepository],
         exports: [auth_service_1.AuthService],

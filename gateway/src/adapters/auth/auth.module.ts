@@ -4,9 +4,10 @@ import { AuthService } from '../../application/auth/auth.service';
 import { IdentityModule } from '../identity/identity.module';
 import { DatabaseModule } from '../../infrastructure/database/database.module';
 import { AccountRepository } from '../../infrastructure/database/repositories/account.repository';
+import { EmailModule } from '../email/email.module';
 
 @Module({
-  imports: [DatabaseModule, IdentityModule],
+  imports: [DatabaseModule, IdentityModule, EmailModule],
   controllers: [AuthController],
   providers: [AuthService, AccountRepository],
   exports: [AuthService],

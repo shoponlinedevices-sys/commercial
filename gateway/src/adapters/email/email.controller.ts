@@ -28,4 +28,23 @@ export class EmailController {
   async getEmailById(@Param('id') id: string) {
     return this.emailService.getEmailById(parseInt(id, 10));
   }
+
+  @Post('order-confirmation')
+  async sendOrderConfirmationEmail(@Body() body: {
+    to: string;
+    orderId: string;
+    totalAmount: number;
+    orderLines: Array<{
+      productId: string;
+      productName: string;
+      quantity: number;
+      unitPrice: number;
+      totalPrice: number;
+      productImage?: string;
+    }>;
+    shippingAddress?: string;
+    customerName?: string;
+  }) {
+    return this.emailService.sendOrderConfirmationEmail(body);
+  }
 }

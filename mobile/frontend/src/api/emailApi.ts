@@ -32,23 +32,26 @@ async function authorizedEmailRequest<T>(path: string, options: RequestInit = {}
 
 export async function sendOrderConfirmationEmail(
   email: string,
-  orderId: string,
-  totalAmount: number
+  orderData: {
+    orderId: string;
+    totalAmount: number;
+    orderLines: Array<{
+      productId: string;
+      productName: string;
+      quantity: number;
+      unitPrice: number;
+      totalPrice: number;
+      productImage?: string;
+    }>;
+    shippingAddress?: string;
+    customerName?: string;
+  }
 ): Promise<any> {
-  const subject = 'Xác nhận đơn hàng thành công';
-  const body = `
-    <h2>Đơn hàng của bạn đã được đặt thành công!</h2>
-    <p>Mã đơn hàng: #${orderId}</p>
-    <p>Tổng tiền: ${totalAmount.toLocaleString('vi-VN')} ₫</p>
-    <p>Cảm ơn bạn đã mua hàng tại Shop Online Devices.</p>
-  `;
-
-  return await authorizedEmailRequest<any>('/emails', {
+  return await authorizedEmailRequest<any>('/emails/order-confirmation', {
     method: 'POST',
     body: JSON.stringify({
       to: email,
-      subject,
-      body,
+      ...orderData,
     }),
   });
 }

@@ -32,6 +32,9 @@ let EmailController = class EmailController {
     async getEmailById(id) {
         return this.emailService.getEmailById(parseInt(id, 10));
     }
+    async sendOrderConfirmationEmail(body) {
+        return this.emailService.sendOrderConfirmationEmail(body);
+    }
 };
 exports.EmailController = EmailController;
 __decorate([
@@ -64,6 +67,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], EmailController.prototype, "getEmailById", null);
+__decorate([
+    (0, common_1.Post)('order-confirmation'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmailController.prototype, "sendOrderConfirmationEmail", null);
 exports.EmailController = EmailController = __decorate([
     (0, common_1.Controller)('emails'),
     __metadata("design:paramtypes", [email_service_1.EmailService])

@@ -16,9 +16,11 @@ exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const identity_service_1 = require("../../domain/identity/identity.service");
+const email_service_1 = require("../../application/email/email.service");
 let AuthController = class AuthController {
-    constructor(identityService) {
+    constructor(identityService, emailService) {
         this.identityService = identityService;
+        this.emailService = emailService;
     }
     async login(body) {
         console.log(`[AuthController] login called with body:`, body);
@@ -50,6 +52,35 @@ let AuthController = class AuthController {
         catch (error) {
             console.error(`[AuthController] Register error:`, error);
             throw error;
+        }
+    }
+    async forgotPassword(body) {
+        console.log(`[AuthController] forgotPassword called with username:`, body.username);
+        const { username } = body;
+        try {
+            const authResponse = await fetch(`${process.env.AUTH_SERVICE_URL || 'http://localhost:3006'}/auth/forgot-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username }),
+            });
+            if (!authResponse.ok) {
+                throw new Error('User not found');
+            }
+            const authData = await authResponse.json();
+            console.log(`[AuthController] Auth service response:`, authData);
+            if (authData.email) {
+                await this.emailService.sendPasswordResetEmail({
+                    to: authData.email,
+                    username: username,
+                    temporaryPassword: authData.temporaryPassword,
+                });
+            }
+            console.log(`[AuthController] Forgot password success for username: ${username}`);
+            return { message: 'Mật khẩu tạm thời đã được gửi đến email của bạn' };
+        }
+        catch (error) {
+            console.error(`[AuthController] Forgot password error:`, error);
+            throw new Error('Không thể gửi mật khẩu. Vui lòng kiểm tra tên đăng nhập và thử lại.');
         }
     }
 };
@@ -87,9 +118,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.Post)('forgot-password'),
+    (0, swagger_1.ApiOperation)({ summary: 'Forgot password - send temporary password to email' }),
+    (0, swagger_1.ApiBody)({ schema: { example: { username: 'user123' } } }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Temporary password sent successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'User not found' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "forgotPassword", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('Authentication'),
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [identity_service_1.IdentityService])
+    __metadata("design:paramtypes", [identity_service_1.IdentityService,
+        email_service_1.EmailService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

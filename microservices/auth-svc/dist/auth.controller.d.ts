@@ -31,4 +31,11 @@ export declare class AuthController {
     }): Promise<{
         access_token: string;
     }>;
+    forgotPassword(body: {
+        username: string;
+    }): Promise<{
+        username: string;
+        email: string;
+        temporaryPassword: string;
+    }>;
 }

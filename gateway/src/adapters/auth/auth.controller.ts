@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { IdentityService, UserInfo } from '../../domain/identity/identity.service';
+import { EmailService } from '../../application/email/email.service';
 
 type LoginRequest = {
   username: string;
@@ -16,6 +17,10 @@ type RefreshRequest = {
   refresh_token: string;
 };
 
+type ForgotPasswordRequest = {
+  username: string;
+};
+
 type LoginResponse = {
   access_token: string;
   refresh_token: string;
@@ -25,7 +30,10 @@ type LoginResponse = {
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly identityService: IdentityService) {}
+  constructor(
+    private readonly identityService: IdentityService,
+    private readonly emailService: EmailService,
+  ) {}
 
   @Post('login')
   @ApiOperation({ summary: 'User login' })
@@ -72,6 +80,47 @@ export class AuthController {
     } catch (error) {
       console.error(`[AuthController] Register error:`, error);
       throw error;
+    }
+  }
+
+  @Post('forgot-password')
+  @ApiOperation({ summary: 'Forgot password - send temporary password to email' })
+  @ApiBody({ schema: { example: { username: 'user123' } } })
+  @ApiResponse({ status: 200, description: 'Temporary password sent successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async forgotPassword(@Body() body: ForgotPasswordRequest): Promise<{ message: string }> {
+    console.log(`[AuthController] forgotPassword called with username:`, body.username);
+    const { username } = body;
+
+    try {
+      // Call auth-svc to generate temporary password
+      const authResponse = await fetch(`${process.env.AUTH_SERVICE_URL || 'http://localhost:3006'}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+      });
+
+      if (!authResponse.ok) {
+        throw new Error('User not found');
+      }
+
+      const authData = await authResponse.json();
+      console.log(`[AuthController] Auth service response:`, authData);
+
+      // Send email with temporary password
+      if (authData.email) {
+        await this.emailService.sendPasswordResetEmail({
+          to: authData.email,
+          username: username,
+          temporaryPassword: authData.temporaryPassword,
+        });
+      }
+
+      console.log(`[AuthController] Forgot password success for username: ${username}`);
+      return { message: 'Mật khẩu tạm thời đã được gửi đến email của bạn' };
+    } catch (error) {
+      console.error(`[AuthController] Forgot password error:`, error);
+      throw new Error('Không thể gửi mật khẩu. Vui lòng kiểm tra tên đăng nhập và thử lại.');
     }
   }
 }

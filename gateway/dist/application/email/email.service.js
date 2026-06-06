@@ -50,6 +50,24 @@ let EmailService = class EmailService {
             take: limit,
         });
     }
+    async sendOrderConfirmationEmail(data) {
+        try {
+            return await this.emailProvider.sendOrderConfirmationEmail(data);
+        }
+        catch (error) {
+            console.error('Error sending order confirmation email via microservice:', error);
+            throw error;
+        }
+    }
+    async sendPasswordResetEmail(data) {
+        try {
+            return await this.emailProvider.sendPasswordResetEmail(data);
+        }
+        catch (error) {
+            console.error('Error sending password reset email via microservice:', error);
+            throw error;
+        }
+    }
 };
 exports.EmailService = EmailService;
 exports.EmailService = EmailService = __decorate([

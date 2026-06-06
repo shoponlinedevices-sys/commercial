@@ -6,6 +6,6 @@ export const grpcEmailsClientOptions = {
   options: {
     package: 'email',
     protoPath: join(__dirname, '../../../packages/contracts/proto/email.proto'),
-    url: 'localhost:50053',
+    url: 'localhost:3010',
   },
 };

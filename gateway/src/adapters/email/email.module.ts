@@ -8,5 +8,6 @@ import { NotificationsModule } from '../../infra/app.module';
   imports: [DatabaseModule, NotificationsModule],
   controllers: [EmailController],
   providers: [EmailService],
+  exports: [EmailService],
 })
 export class EmailModule {}

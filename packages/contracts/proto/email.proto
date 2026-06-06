@@ -5,6 +5,10 @@ package email;
 service EmailService {
   rpc SendEmail (SendEmailRequest)
       returns (SendEmailResponse);
+  rpc SendOrderConfirmationEmail (SendOrderConfirmationEmailRequest)
+      returns (SendEmailResponse);
+  rpc SendPasswordResetEmail (SendPasswordResetEmailRequest)
+      returns (SendEmailResponse);
 }
 
 message SendEmailRequest {
@@ -13,6 +17,30 @@ message SendEmailRequest {
   string body = 3;
   string template = 4;
   map<string, string> templateData = 5;
+}
+
+message SendOrderConfirmationEmailRequest {
+  string to = 1;
+  string orderId = 2;
+  double totalAmount = 3;
+  repeated OrderLine orderLines = 4;
+  string shippingAddress = 5;
+  string customerName = 6;
+}
+
+message OrderLine {
+  string productId = 1;
+  string productName = 2;
+  int32 quantity = 3;
+  double unitPrice = 4;
+  double totalPrice = 5;
+  string productImage = 6;
+}
+
+message SendPasswordResetEmailRequest {
+  string to = 1;
+  string username = 2;
+  string temporaryPassword = 3;
 }
 
 message SendEmailResponse {

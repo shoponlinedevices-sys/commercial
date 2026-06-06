@@ -27,4 +27,10 @@ export declare class AuthService {
     refresh(refreshToken: string): Promise<{
         access_token: string;
     }>;
+    forgotPassword(username: string): Promise<{
+        username: string;
+        email: string;
+        temporaryPassword: string;
+    }>;
+    private generateTemporaryPassword;
 }

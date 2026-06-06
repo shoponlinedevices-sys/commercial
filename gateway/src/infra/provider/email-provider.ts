@@ -29,4 +29,16 @@ export class EmailProvider implements OnModuleInit {
       this.grpcEmailService.sendEmail(data),
     );
   }
+
+  async sendOrderConfirmationEmail(data: any) {
+    return await firstValueFrom(
+      this.grpcEmailService.sendOrderConfirmationEmail(data),
+    );
+  }
+
+  async sendPasswordResetEmail(data: any) {
+    return await firstValueFrom(
+      this.grpcEmailService.sendPasswordResetEmail(data),
+    );
+  }
 }

@@ -254,8 +254,19 @@ const CartScreen: React.FC<Props> = ({
           console.log('[Email] Sending order confirmation email to:', userInfo.email);
           const emailResponse = await sendOrderConfirmationEmail(
             userInfo.email,
-            '1',
-            totalAmount,
+            {
+              orderId: orderResponse?.id || '1',
+              totalAmount,
+              orderLines: cartItems.map(item => ({
+                productId: String(item.productId),
+                productName: item.name || 'Sản phẩm',
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                totalPrice: item.unitPrice * item.quantity,
+                productImage: item.image,
+              })),
+              customerName: userInfo?.username,
+            },
           );
           console.log('[Email] Email sent successfully:', emailResponse);
         } catch (emailError: any) {

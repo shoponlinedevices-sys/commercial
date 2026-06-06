@@ -93,4 +93,35 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
+
+  async forgotPassword(username: string) {
+    const user = await this.usersRepository.findOne({ where: { username } });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Generate temporary password
+    const temporaryPassword = this.generateTemporaryPassword();
+    const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
+
+    // Update user's password
+    user.password = hashedPassword;
+    await this.usersRepository.save(user);
+
+    return {
+      username: user.username,
+      email: user.email,
+      temporaryPassword,
+    };
+  }
+
+  private generateTemporaryPassword(): string {
+    const length = 12;
+    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      password += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return password;
+  }
 }
