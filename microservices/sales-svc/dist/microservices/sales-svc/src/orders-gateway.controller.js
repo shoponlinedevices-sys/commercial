@@ -26,7 +26,8 @@ let OrdersGatewayController = class OrdersGatewayController {
         return this.ordersGatewayService.getOrder(id);
     }
     async createOrder(body) {
-        return this.ordersGatewayService.createOrder(body);
+        const result = await this.ordersGatewayService.createOrder(body);
+        return result;
     }
     async updateOrderStatus(id, body) {
         return this.ordersGatewayService.updateOrderStatus({ id, status: body.status });

@@ -27,7 +27,8 @@ export class OrderController {
     shippingAddress?: string;
     fcmToken?: string;
   }) {
-    return this.orderService.createOrder(body);
+    const result = await this.orderService.createOrder(body);
+    return result;
   }
 
   @Post(':id/status')

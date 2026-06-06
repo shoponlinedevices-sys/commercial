@@ -249,13 +249,13 @@ const CartScreen: React.FC<Props> = ({
       }
 
       // Send email notification if user has email (non-blocking)
-      if (userInfo?.email && userInfo.email.trim() !== '') {
+      if (userInfo?.email && userInfo.email.trim() !== '' && orderResponse?.id) {
         try {
           console.log('[Email] Sending order confirmation email to:', userInfo.email);
           const emailResponse = await sendOrderConfirmationEmail(
             userInfo.email,
             {
-              orderId: orderResponse?.id || '1',
+              orderId: orderResponse?.id,
               totalAmount,
               orderLines: cartItems.map(item => ({
                 productId: String(item.productId),

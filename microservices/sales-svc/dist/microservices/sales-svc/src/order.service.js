@@ -63,8 +63,9 @@ let OrderService = class OrderService {
             if (orderLineEntities.length > 0) {
                 await manager.save(order_line_entity_1.OrderLineEntity, orderLineEntities);
             }
-            return this.orderRepository.findOne({
+            return manager.findOne(order_entity_1.OrderEntity, {
                 where: { id: savedOrder.id },
+                relations: ['orderLines'],
             });
         });
     }

@@ -18,7 +18,8 @@ export class OrdersGatewayController {
 
   @Post('orders')
   async createOrder(@Body() body: any) {
-    return this.ordersGatewayService.createOrder(body);
+    const result = await this.ordersGatewayService.createOrder(body);
+    return result;
   }
 
   @Put('orders/:id/status')

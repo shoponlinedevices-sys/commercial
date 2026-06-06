@@ -70,8 +70,9 @@ export class OrderService {
       }
 
       // Return order with lines
-      return this.orderRepository.findOne({
+      return manager.findOne(OrderEntity, {
         where: { id: savedOrder.id },
+        relations: ['orderLines'],
       });
     });
   }

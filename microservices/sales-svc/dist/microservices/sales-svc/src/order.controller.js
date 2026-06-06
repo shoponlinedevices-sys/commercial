@@ -26,7 +26,9 @@ let OrderController = class OrderController {
         return this.orderService.getOrderById(id);
     }
     async createOrder(body) {
-        return this.orderService.createOrder(body);
+        const result = await this.orderService.createOrder(body);
+        console.log('result1', result);
+        return result;
     }
     async updateOrderStatus(id, body) {
         return this.orderService.updateOrderStatus(id, body.status);
