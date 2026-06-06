@@ -1,7 +1,8 @@
 import { join } from 'path';
+import { Transport } from '@nestjs/microservices';
 
 export const grpcNotificationsClientOptions = {
-  transport: 1, // Transport.GRPC
+  transport: Transport.GRPC,
   options: {
     package: 'notification',
     protoPath: join(__dirname, '../../../packages/contracts/proto/notification.proto'),

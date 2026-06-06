@@ -14,20 +14,22 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailProvider = void 0;
 const common_1 = require("@nestjs/common");
-const microservices_1 = require("@nestjs/microservices");
 const rxjs_1 = require("rxjs");
 let EmailProvider = class EmailProvider {
     constructor(client) {
         this.client = client;
     }
+    onModuleInit() {
+        this.grpcEmailService = this.client.getService('EmailService');
+    }
     async sendEmail(data) {
-        return await (0, rxjs_1.firstValueFrom)(this.client.send({ cmd: 'sendEmail' }, data));
+        return await (0, rxjs_1.firstValueFrom)(this.grpcEmailService.sendEmail(data));
     }
 };
 exports.EmailProvider = EmailProvider;
 exports.EmailProvider = EmailProvider = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('GRPC_EMAILS_SERVICE')),
-    __metadata("design:paramtypes", [microservices_1.ClientProxy])
+    __metadata("design:paramtypes", [Object])
 ], EmailProvider);
 //# sourceMappingURL=email-provider.js.map

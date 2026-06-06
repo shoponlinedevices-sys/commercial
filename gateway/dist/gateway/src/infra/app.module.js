@@ -9,9 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationsModule = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
-const path_1 = require("path");
 const notification_provider_1 = require("./provider/notification-provider");
 const email_provider_1 = require("./provider/email-provider");
+const grpc_notifications_options_1 = require("./grpc-notifications.options");
+const grpc_emails_options_1 = require("../../../packages/contracts/grpc/clients/grpc-emails.options");
 let NotificationsModule = class NotificationsModule {
 };
 exports.NotificationsModule = NotificationsModule;
@@ -19,24 +20,8 @@ exports.NotificationsModule = NotificationsModule = __decorate([
     (0, common_1.Module)({
         imports: [
             microservices_1.ClientsModule.register([
-                {
-                    name: 'GRPC_NOTIFICATIONS_SERVICE',
-                    transport: microservices_1.Transport.GRPC,
-                    options: {
-                        package: 'notification',
-                        protoPath: (0, path_1.join)(__dirname, '../../../packages/contracts/proto/notification.proto'),
-                        url: 'localhost:50052',
-                    },
-                },
-                {
-                    name: 'GRPC_EMAILS_SERVICE',
-                    transport: microservices_1.Transport.GRPC,
-                    options: {
-                        package: 'email',
-                        protoPath: (0, path_1.join)(__dirname, '../../../packages/contracts/proto/email.proto'),
-                        url: 'localhost:3010',
-                    },
-                },
+                Object.assign({ name: 'GRPC_NOTIFICATIONS_SERVICE' }, grpc_notifications_options_1.grpcNotificationsClientOptions),
+                Object.assign({ name: 'GRPC_EMAILS_SERVICE' }, grpc_emails_options_1.grpcEmailsClientOptions),
             ]),
         ],
         providers: [notification_provider_1.NotificationProvider, email_provider_1.EmailProvider],

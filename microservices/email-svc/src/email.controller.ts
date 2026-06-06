@@ -1,8 +1,9 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
+import { GrpcMethod, GrpcService } from '@nestjs/microservices';
 import { EmailService } from './email.service';
 
 @Controller('emails')
+@GrpcService()
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
 

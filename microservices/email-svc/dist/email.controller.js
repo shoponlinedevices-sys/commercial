@@ -72,6 +72,7 @@ __decorate([
 ], EmailController.prototype, "getEmailById", null);
 exports.EmailController = EmailController = __decorate([
     (0, common_1.Controller)('emails'),
+    (0, microservices_1.GrpcService)(),
     __metadata("design:paramtypes", [email_service_1.EmailService])
 ], EmailController);
 //# sourceMappingURL=email.controller.js.map

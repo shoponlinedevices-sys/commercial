@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.grpcNotificationsClientOptions = void 0;
 const path_1 = require("path");
+const microservices_1 = require("@nestjs/microservices");
 exports.grpcNotificationsClientOptions = {
-    transport: 1,
+    transport: microservices_1.Transport.GRPC,
     options: {
         package: 'notification',
         protoPath: (0, path_1.join)(__dirname, '../../../packages/contracts/proto/notification.proto'),
