@@ -4,10 +4,10 @@ import { Platform } from 'react-native';
 /**
  * API Configuration
  *
- * Detects the appropriate API URL based on the platform:
- * - Android emulator: 10.0.2.2 (accesses host's localhost)
- * - iOS simulator: localhost
- * - Physical device: use Expo host IP or fallback to localhost
+ * Uses domain name for cross-network access:
+ * - All platforms use thegioithietbi.online domain
+ * - HTTPS protocol for secure communication
+ * - Works across different networks (not limited to local network)
  */
 
 const getApiBaseUrl = (port: number): string => {
@@ -17,21 +17,16 @@ const getApiBaseUrl = (port: number): string => {
 
   console.log(`[API Config] Platform: ${platform}, isDevice: ${isDevice}, debuggerHost: ${debuggerHost}`);
 
-  if (platform === 'android' && !isDevice) {
-    // Android emulator - use machine IP
-    console.log(`[API Config] Using Android emulator with machine IP`);
-    return `http://192.168.1.8:${port}`;
-  }
+  // Use localhost for simulator, domain for real device (works across different networks)
+  const isSimulator = !isDevice;
+  // const baseUrl = isSimulator 
+  //   ? `http://${debuggerHost || 'localhost'}:${port}`
+  //   : `https://thegioithietbi.online`;
 
-  if (debuggerHost && isDevice) {
-    // Physical device - use Expo host IP
-    console.log(`[API Config] Using physical device with Expo host: ${debuggerHost}`);
-    return `http://${debuggerHost}:${port}`;
-  }
-
-  // iOS simulator or fallback - use machine IP for consistency
-  console.log(`[API Config] Using fallback with machine IP`);
-  return `http://192.168.1.8:${port}`;
+   const baseUrl = `https://thegioithietbi.online`;
+  
+  console.log(`[API Config] Using base URL: ${baseUrl}, port: ${port}`);
+  return baseUrl;
 };
 
 // Detect current Expo host for logging

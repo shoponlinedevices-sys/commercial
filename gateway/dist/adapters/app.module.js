@@ -18,12 +18,13 @@ const user_profile_module_1 = require("./user-profile/user-profile.module");
 const delivery_address_module_1 = require("./delivery-address/delivery-address.module");
 const payment_method_module_1 = require("./payment-method/payment-method.module");
 const email_module_1 = require("./email/email.module");
+const feature_settings_module_1 = require("./feature-settings/feature-settings.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [cart_module_1.CartModule, product_module_1.ProductModule, auth_module_1.AuthModule, ads_module_1.AdsModule, order_module_1.OrderModule, notification_module_1.NotificationModule, user_profile_module_1.UserProfileModule, delivery_address_module_1.DeliveryAddressModule, payment_method_module_1.PaymentMethodModule, email_module_1.EmailModule],
+        imports: [cart_module_1.CartModule, product_module_1.ProductModule, auth_module_1.AuthModule, ads_module_1.AdsModule, order_module_1.OrderModule, notification_module_1.NotificationModule, user_profile_module_1.UserProfileModule, delivery_address_module_1.DeliveryAddressModule, payment_method_module_1.PaymentMethodModule, email_module_1.EmailModule, feature_settings_module_1.FeatureSettingsModule],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

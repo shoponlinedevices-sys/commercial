@@ -43,15 +43,15 @@ export async function testNetworkConnectivity(): Promise<{
   }
 
   console.log('[Network Diagnostic] ========================================');
-  
+
   if (errors.length > 0) {
     console.log('[Network Diagnostic] TROUBLESHOOTING:');
     console.log('  1. Is the backend running? (npm run start:dev)');
     console.log('  2. Check API_BASE_URL in src/api/config.ts');
     console.log(`  3. Current URL: ${API_BASE_URL}`);
-    console.log('  4. Your machine IP: 192.168.1.8');
-    console.log('  5. For physical device use: http://192.168.1.8:3000');
-    console.log('  6. For Android emulator use: http://10.0.2.2:3000');
+    console.log('  4. Ensure DNS resolves thegioithietbi.online');
+    console.log('  5. Check firewall allows HTTPS traffic');
+    console.log('  6. Verify SSL certificate is valid');
   }
   
   console.log('[Network Diagnostic] ========================================');

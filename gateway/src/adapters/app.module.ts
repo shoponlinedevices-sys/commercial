@@ -9,8 +9,9 @@ import { UserProfileModule } from './user-profile/user-profile.module';
 import { DeliveryAddressModule } from './delivery-address/delivery-address.module';
 import { PaymentMethodModule } from './payment-method/payment-method.module';
 import { EmailModule } from './email/email.module';
+import { FeatureSettingsModule } from './feature-settings/feature-settings.module';
 
 @Module({
-  imports: [CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule],
+  imports: [CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule, FeatureSettingsModule],
 })
 export class AppModule {}
