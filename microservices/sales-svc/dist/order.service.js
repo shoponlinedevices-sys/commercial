@@ -18,6 +18,8 @@ const common_2 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const order_entity_1 = require("./order.entity");
 const order_line_entity_1 = require("./order-line.entity");
+const cart_entity_1 = require("./cart.entity");
+const cart_line_entity_1 = require("./cart-line.entity");
 let OrderService = class OrderService {
     constructor(dataSource) {
         this.dataSource = dataSource;
@@ -27,6 +29,12 @@ let OrderService = class OrderService {
     }
     get orderLineRepository() {
         return this.dataSource.getRepository(order_line_entity_1.OrderLineEntity);
+    }
+    get cartRepository() {
+        return this.dataSource.getRepository(cart_entity_1.CartEntity);
+    }
+    get cartLineRepository() {
+        return this.dataSource.getRepository(cart_line_entity_1.CartLineEntity);
     }
     async getUserOrders(userId) {
         return this.orderRepository.find({
@@ -76,6 +84,129 @@ let OrderService = class OrderService {
         }
         order.status = status;
         return this.orderRepository.save(order);
+    }
+    async getCart(id) {
+        const cart = await this.cartRepository.findOne({
+            where: { id },
+        });
+        if (!cart) {
+            throw new Error('Cart not found');
+        }
+        return { cart };
+    }
+    async getCartByUserId(userId) {
+        const cart = await this.cartRepository.findOne({
+            where: { userId },
+            relations: ['cartLines'],
+        });
+        if (!cart) {
+            return { cart: null };
+        }
+        return { cart };
+    }
+    async addToCart(data) {
+        try {
+            let cart = await this.cartRepository.findOne({
+                where: { userId: data.userId },
+            });
+            if (!cart) {
+                cart = this.cartRepository.create({
+                    userId: data.userId,
+                    totalPrice: '0',
+                    status: 1,
+                });
+                cart = await this.cartRepository.save(cart);
+            }
+            let cartLine = await this.cartLineRepository.findOne({
+                where: { cartId: cart.id, productId: data.productId },
+            });
+            if (cartLine) {
+                cartLine.quantity += data.quantity;
+            }
+            else {
+                cartLine = this.cartLineRepository.create({
+                    cartId: cart.id,
+                    productId: data.productId,
+                    quantity: data.quantity,
+                    unitPrice: 0,
+                    status: 1,
+                    name: data.cartLines?.[0]?.name || 'Sản phẩm',
+                    image: data.cartLines?.[0]?.image || 'https://via.placeholder.com/150',
+                });
+            }
+            await this.cartLineRepository.save(cartLine);
+            const cartLines = await this.cartLineRepository.find({
+                where: { cartId: cart.id },
+            });
+            const totalPrice = cartLines.reduce((sum, line) => sum + (Number(line.unitPrice) * line.quantity), 0);
+            cart.totalPrice = totalPrice.toString();
+            await this.cartRepository.save(cart);
+            const updatedCart = await this.cartRepository.findOne({
+                where: { id: cart.id },
+            });
+            return { cart: updatedCart };
+        }
+        catch (error) {
+            console.error('Error in addToCart:', error);
+            throw error;
+        }
+    }
+    async getCartLinesByUserId(userId) {
+        const cart = await this.cartRepository.findOne({
+            where: { userId },
+        });
+        if (!cart) {
+            return { cartLines: [] };
+        }
+        const cartLines = await this.cartLineRepository.find({
+            where: { cartId: cart.id },
+        });
+        return { cartLines };
+    }
+    async removeCartLine(cartLineId) {
+        try {
+            const cartLine = await this.cartLineRepository.findOne({
+                where: { id: cartLineId },
+            });
+            if (!cartLine) {
+                throw new Error('Cart line not found');
+            }
+            await this.cartLineRepository.remove(cartLine);
+            const cart = await this.cartRepository.findOne({
+                where: { id: cartLine.cartId },
+            });
+            if (cart) {
+                const cartLines = await this.cartLineRepository.find({
+                    where: { cartId: cart.id },
+                });
+                const totalPrice = cartLines.reduce((sum, line) => sum + (Number(line.unitPrice) * line.quantity), 0);
+                cart.totalPrice = totalPrice.toString();
+                await this.cartRepository.save(cart);
+            }
+            return { success: true };
+        }
+        catch (error) {
+            console.error('Error in removeCartLine:', error);
+            throw error;
+        }
+    }
+    async clearCartByUserId(userId) {
+        try {
+            const cart = await this.cartRepository.findOne({
+                where: { userId },
+            });
+            if (!cart) {
+                return { success: true };
+            }
+            await this.cartLineRepository.delete({ cartId: cart.id });
+            cart.totalPrice = '0';
+            await this.cartRepository.save(cart);
+            return { success: true };
+        }
+        catch (error) {
+            console.error('Error in clearCartByUserId:', error);
+            throw error;
+        }
     }
 };
 exports.OrderService = OrderService;

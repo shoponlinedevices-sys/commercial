@@ -47,7 +47,7 @@ let DatabaseOrderRepository = class DatabaseOrderRepository {
             if (lineEntities.length) {
                 await entityManager.save(entities_1.CartLineEntity, lineEntities);
             }
-            return new order_entity_1.Order(savedOrder.id, savedOrder.userId, savedOrder.totalPrice, savedOrder.status, savedOrder.createdAt, savedOrder.updatedAt);
+            return new order_entity_1.Order(savedOrder.id, savedOrder.userId, parseFloat(savedOrder.totalPrice), this.mapStatusToString(savedOrder.status), savedOrder.createdAt, savedOrder.updatedAt);
         });
     }
     async findByUserId(userId) {
@@ -55,7 +55,23 @@ let DatabaseOrderRepository = class DatabaseOrderRepository {
         const orders = await this.orderRepo.find({ where: { userId } });
         console.log(`[DatabaseOrderRepository] Query result: ${orders.length} orders found`);
         console.log(`[DatabaseOrderRepository] Orders:`, JSON.stringify(orders, null, 2));
-        return orders.map((order) => new order_entity_1.Order(order.id, order.userId, order.totalPrice, order.status, order.createdAt, order.updatedAt));
+        return orders.map((order) => new order_entity_1.Order(order.id, order.userId, parseFloat(order.totalPrice), this.mapStatusToString(order.status), order.createdAt, order.updatedAt));
+    }
+    mapStatusToString(status) {
+        switch (status) {
+            case 1:
+                return 'pending';
+            case 2:
+                return 'confirmed';
+            case 3:
+                return 'shipped';
+            case 4:
+                return 'delivered';
+            case 5:
+                return 'cancelled';
+            default:
+                return 'pending';
+        }
     }
 };
 exports.DatabaseOrderRepository = DatabaseOrderRepository;

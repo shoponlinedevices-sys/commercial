@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const product_module_1 = require("./product/product.module");
 const auth_module_1 = require("./auth/auth.module");
 const ads_module_1 = require("./ads/ads.module");
@@ -24,7 +25,13 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [cart_module_1.CartModule, product_module_1.ProductModule, auth_module_1.AuthModule, ads_module_1.AdsModule, order_module_1.OrderModule, notification_module_1.NotificationModule, user_profile_module_1.UserProfileModule, delivery_address_module_1.DeliveryAddressModule, payment_method_module_1.PaymentMethodModule, email_module_1.EmailModule, feature_settings_module_1.FeatureSettingsModule],
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            cart_module_1.CartModule, product_module_1.ProductModule, auth_module_1.AuthModule, ads_module_1.AdsModule, order_module_1.OrderModule, notification_module_1.NotificationModule, user_profile_module_1.UserProfileModule, delivery_address_module_1.DeliveryAddressModule, payment_method_module_1.PaymentMethodModule, email_module_1.EmailModule, feature_settings_module_1.FeatureSettingsModule
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

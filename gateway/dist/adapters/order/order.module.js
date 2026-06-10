@@ -14,7 +14,7 @@ const path_1 = require("path");
 const order_controller_1 = require("./order.controller");
 const order_service_1 = require("../../application/order/order.service");
 const order_repository_1 = require("../../domain/order/order.repository");
-const database_order_repository_1 = require("../../infrastructure/database/repositories/database-order.repository");
+const sales_service_order_repository_1 = require("../../infrastructure/sales-service/sales-service-order.repository");
 const database_module_1 = require("../../infrastructure/database/database.module");
 let OrderModule = class OrderModule {
 };
@@ -37,6 +37,19 @@ exports.OrderModule = OrderModule = __decorate([
                         },
                     },
                 },
+                {
+                    name: 'ORDERS_PACKAGE',
+                    transport: microservices_1.Transport.GRPC,
+                    options: {
+                        package: ['orders'],
+                        protoPath: (0, path_1.join)(__dirname, '../../../../packages/contracts/proto/orders.proto'),
+                        url: 'localhost:50055',
+                        loader: {
+                            longs: Number,
+                            includeDirs: [(0, path_1.join)(__dirname, '../../../../packages/contracts/proto')],
+                        },
+                    },
+                },
             ]),
         ],
         controllers: [order_controller_1.OrderController],
@@ -44,7 +57,7 @@ exports.OrderModule = OrderModule = __decorate([
             order_service_1.OrderService,
             {
                 provide: order_repository_1.OrderRepository,
-                useClass: database_order_repository_1.DatabaseOrderRepository,
+                useClass: sales_service_order_repository_1.SalesServiceOrderRepository,
             },
         ],
         exports: [order_service_1.OrderService],

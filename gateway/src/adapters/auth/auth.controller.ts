@@ -99,8 +99,8 @@ export class AuthController {
     const { username } = body;
 
     try {
-      // Call auth-svc to generate temporary password
-      const authResponse = await fetch(`${process.env.AUTH_SERVICE_URL || 'http://localhost:3006'}/auth/forgot-password`, {
+      // Call contacts-svc to generate temporary password (auth merged into contacts-svc)
+      const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username }),
@@ -140,8 +140,8 @@ export class AuthController {
     const { userId, currentPassword, newPassword } = body;
 
     try {
-      // Call auth-svc to change password
-      const authResponse = await fetch(`${process.env.AUTH_SERVICE_URL || 'http://localhost:3006'}/auth/change-password`, {
+      // Call contacts-svc to change password (auth merged into contacts-svc)
+      const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/change-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, currentPassword, newPassword }),

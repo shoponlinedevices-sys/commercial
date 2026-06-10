@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm';
 
 import databaseConfig from './config/database.config';
 import { ContactsModule } from './contacts.module';
+import { AuthModule } from './auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ContactsModule } from './contacts.module';
     }),
 
     forwardRef(() => ContactsModule),
+    AuthModule,
   ],
   providers: [
     {

@@ -5,7 +5,7 @@ import { join } from 'path';
 import { OrderController } from './order.controller';
 import { OrderService } from '../../application/order/order.service';
 import { OrderRepository } from '../../domain/order/order.repository';
-import { DatabaseOrderRepository } from '../../infrastructure/database/repositories/database-order.repository';
+import { SalesServiceOrderRepository } from '../../infrastructure/sales-service/sales-service-order.repository';
 import { DatabaseModule } from '../../infrastructure/database/database.module';
 
 @Module({
@@ -25,6 +25,19 @@ import { DatabaseModule } from '../../infrastructure/database/database.module';
           },
         },
       },
+      {
+        name: 'ORDERS_PACKAGE',
+        transport: Transport.GRPC,
+        options: {
+          package: ['orders'],
+          protoPath: join(__dirname, '../../../../packages/contracts/proto/orders.proto'),
+          url: 'localhost:50055',
+          loader: {
+            longs: Number,
+            includeDirs: [join(__dirname, '../../../../packages/contracts/proto')],
+          },
+        },
+      },
     ]),
   ],
   controllers: [OrderController],
@@ -32,7 +45,7 @@ import { DatabaseModule } from '../../infrastructure/database/database.module';
     OrderService,
     {
       provide: OrderRepository,
-      useClass: DatabaseOrderRepository,
+      useClass: SalesServiceOrderRepository,
     },
   ],
   exports: [OrderService],

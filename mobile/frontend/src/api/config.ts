@@ -34,10 +34,10 @@ const debuggerHost = Constants.expoConfig?.hostUri?.split(':').shift();
 
 // API URLs
 export const API_BASE_URL = getApiBaseUrl(3000); // gateway (cart endpoints)
-export const AUTH_SERVICE_BASE_URL = getApiBaseUrl(3006); // auth-svc (auth endpoints)
+export const AUTH_SERVICE_BASE_URL = getApiBaseUrl(3004); // contacts-svc (auth endpoints - auth merged into contacts-svc)
 export const PRODUCTS_SERVICE_BASE_URL = getApiBaseUrl(3000); // gateway (products endpoints)
-export const SALES_SERVICE_BASE_URL = getApiBaseUrl(3001); // sales-svc (orders endpoints)
-export const ORDERS_SERVICE_BASE_URL = getApiBaseUrl(3001); // sales-svc (orders endpoints)
+export const SALES_SERVICE_BASE_URL = getApiBaseUrl(3001); // sales-svc (orders endpoints - orders merged into sales-svc)
+export const ORDERS_SERVICE_BASE_URL = getApiBaseUrl(3000); // gateway (orders endpoints - routed through gateway to sales-svc)
 export const NOTIFICATION_API_BASE_URL = getApiBaseUrl(3002);
 export const EMAIL_SERVICE_BASE_URL = getApiBaseUrl(3011); // email-svc (email endpoints)
 

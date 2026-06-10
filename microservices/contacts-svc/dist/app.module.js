@@ -13,6 +13,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const database_config_1 = require("./config/database.config");
 const contacts_module_1 = require("./contacts.module");
+const auth_module_1 = require("./auth.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -31,6 +32,7 @@ exports.AppModule = AppModule = __decorate([
                 },
             }),
             (0, common_1.forwardRef)(() => contacts_module_1.ContactsModule),
+            auth_module_1.AuthModule,
         ],
         providers: [
             {

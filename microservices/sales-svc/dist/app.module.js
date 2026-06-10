@@ -19,7 +19,6 @@ const order_module_1 = require("./order.module");
 const feature_settings_module_1 = require("./feature-settings.module");
 const product_module_1 = require("./product.module");
 const contacts_module_1 = require("./contacts.module");
-const orders_gateway_module_1 = require("./orders-gateway.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -41,7 +40,6 @@ exports.AppModule = AppModule = __decorate([
             feature_settings_module_1.FeatureSettingsModule,
             product_module_1.ProductModule,
             contacts_module_1.ContactsModule,
-            orders_gateway_module_1.OrdersGatewayModule,
         ],
         providers: [
             {

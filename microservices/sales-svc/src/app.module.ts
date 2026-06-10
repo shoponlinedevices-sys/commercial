@@ -8,7 +8,6 @@ import { OrderModule } from './order.module';
 import { FeatureSettingsModule } from './feature-settings.module';
 import { ProductModule } from './product.module';
 import { ContactsModule } from './contacts.module';
-import { OrdersGatewayModule } from './orders-gateway.module';
 
 @Module({
   imports: [
@@ -32,7 +31,6 @@ import { OrdersGatewayModule } from './orders-gateway.module';
     FeatureSettingsModule,
     ProductModule,
     ContactsModule,
-    OrdersGatewayModule,
   ],
   providers: [
     {

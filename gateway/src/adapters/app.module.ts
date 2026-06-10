@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ProductModule } from './product/product.module';
 import { AuthModule } from './auth/auth.module';
 import { AdsModule } from './ads/ads.module';
@@ -12,6 +13,12 @@ import { EmailModule } from './email/email.module';
 import { FeatureSettingsModule } from './feature-settings/feature-settings.module';
 
 @Module({
-  imports: [CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule, FeatureSettingsModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule, FeatureSettingsModule
+  ],
 })
 export class AppModule {}

@@ -56,8 +56,8 @@ export class DatabaseOrderRepository implements OrderRepository {
       return new Order(
         savedOrder.id!,
         savedOrder.userId!,
-        savedOrder.totalPrice!,
-        savedOrder.status!,
+        parseFloat(savedOrder.totalPrice!),
+        this.mapStatusToString(savedOrder.status!),
         savedOrder.createdAt!,
         savedOrder.updatedAt!,
       );
@@ -74,11 +74,28 @@ export class DatabaseOrderRepository implements OrderRepository {
         new Order(
           order.id!,
           order.userId!,
-          order.totalPrice!,
-          order.status!,
+          parseFloat(order.totalPrice!),
+          this.mapStatusToString(order.status!),
           order.createdAt!,
           order.updatedAt!,
         ),
     );
+  }
+
+  private mapStatusToString(status: number): string {
+    switch (status) {
+      case 1:
+        return 'pending';
+      case 2:
+        return 'confirmed';
+      case 3:
+        return 'shipped';
+      case 4:
+        return 'delivered';
+      case 5:
+        return 'cancelled';
+      default:
+        return 'pending';
+    }
   }
 }

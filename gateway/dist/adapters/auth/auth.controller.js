@@ -58,7 +58,7 @@ let AuthController = class AuthController {
         console.log(`[AuthController] forgotPassword called with username:`, body.username);
         const { username } = body;
         try {
-            const authResponse = await fetch(`${process.env.AUTH_SERVICE_URL || 'http://localhost:3006'}/auth/forgot-password`, {
+            const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/forgot-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username }),
@@ -87,7 +87,7 @@ let AuthController = class AuthController {
         console.log(`[AuthController] changePassword called for user ID:`, body.userId);
         const { userId, currentPassword, newPassword } = body;
         try {
-            const authResponse = await fetch(`${process.env.AUTH_SERVICE_URL || 'http://localhost:3006'}/auth/change-password`, {
+            const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/change-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, currentPassword, newPassword }),

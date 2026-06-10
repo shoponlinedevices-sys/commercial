@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Order = void 0;
 class Order {
-    constructor(id, userId, totalPrice, status, createdAt, updatedAt, orderLines) {
+    constructor(id, userId, totalAmount, status, createdAt, updatedAt, orderLines) {
         this.id = id;
         this.userId = userId;
-        this.totalPrice = totalPrice;
+        this.totalAmount = totalAmount;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

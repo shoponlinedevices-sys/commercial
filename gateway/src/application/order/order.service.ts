@@ -24,7 +24,7 @@ export class OrderService {
             {
               token: fcmToken,
               title: 'Đặt hàng thành công',
-              body: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalPrice}₫`,
+              body: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
               data: {
                 orderId: order.id.toString(),
                 type: 'order_created',
@@ -45,11 +45,11 @@ export class OrderService {
         {
           userId: userId.toString(),
           title: 'Đặt hàng thành công',
-          message: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalPrice}₫`,
+          message: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
           type: 'order',
           metadata: {
             orderId: order.id.toString(),
-            totalPrice: order.totalPrice,
+            totalAmount: order.totalAmount,
           },
         },
       );
