@@ -27,7 +27,15 @@ let AuthController = class AuthController {
         const { username, password } = body;
         console.log(`[AuthController] Extracted username: ${username}, password length: ${(password === null || password === void 0 ? void 0 : password.length) || 0}`);
         try {
-            const result = await this.identityService.login(username, password);
+            const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+            if (!authResponse.ok) {
+                throw new Error('Authentication failed');
+            }
+            const result = await authResponse.json();
             console.log(`[AuthController] Login success:`, { user: result.user });
             return result;
         }
@@ -38,14 +46,30 @@ let AuthController = class AuthController {
     }
     async refresh(body) {
         console.log('[AuthController] refresh called');
-        return this.identityService.refreshToken(body.refresh_token);
+        const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: body.refresh_token }),
+        });
+        if (!authResponse.ok) {
+            throw new Error('Token refresh failed');
+        }
+        return await authResponse.json();
     }
     async register(body) {
         console.log(`[AuthController] register called with body:`, body);
         const { username, password } = body;
         console.log(`[AuthController] Extracted username: ${username}, password length: ${(password === null || password === void 0 ? void 0 : password.length) || 0}`);
         try {
-            const user = await this.identityService.register(username, password);
+            const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+            if (!authResponse.ok) {
+                throw new Error('Registration failed');
+            }
+            const user = await authResponse.json();
             console.log(`[AuthController] Register success:`, user);
             return user;
         }

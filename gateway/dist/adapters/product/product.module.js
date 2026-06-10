@@ -10,21 +10,21 @@ exports.ProductModule = void 0;
 const common_1 = require("@nestjs/common");
 const product_controller_1 = require("./product.controller");
 const product_service_1 = require("../../application/product/product.service");
-const database_product_repository_1 = require("../../infrastructure/database/repositories/database-product.repository");
+const products_service_product_repository_1 = require("../../infrastructure/products-service/products-service-product.repository");
 const product_repository_1 = require("../../domain/product/product.repository");
-const database_module_1 = require("../../infrastructure/database/database.module");
+const axios_1 = require("@nestjs/axios");
 let ProductModule = class ProductModule {
 };
 exports.ProductModule = ProductModule;
 exports.ProductModule = ProductModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule],
+        imports: [axios_1.HttpModule],
         controllers: [product_controller_1.ProductController],
         providers: [
             product_service_1.ProductService,
             {
                 provide: product_repository_1.ProductRepository,
-                useClass: database_product_repository_1.DatabaseProductRepository,
+                useClass: products_service_product_repository_1.ProductsServiceProductRepository,
             },
         ],
         exports: [product_service_1.ProductService],

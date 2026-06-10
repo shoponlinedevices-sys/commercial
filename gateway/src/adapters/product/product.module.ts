@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ProductController } from './product.controller';
 import { ProductService } from '../../application/product/product.service';
-import { DatabaseProductRepository } from '../../infrastructure/database/repositories/database-product.repository';
+import { ProductsServiceProductRepository } from '../../infrastructure/products-service/products-service-product.repository';
 import { ProductRepository } from '../../domain/product/product.repository';
-import { DatabaseModule } from '../../infrastructure/database/database.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [HttpModule],
   controllers: [ProductController],
   providers: [
     ProductService,
     {
       provide: ProductRepository,
-      useClass: DatabaseProductRepository,
+      useClass: ProductsServiceProductRepository,
     },
   ],
   exports: [ProductService],

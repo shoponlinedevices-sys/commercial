@@ -51,7 +51,18 @@ export class AuthController {
     const { username, password } = body;
     console.log(`[AuthController] Extracted username: ${username}, password length: ${password?.length || 0}`);
     try {
-      const result = await this.identityService.login(username, password);
+      // Route to contacts-svc for authentication
+      const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!authResponse.ok) {
+        throw new Error('Authentication failed');
+      }
+
+      const result = await authResponse.json();
       console.log(`[AuthController] Login success:`, { user: result.user });
       return result;
     } catch (error) {
@@ -67,7 +78,18 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
   async refresh(@Body() body: RefreshRequest): Promise<{ access_token: string }> {
     console.log('[AuthController] refresh called');
-    return this.identityService.refreshToken(body.refresh_token);
+    // Route to contacts-svc for token refresh
+    const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: body.refresh_token }),
+    });
+
+    if (!authResponse.ok) {
+      throw new Error('Token refresh failed');
+    }
+
+    return await authResponse.json();
   }
 
   @Post('register')
@@ -80,7 +102,18 @@ export class AuthController {
     const { username, password } = body;
     console.log(`[AuthController] Extracted username: ${username}, password length: ${password?.length || 0}`);
     try {
-      const user = await this.identityService.register(username, password);
+      // Route to contacts-svc for registration
+      const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!authResponse.ok) {
+        throw new Error('Registration failed');
+      }
+
+      const user = await authResponse.json();
       console.log(`[AuthController] Register success:`, user);
       return user;
     } catch (error) {
