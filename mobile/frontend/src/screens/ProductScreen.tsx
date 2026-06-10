@@ -955,6 +955,7 @@ const styles = StyleSheet.create({
   },
 
   contentContainer: {
+    paddingTop: 50,
     padding: 16,
     paddingBottom: 120,
   },

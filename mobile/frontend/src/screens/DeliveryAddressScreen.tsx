@@ -250,6 +250,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
+    paddingTop: 50,
     paddingVertical: 16,
     backgroundColor: '#fff',
     elevation: 3,

@@ -107,6 +107,7 @@ const ProductDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 50,
     padding: 16,
     backgroundColor: '#F5F6F8',
     paddingBottom: 40,
