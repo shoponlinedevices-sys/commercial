@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const product_service_1 = require("../../application/product/product.service");
 const jwt_auth_guard_1 = require("../../domain/identity/jwt-auth.guard");
+const public_decorator_1 = require("../../domain/identity/public.decorator");
 let ProductController = class ProductController {
     constructor(productService) {
         this.productService = productService;
@@ -39,6 +40,7 @@ let ProductController = class ProductController {
 };
 exports.ProductController = ProductController;
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all products' }),
@@ -50,6 +52,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "findAll", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get product by ID' }),
@@ -62,6 +65,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "findOne", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(':categoryId/products'),
     (0, swagger_1.ApiOperation)({ summary: 'Get products by category ID' }),

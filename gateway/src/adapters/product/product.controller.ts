@@ -2,6 +2,7 @@ import { Controller, Get, UseGuards, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductService } from '../../application/product/product.service';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
+import { Public } from '../../domain/identity/public.decorator';
 
 @ApiTags('Products')
 @ApiBearerAuth()
@@ -9,6 +10,7 @@ import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Public()
   @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get all products' })
@@ -24,6 +26,7 @@ export class ProductController {
     return { products, total: products.length };
   }
 
+  @Public()
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Get product by ID' })
@@ -34,6 +37,7 @@ export class ProductController {
     return this.productService.findOne(parseInt(id, 10));
   }
 
+  @Public()
   @UseGuards(JwtAuthGuard)
   @Get(':categoryId/products')
   @ApiOperation({ summary: 'Get products by category ID' })
