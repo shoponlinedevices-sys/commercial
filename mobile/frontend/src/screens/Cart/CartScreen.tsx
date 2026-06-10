@@ -377,7 +377,7 @@ const CartScreen: React.FC<Props> = ({
 
               <TouchableOpacity
                 onPress={() =>
-                  removeItem(item.productId)
+                  removeItem(item.id)
                 }
                 style={styles.deleteBtn}
               >

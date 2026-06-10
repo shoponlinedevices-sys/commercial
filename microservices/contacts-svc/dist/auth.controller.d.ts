@@ -6,8 +6,8 @@ export declare class AuthController {
         username: string;
         password: string;
     }): Promise<{
-        access_token: any;
-        refresh_token: any;
+        access_token: string;
+        refresh_token: string;
         user: {
             id: any;
             username: any;
@@ -29,7 +29,7 @@ export declare class AuthController {
     refresh(body: {
         refresh_token: string;
     }): Promise<{
-        access_token: any;
+        access_token: string;
     }>;
     forgotPassword(body: {
         username: string;
