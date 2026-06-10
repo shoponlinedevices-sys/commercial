@@ -21,8 +21,14 @@ let ProductController = class ProductController {
     constructor(productService) {
         this.productService = productService;
     }
-    findAll() {
-        return this.productService.findAll();
+    async findAll(category) {
+        if (category) {
+            const categoryId = parseInt(category, 10);
+            const products = await this.productService.findByCategory(categoryId);
+            return { products, total: products.length };
+        }
+        const products = await this.productService.findAll();
+        return { products, total: products.length };
     }
     findOne(id) {
         return this.productService.findOne(parseInt(id, 10));
@@ -38,9 +44,10 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all products' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'List of products retrieved successfully' }),
     (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    __param(0, (0, common_1.Query)('category')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
 ], ProductController.prototype, "findAll", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

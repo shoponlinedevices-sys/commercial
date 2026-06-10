@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Param } from '@nestjs/common';
+import { Controller, Get, UseGuards, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductService } from '../../application/product/product.service';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
@@ -14,8 +14,14 @@ export class ProductController {
   @ApiOperation({ summary: 'Get all products' })
   @ApiResponse({ status: 200, description: 'List of products retrieved successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  findAll() {
-    return this.productService.findAll();
+  async findAll(@Query('category') category?: string) {
+    if (category) {
+      const categoryId = parseInt(category, 10);
+      const products = await this.productService.findByCategory(categoryId);
+      return { products, total: products.length };
+    }
+    const products = await this.productService.findAll();
+    return { products, total: products.length };
   }
 
   @UseGuards(JwtAuthGuard)
