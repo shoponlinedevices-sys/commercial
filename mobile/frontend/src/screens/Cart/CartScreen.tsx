@@ -57,21 +57,40 @@ const CartScreen: React.FC<Props> = ({
     try {
       setLoading(true);
 
-      console.log('Fetching cart for user ID:', userInfo?.id);
-      const response = await getCart(userInfo?.id || 0);
+      if (!userInfo?.id) {
+        console.log('No user ID available, skipping cart fetch');
+        setCartItems([]);
+        setLoading(false);
+        return;
+      }
+
+      console.log('Fetching cart for user ID:', userInfo.id);
+      const response = await getCart(userInfo.id);
       console.log('Cart response:', response);
+      console.log('Cart response type:', typeof response);
+      console.log('Cart response.cartLines:', response?.cartLines);
+      console.log('Is response an array?', Array.isArray(response));
+      console.log('Is response.cartLines an array?', Array.isArray(response?.cartLines));
+
+      const cartLinesData = response?.cartLines || response || [];
+      console.log('cartLinesData after fallback:', cartLinesData);
+      console.log('Is cartLinesData an array?', Array.isArray(cartLinesData));
 
       const mappedItems: ICartLine[] =
-        response?.cartLines?.map((item: ICartLine) => ({
-          id: item.id,
-          productId: item.productId,
-          name: item.name || item.product?.name || 'Không có tên',
-          image: item.image || item.product?.image || 'https://via.placeholder.com/150',
-          unitPrice: item.unitPrice || 0,
-          quantity: item.quantity || 1,
-          status: item.status || 0,
-        })) || [];
+        (Array.isArray(cartLinesData) ? cartLinesData : []).map((item: ICartLine) => {
+          console.log('Mapping item:', item);
+          return {
+            id: item.id,
+            productId: item.productId,
+            name: item.name || item.product?.name || 'Không có tên',
+            image: item.image || item.product?.image || 'https://via.placeholder.com/150',
+            unitPrice: item.unitPrice || 0,
+            quantity: item.quantity || 1,
+            status: item.status || 0,
+          };
+        });
 
+      console.log('Mapped cart items count:', mappedItems.length);
       console.log('Mapped cart items:', mappedItems);
       setCartItems(mappedItems);
     } catch (error) {

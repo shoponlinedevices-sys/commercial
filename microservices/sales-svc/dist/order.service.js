@@ -127,13 +127,15 @@ let OrderService = class OrderService {
                 where: { cartId: cart.id, productId: data.productId },
             });
             if (cartLine) {
-                cartLine.quantity += data.quantity;
+                const newQuantity = cartLine.quantity + (data.quantity || 0);
+                cartLine.quantity = isNaN(newQuantity) ? cartLine.quantity : newQuantity;
             }
             else {
+                const validQuantity = data.quantity || 1;
                 cartLine = this.cartLineRepository.create({
                     cartId: cart.id,
                     productId: data.productId,
-                    quantity: data.quantity,
+                    quantity: isNaN(validQuantity) ? 1 : validQuantity,
                     unitPrice: 0,
                     status: 1,
                     name: data.cartLines?.[0]?.name || 'Sản phẩm',

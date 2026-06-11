@@ -91,14 +91,24 @@ const OrderScreen: React.FC<Props> = ({
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      if (userInfo?.id) {
-        console.log('Fetching orders for user ID:', userInfo.id);
-        const response = await getUserOrders(String(userInfo.id));
-        console.log('Orders response:', response);
-        setOrders(response || []);
+      if (!userInfo?.id) {
+        console.log('No user ID available, skipping orders fetch');
+        setOrders([]);
+        setLoading(false);
+        return;
       }
+
+      console.log('Fetching orders for user ID:', userInfo.id);
+      const response = await getUserOrders(String(userInfo.id));
+      console.log('Orders response:', response);
+      console.log('Orders response type:', typeof response);
+      console.log('Is response an array?', Array.isArray(response));
+      console.log('Orders response length:', Array.isArray(response) ? response.length : 'N/A');
+
+      setOrders(response || []);
     } catch (error) {
       console.log('Error fetching orders:', error);
+      setOrders([]);
     } finally {
       setLoading(false);
     }

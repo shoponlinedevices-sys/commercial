@@ -3,10 +3,18 @@ import { rawApiRequest } from './httpClient';
 import { ICart, IAddToCart, ICartLine } from './interface';
 
 export async function getCart(userId: number): Promise<ICart> {
-    const response = await authorizedRequest<{ cart: ICart }>(`/cart/by-user-id/${userId}`, {
+    console.log('[cartApi] Fetching cart for userId:', userId);
+    const response = await authorizedRequest<any>(`/cart/by-user-id/${userId}`, {
         method: 'GET'
     });
-    return response.cart;
+    console.log('[cartApi] Raw response:', response);
+    console.log('[cartApi] Response.cart:', response?.cart);
+    console.log('[cartApi] Response.cartLines:', response?.cartLines);
+    console.log('[cartApi] Is response an array?', Array.isArray(response));
+    // Handle both wrapped response { cart: ICart } and direct response ICart
+    const result = response?.cart || response || { cartLines: [] };
+    console.log('[cartApi] Final result:', result);
+    return result;
 }
 
 export async function addProductToCart(cart: IAddToCart): Promise<ICart> {

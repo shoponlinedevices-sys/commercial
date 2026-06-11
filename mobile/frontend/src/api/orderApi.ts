@@ -62,9 +62,20 @@ export async function createOrder(order: ICreateOrder): Promise<any> {
 }
 
 export async function getUserOrders(userId: string): Promise<IOrder[]> {
-  return await authorizedSalesRequest<IOrder[]>(`/orders/user/${userId}`, {
+  console.log('[orderApi] Fetching orders for userId:', userId);
+  const response = await authorizedSalesRequest<any>(`/orders/user/${userId}`, {
     method: 'GET',
   });
+  console.log('[orderApi] Raw response:', response);
+  console.log('[orderApi] Response type:', typeof response);
+  console.log('[orderApi] Is response an array?', Array.isArray(response));
+  console.log('[orderApi] Response.orders:', response?.orders);
+  console.log('[orderApi] Response.data:', response?.data);
+  // Handle both direct array response and wrapped response { orders: IOrder[] }
+  const result = Array.isArray(response) ? response : (response?.orders || response?.data || []);
+  console.log('[orderApi] Final result length:', result.length);
+  console.log('[orderApi] Final result:', result);
+  return result;
 }
 
 export async function getOrderById(orderId: string): Promise<IOrder> {
