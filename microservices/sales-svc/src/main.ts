@@ -9,7 +9,8 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(process.env.PORT || 3001);
+  console.log(`Sales-svc Service gRPC running on port ${process.env.GRPC_PORT || 3001}`);
 }
 
 bootstrap();

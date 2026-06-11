@@ -150,12 +150,41 @@ export class SalesServiceCartRepository implements CartRepository {
     try {
       console.log(`[SalesServiceCartRepository] Clearing cart for userId: ${userId}`);
       const salesServiceUrl = process.env.SALES_SERVICE_URL || 'http://localhost:3001';
-      
+
       await this.httpService.axiosRef.delete(`${salesServiceUrl}/cart/user/${userId}`);
-      
+
       console.log(`[SalesServiceCartRepository] Cart cleared successfully`);
     } catch (error) {
       console.error('[SalesServiceCartRepository] Error clearing cart:', error);
+      throw error;
+    }
+  }
+
+  async addToCart(userId: number, productId: number, quantity: number): Promise<Cart> {
+    try {
+      console.log(`[SalesServiceCartRepository] Adding to cart - userId: ${userId}, productId: ${productId}, quantity: ${quantity}`);
+      const salesServiceUrl = process.env.SALES_SERVICE_URL || 'http://localhost:3001';
+
+      const response = await this.httpService.axiosRef.post(`${salesServiceUrl}/cart`, {
+        userId,
+        productId,
+        quantity,
+      });
+
+      const cartData = response.data;
+      console.log('[SalesServiceCartRepository] Item added to cart successfully:', JSON.stringify(cartData, null, 2));
+
+      return new Cart(
+        cartData.id,
+        cartData.userId,
+        cartData.totalPrice,
+        cartData.status,
+        new Date(cartData.createdAt),
+        new Date(cartData.updatedAt),
+        cartData.cartLines,
+      );
+    } catch (error) {
+      console.error('[SalesServiceCartRepository] Error adding to cart:', error);
       throw error;
     }
   }

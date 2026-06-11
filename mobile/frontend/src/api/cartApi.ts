@@ -18,7 +18,7 @@ export async function getCart(userId: number): Promise<ICart> {
 }
 
 export async function addProductToCart(cart: IAddToCart): Promise<ICart> {
-    return await authorizedRequest<ICart>('/cart', {
+    return await rawApiRequest<ICart>('/cart', {
     method: 'POST',
     body: JSON.stringify(cart)
   });

@@ -14,6 +14,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import {
   getCart,
+  getCartLinesByUserId,
   rmCartLine,
   clearCartByUserId,
 } from '../../api/cartApi';
@@ -65,16 +66,8 @@ const CartScreen: React.FC<Props> = ({
       }
 
       console.log('Fetching cart for user ID:', userInfo.id);
-      const response = await getCart(userInfo.id);
-      console.log('Cart response:', response);
-      console.log('Cart response type:', typeof response);
-      console.log('Cart response.cartLines:', response?.cartLines);
-      console.log('Is response an array?', Array.isArray(response));
-      console.log('Is response.cartLines an array?', Array.isArray(response?.cartLines));
-
-      const cartLinesData = response?.cartLines || response || [];
-      console.log('cartLinesData after fallback:', cartLinesData);
-      console.log('Is cartLinesData an array?', Array.isArray(cartLinesData));
+      const cartLinesData = await getCartLinesByUserId(userInfo.id);
+      console.log('Cart lines response:', cartLinesData);
 
       const mappedItems: ICartLine[] =
         (Array.isArray(cartLinesData) ? cartLinesData : []).map((item: ICartLine) => {

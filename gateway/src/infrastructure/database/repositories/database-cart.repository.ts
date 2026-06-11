@@ -246,5 +246,37 @@ export class DatabaseCartRepository implements CartRepository {
       await entityManager.delete(CartLineEntity, { cartId: cart.id });
     });
   }
+
+  async addToCart(userId: number, productId: number, quantity: number): Promise<Cart> {
+    // This should be implemented via microservice call to sales-svc
+    // For now, delegate to create method as a temporary fix
+    const product = await this.productRepo.findOne({ where: { id: productId } });
+    if (!product) {
+      throw new Error(`Product with id ${productId} does not exist`);
+    }
+
+    const price = product.price ?? 0;
+
+    return this.create({
+      id: 0,
+      userId,
+      totalPrice: '0',
+      status: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      cartLines: [{
+        id: 0,
+        cartId: 0,
+        productId,
+        quantity,
+        unitPrice: price.toString(),
+        totalPrice: (price * quantity).toString(),
+        status: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        name: product.name
+      }]
+    });
+  }
 }
 

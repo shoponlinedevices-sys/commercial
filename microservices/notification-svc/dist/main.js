@@ -18,7 +18,8 @@ async function bootstrap() {
         },
     });
     await app.startAllMicroservices();
-    await app.listen(process.env.PORT || 3001);
+    await app.listen(process.env.PORT || 3002);
+    console.log(`Notification-svc Service gRPC running on port ${process.env.GRPC_PORT || 3002}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

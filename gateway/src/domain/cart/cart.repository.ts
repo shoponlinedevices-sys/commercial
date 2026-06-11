@@ -7,5 +7,6 @@ export abstract class CartRepository {
   abstract findOne(id: number): Promise<Cart | null>;
   abstract getCartByUserId(userId: number): Promise<Cart | null>;
   abstract create(item: Cart): Promise<Cart>;
+  abstract addToCart(userId: number, productId: number, quantity: number): Promise<Cart>;
   abstract clearCartByUserId(userId: number): Promise<void>;
 }

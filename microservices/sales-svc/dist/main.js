@@ -7,7 +7,8 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors();
     app.useGlobalPipes(new common_1.ValidationPipe());
-    await app.listen(process.env.PORT || 3000);
+    await app.listen(process.env.PORT || 3001);
+    console.log(`Sales-svc Service gRPC running on port ${process.env.GRPC_PORT || 3001}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

@@ -120,6 +120,24 @@ let SalesServiceCartRepository = class SalesServiceCartRepository {
             throw error;
         }
     }
+    async addToCart(userId, productId, quantity) {
+        try {
+            console.log(`[SalesServiceCartRepository] Adding to cart - userId: ${userId}, productId: ${productId}, quantity: ${quantity}`);
+            const salesServiceUrl = process.env.SALES_SERVICE_URL || 'http://localhost:3001';
+            const response = await this.httpService.axiosRef.post(`${salesServiceUrl}/cart`, {
+                userId,
+                productId,
+                quantity,
+            });
+            const cartData = response.data;
+            console.log('[SalesServiceCartRepository] Item added to cart successfully:', JSON.stringify(cartData, null, 2));
+            return new cart_entity_1.Cart(cartData.id, cartData.userId, cartData.totalPrice, cartData.status, new Date(cartData.createdAt), new Date(cartData.updatedAt), cartData.cartLines);
+        }
+        catch (error) {
+            console.error('[SalesServiceCartRepository] Error adding to cart:', error);
+            throw error;
+        }
+    }
 };
 exports.SalesServiceCartRepository = SalesServiceCartRepository;
 exports.SalesServiceCartRepository = SalesServiceCartRepository = __decorate([

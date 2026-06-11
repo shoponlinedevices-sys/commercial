@@ -19,7 +19,7 @@ export type ICartLine = {
   product?: IProduct;
   name?: string;
   image?: string;
-  status: number;
+  status?: number;
 }
 
 export type IAddToCart = {

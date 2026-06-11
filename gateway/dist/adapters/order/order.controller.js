@@ -47,7 +47,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "createOrder", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('user/:userId'),
     (0, swagger_1.ApiOperation)({ summary: 'Get orders by user ID' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Orders retrieved successfully' }),

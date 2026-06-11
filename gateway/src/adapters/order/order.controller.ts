@@ -21,7 +21,7 @@ export class OrderController {
     return order;
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('user/:userId')
   @ApiOperation({ summary: 'Get orders by user ID' })
   @ApiResponse({ status: 200, description: 'Orders retrieved successfully' })

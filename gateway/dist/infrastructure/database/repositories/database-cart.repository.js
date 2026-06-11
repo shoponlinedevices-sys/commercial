@@ -194,6 +194,34 @@ let DatabaseCartRepository = class DatabaseCartRepository {
             await entityManager.delete(entities_1.CartLineEntity, { cartId: cart.id });
         });
     }
+    async addToCart(userId, productId, quantity) {
+        var _a;
+        const product = await this.productRepo.findOne({ where: { id: productId } });
+        if (!product) {
+            throw new Error(`Product with id ${productId} does not exist`);
+        }
+        const price = (_a = product.price) !== null && _a !== void 0 ? _a : 0;
+        return this.create({
+            id: 0,
+            userId,
+            totalPrice: '0',
+            status: 1,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            cartLines: [{
+                    id: 0,
+                    cartId: 0,
+                    productId,
+                    quantity,
+                    unitPrice: price.toString(),
+                    totalPrice: (price * quantity).toString(),
+                    status: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    name: product.name
+                }]
+        });
+    }
 };
 exports.DatabaseCartRepository = DatabaseCartRepository;
 exports.DatabaseCartRepository = DatabaseCartRepository = __decorate([

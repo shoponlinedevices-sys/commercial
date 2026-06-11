@@ -202,6 +202,8 @@ const ProductScreen: React.FC<Props> = ({
         try {
           const cartLines = await getCartLinesByUserId(userInfo.id);
 
+          console.log('cartLines test', cartLines);
+
           if (isMounted) setCartLines(cartLines);
         } catch (error) {
           console.log(error);
@@ -328,35 +330,35 @@ const ProductScreen: React.FC<Props> = ({
 
   const addToCart = async (product: IProduct) => {
     try {
+      if (!userInfo?.id) {
+        Alert.alert(
+          'Lỗi',
+          'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng'
+        );
+        return;
+      }
+
       setAddingCartId(product.id);
 
       const quantity =
         quantities[product.id] || 1;
 
       const cartRequest = {
-        userId: userInfo?.id ?? 0,
-        productId: product.id,
-        quantity,
-
-        cartLines: [
-          {
-            productId: product.id,
-            quantity,
-            unitPrice: product.price,
-            status: 1,
-          },
-        ],
+        userId: Number(userInfo.id),
+        productId: Number(product.id),
+        quantity: Number(quantity),
       };
 
       console.log('Frontend: Adding to cart with request:', JSON.stringify(cartRequest));
+      console.log('Frontend: userInfo.id:', userInfo.id);
+      console.log('Frontend: product.id:', product.id);
+      console.log('Frontend: product.price:', product.price);
 
       const response = await addProductToCart(cartRequest);
 
       console.log('Frontend: Add to cart response:', JSON.stringify(response));
 
-      const cartLines = await getCartLinesByUserId(
-          userInfo?.id ?? 0
-        );
+      const cartLines = await getCartLinesByUserId(userInfo.id);
 
       console.log('Frontend: Cart lines after add:', JSON.stringify(cartLines));
 
@@ -371,11 +373,24 @@ const ProductScreen: React.FC<Props> = ({
         'Add cart error:',
         error
       );
+      console.log('Error details:', {
+        message: error?.message,
+        status: error?.status,
+        name: error?.name,
+      });
+
+      let errorMessage = 'Không thể thêm vào giỏ hàng';
+      if (error?.status === 401) {
+        errorMessage = 'Phiên đăng nhập hết hạn, vui lòng đăng nhập lại';
+      } else if (error?.status === 500) {
+        errorMessage = 'Lỗi server, vui lòng thử lại sau';
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
 
       Alert.alert(
         'Lỗi',
-        error?.message ||
-          'Không thể thêm vào giỏ hàng'
+        errorMessage
       );
     } finally {
       setAddingCartId(null);

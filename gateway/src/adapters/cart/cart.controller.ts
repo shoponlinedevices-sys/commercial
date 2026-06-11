@@ -64,35 +64,8 @@ export class CartController {
         throw new Error(`Product with id ${body.productId} not found`);
       }
 
-      const cartLines = body.cartLines || [{
-        productId: body.productId,
-        quantity: body.quantity,
-        unitPrice: product.price || 0
-      }];
-
-      console.log('Controller: cartLines before mapping:', JSON.stringify(cartLines));
-
-      // Ensure each cart line has the product name
-      const cartLinesWithName = cartLines.map(line => ({
-        ...line,
-        name: product.name,
-        totalPrice: (line.unitPrice * line.quantity).toString()
-      }));
-
-      console.log('Controller: cartLines after mapping:', JSON.stringify(cartLinesWithName));
-
-      const item = {
-        id: 0,
-        userId: body.userId!,
-        totalPrice: '0',
-        status: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        cartLines: cartLinesWithName as any
-      } as Cart;
-
-      console.log('Controller: Cart item to create:', JSON.stringify(item));
-      const result = await this.cartService.create(item);
+      console.log('Controller: Calling cartService.addToCart');
+      const result = await this.cartService.addToCart(body.userId, body.productId, body.quantity);
       console.log('Controller: Cart created successfully:', JSON.stringify(result));
       return result;
     } catch (error) {

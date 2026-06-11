@@ -19,6 +19,7 @@ async function bootstrap() {
     });
     await app.startAllMicroservices();
     await app.listen(process.env.PORT || 3004);
+    console.log(`Contacts-svc Service gRPC running on port ${process.env.GRPC_PORT || 3004}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

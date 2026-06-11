@@ -46,6 +46,18 @@ let CartService = class CartService {
             throw error;
         }
     }
+    async addToCart(userId, productId, quantity) {
+        console.log('Service: Adding to cart - userId:', userId, 'productId:', productId, 'quantity:', quantity);
+        try {
+            const result = await this.cartRepository.addToCart(userId, productId, quantity);
+            console.log('Service: Item added to cart successfully:', JSON.stringify(result));
+            return result;
+        }
+        catch (error) {
+            console.error('Service: Error adding to cart:', error);
+            throw error;
+        }
+    }
     deleteCartLineById(id) {
         try {
             return this.cartRepository.deleteCartLineById(id);
@@ -55,7 +67,7 @@ let CartService = class CartService {
             throw error;
         }
     }
-    getCartLinesByUserId(userId) {
+    async getCartLinesByUserId(userId) {
         try {
             return this.cartRepository.getCartLinesByUserId(userId);
         }
