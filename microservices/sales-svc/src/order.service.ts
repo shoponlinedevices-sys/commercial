@@ -98,6 +98,14 @@ export class OrderService {
   }
 
   // Cart
+  async findAllCarts() {
+    const carts = await this.cartRepository.find({
+      relations: ['cartLines'],
+    });
+
+    return { carts };
+  }
+
   async getCart(id: number) {
     const cart = await this.cartRepository.findOne({
       where: { id },

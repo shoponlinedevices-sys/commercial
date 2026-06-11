@@ -1,6 +1,4 @@
 import { rawApiRequest } from './httpClient';
-import { getAccessToken, getRefreshToken, clearTokens } from './tokenStorage';
-import { refreshAccessToken } from './authApi';
 import { SALES_SERVICE_BASE_URL } from './config';
 
 export interface FeatureSetting {
@@ -15,56 +13,20 @@ export interface FeatureSetting {
   updatedAt: string;
 }
 
-async function salesAuthorizedRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const accessToken = await getAccessToken();
-  const headers = {
-    ...(options.headers ?? {}),
-    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-  };
-
-  try {
-    return await rawApiRequest<T>(path, {
-      ...options,
-      headers,
-    }, 0, SALES_SERVICE_BASE_URL);
-  } catch (error) {
-    const apiError = error as any;
-    if (apiError.status === 401) {
-      const refreshToken = await getRefreshToken();
-      if (!refreshToken) {
-        await clearTokens();
-        throw apiError;
-      }
-
-      try {
-        const newAccessToken = await refreshAccessToken(refreshToken);
-        return await rawApiRequest<T>(path, {
-          ...options,
-          headers: {
-            ...(options.headers ?? {}),
-            Authorization: `Bearer ${newAccessToken}`,
-          },
-        }, 0, SALES_SERVICE_BASE_URL);
-      } catch (refreshError) {
-        await clearTokens();
-        throw refreshError;
-      }
-    }
-
-    throw apiError;
-  }
+async function salesRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+  return await rawApiRequest<T>(path, options, 0, SALES_SERVICE_BASE_URL);
 }
 
 export async function fetchAllFeatureSettings(): Promise<FeatureSetting[]> {
-  return await salesAuthorizedRequest<FeatureSetting[]>('/feature-settings');
+  return await salesRequest<FeatureSetting[]>('/feature-settings');
 }
 
 export async function fetchEnabledFeatureSettings(): Promise<FeatureSetting[]> {
-  return await salesAuthorizedRequest<FeatureSetting[]>('/feature-settings/enabled');
+  return await salesRequest<FeatureSetting[]>('/feature-settings/enabled');
 }
 
 export async function fetchFeatureSettingByKey(featureKey: string): Promise<FeatureSetting | null> {
-  return await salesAuthorizedRequest<FeatureSetting | null>(`/feature-settings/${featureKey}`);
+  return await salesRequest<FeatureSetting | null>(`/feature-settings/${featureKey}`);
 }
 
 export async function updateFeatureSetting(
@@ -76,7 +38,7 @@ export async function updateFeatureSetting(
     endTime?: string;
   }
 ): Promise<FeatureSetting> {
-  return await salesAuthorizedRequest<FeatureSetting>(`/feature-settings/${featureKey}`, {
+  return await salesRequest<FeatureSetting>(`/feature-settings/${featureKey}`, {
     method: 'PUT',
     body: JSON.stringify(data),
   });

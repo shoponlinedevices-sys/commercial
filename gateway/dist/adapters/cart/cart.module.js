@@ -9,23 +9,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CartModule = void 0;
 const common_1 = require("@nestjs/common");
 const cart_controller_1 = require("./cart.controller");
-const database_module_1 = require("../../infrastructure/database/database.module");
+const axios_1 = require("@nestjs/axios");
 const cart_repository_1 = require("../../domain/cart/cart.repository");
 const cart_service_1 = require("../../application/cart/cart.service");
-const database_cart_repository_1 = require("../../infrastructure/database/repositories/database-cart.repository");
+const sales_service_cart_repository_1 = require("../../infrastructure/sales-service/sales-service-cart.repository");
 const product_module_1 = require("../product/product.module");
 let CartModule = class CartModule {
 };
 exports.CartModule = CartModule;
 exports.CartModule = CartModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule, product_module_1.ProductModule],
+        imports: [axios_1.HttpModule, product_module_1.ProductModule],
         controllers: [cart_controller_1.CartController],
         providers: [
             cart_service_1.CartService,
             {
                 provide: cart_repository_1.CartRepository,
-                useClass: database_cart_repository_1.DatabaseCartRepository,
+                useClass: sales_service_cart_repository_1.SalesServiceCartRepository,
             },
         ],
     })

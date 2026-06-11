@@ -16,7 +16,6 @@ exports.FeatureSettingsController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const feature_settings_service_1 = require("../../application/feature-settings/feature-settings.service");
-const jwt_auth_guard_1 = require("../../domain/identity/jwt-auth.guard");
 let FeatureSettingsController = class FeatureSettingsController {
     constructor(featureSettingsService) {
         this.featureSettingsService = featureSettingsService;
@@ -36,44 +35,36 @@ let FeatureSettingsController = class FeatureSettingsController {
 };
 exports.FeatureSettingsController = FeatureSettingsController;
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all feature settings' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'List of feature settings retrieved successfully' }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], FeatureSettingsController.prototype, "getAllSettings", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('enabled'),
     (0, swagger_1.ApiOperation)({ summary: 'Get enabled feature settings' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'List of enabled feature settings retrieved successfully' }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], FeatureSettingsController.prototype, "getEnabledSettings", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(':featureKey'),
     (0, swagger_1.ApiOperation)({ summary: 'Get feature setting by key' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Feature setting retrieved successfully' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Feature setting not found' }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     __param(0, (0, common_1.Param)('featureKey')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], FeatureSettingsController.prototype, "getSettingByKey", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Put)(':featureKey'),
     (0, swagger_1.ApiOperation)({ summary: 'Update feature setting' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Feature setting updated successfully' }),
     (0, swagger_1.ApiResponse)({ status: 404, description: 'Feature setting not found' }),
-    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     __param(0, (0, common_1.Param)('featureKey')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -82,7 +73,6 @@ __decorate([
 ], FeatureSettingsController.prototype, "updateSetting", null);
 exports.FeatureSettingsController = FeatureSettingsController = __decorate([
     (0, swagger_1.ApiTags)('Feature Settings'),
-    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('feature-settings'),
     __metadata("design:paramtypes", [feature_settings_service_1.FeatureSettingsService])
 ], FeatureSettingsController);

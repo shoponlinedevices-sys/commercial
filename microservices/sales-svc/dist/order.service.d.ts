@@ -19,6 +19,9 @@ export declare class OrderService {
         fcmToken?: string;
     }): Promise<OrderEntity>;
     updateOrderStatus(orderId: string, status: string): Promise<OrderEntity>;
+    findAllCarts(): Promise<{
+        carts: CartEntity[];
+    }>;
     getCart(id: number): Promise<{
         cart: CartEntity;
     }>;

@@ -19,6 +19,7 @@ const order_module_1 = require("./order.module");
 const feature_settings_module_1 = require("./feature-settings.module");
 const product_module_1 = require("./product.module");
 const contacts_module_1 = require("./contacts.module");
+const cart_controller_1 = require("./cart.controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -41,6 +42,7 @@ exports.AppModule = AppModule = __decorate([
             product_module_1.ProductModule,
             contacts_module_1.ContactsModule,
         ],
+        controllers: [cart_controller_1.CartController],
         providers: [
             {
                 provide: 'DATA_SOURCE',

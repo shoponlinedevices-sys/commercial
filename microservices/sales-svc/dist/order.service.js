@@ -85,6 +85,12 @@ let OrderService = class OrderService {
         order.status = status;
         return this.orderRepository.save(order);
     }
+    async findAllCarts() {
+        const carts = await this.cartRepository.find({
+            relations: ['cartLines'],
+        });
+        return { carts };
+    }
     async getCart(id) {
         const cart = await this.cartRepository.findOne({
             where: { id },

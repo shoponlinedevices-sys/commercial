@@ -8,6 +8,7 @@ import { OrderModule } from './order.module';
 import { FeatureSettingsModule } from './feature-settings.module';
 import { ProductModule } from './product.module';
 import { ContactsModule } from './contacts.module';
+import { CartController } from './cart.controller';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ContactsModule } from './contacts.module';
     ProductModule,
     ContactsModule,
   ],
+  controllers: [CartController],
   providers: [
     {
       provide: 'DATA_SOURCE',
