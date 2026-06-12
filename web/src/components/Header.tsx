@@ -7,33 +7,22 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
-import { cartService } from '@/services/cart.service';
 import { notificationService } from '@/services/notification.service';
-import { CartLine, NotificationItem } from '@/types';
+import { NotificationItem } from '@/types';
 import ColorPicker from '@/components/ColorPicker';
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
   const { colors } = useTheme();
+  const { cartCount } = useCart();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [cartCount, setCartCount] = useState(0);
   const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated || !user?.id) return;
-
-    const fetchCartCount = async () => {
-      try {
-        const cartLines = await cartService.getCartLinesByUserId(user.id);
-        const count = cartLines.filter(line => line.status === 1).length;
-        setCartCount(count);
-      } catch (error) {
-        console.error('Error fetching cart count:', error);
-        setCartCount(0);
-      }
-    };
 
     const fetchNotificationCount = async () => {
       try {
@@ -46,7 +35,6 @@ export default function Header() {
       }
     };
 
-    fetchCartCount();
     fetchNotificationCount();
   }, [isAuthenticated, user?.id]);
 

@@ -16,4 +16,3 @@ exports.grpcContactsClientOptions = {
         },
     },
 };
-//# sourceMappingURL=grpc-contacts.options.js.map

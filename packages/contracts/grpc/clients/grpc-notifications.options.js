@@ -17,4 +17,3 @@ exports.grpcNotificationsClientOptions = {
         },
     },
 };
-//# sourceMappingURL=grpc-notifications.options.js.map

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 import { cartService } from '@/services/cart.service';
 import { Cart, CartLine } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +14,7 @@ import Image from 'next/image';
 
 export default function CartPage() {
   const { user } = useAuth();
+  const { refreshCartCount } = useCart();
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,11 +27,10 @@ export default function CartPage() {
     try {
       setLoading(true);
       console.log('[Cart Page] Loading cart for user:', user.id);
-      const data = await cartService.getCart(user.id);
-      console.log('[Cart Page] Cart data received:', JSON.stringify(data));
-      console.log('[Cart Page] Cart lines:', data?.cartLines);
-      console.log('[Cart Page] Cart lines count:', data?.cartLines?.length);
-      setCart(data);
+      const cartLines = await cartService.getCartLinesByUserId(user.id);
+      console.log('[Cart Page] Cart lines received:', JSON.stringify(cartLines));
+      console.log('[Cart Page] Cart lines count:', cartLines?.length);
+      setCart({ cartLines });
     } catch (error) {
       console.error('[Cart Page] Error loading cart:', error);
     } finally {
@@ -41,6 +42,7 @@ export default function CartPage() {
     try {
       await cartService.removeCartLine(cartLineId);
       await loadCart();
+      await refreshCartCount();
     } catch (error) {
       console.error('Error removing item:', error);
       alert('Failed to remove item');
@@ -52,6 +54,7 @@ export default function CartPage() {
     try {
       await cartService.clearCartByUserId(user.id);
       await loadCart();
+      await refreshCartCount();
     } catch (error) {
       console.error('Error clearing cart:', error);
       alert('Failed to clear cart');
@@ -67,6 +70,7 @@ export default function CartPage() {
         quantity: newQuantity,
       });
       await loadCart();
+      await refreshCartCount();
     } catch (error) {
       console.error('Error updating quantity:', error);
     }

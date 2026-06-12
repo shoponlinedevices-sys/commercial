@@ -16,4 +16,3 @@ exports.grpcOrdersClientOptions = {
         },
     },
 };
-//# sourceMappingURL=grpc-orders.options.js.map

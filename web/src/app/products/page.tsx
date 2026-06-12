@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 import { productService } from '@/services/product.service';
 import { Product } from '@/types';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -17,6 +18,7 @@ export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
+  const { refreshCartCount } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,6 +91,7 @@ export default function ProductsPage() {
         productId,
         quantity: 1,
       });
+      await refreshCartCount();
       alert('Product added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);
