@@ -101,11 +101,11 @@ export default function ProductsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex">
+      <div className="min-h-screen flex bg-gradient-to-br from-background via-background to-muted/20">
         <Sidebar />
         <div className="flex-1 lg:ml-64">
           <Header />
-          <div className="container mx-auto px-4 py-8 mt-16 lg:mt-0">
+          <div className="container mx-auto px-3 sm:px-4 py-6 md:py-8 mt-16">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
               <p className="mt-4 text-muted-foreground">Loading products...</p>
@@ -117,17 +117,19 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex">
       <Sidebar />
       <div className="flex-1 lg:ml-64">
         <Header />
-        <div className="container mx-auto px-4 py-8 mt-16 lg:mt-0">
+        <div className="container mx-auto px-3 sm:px-4 py-6 md:py-8 mt-16">
+          {/* Category Filter */}
           <div className="mb-8">
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={selectedCategory === '' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedCategory('')}
+                className={selectedCategory === '' ? 'bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90' : ''}
               >
                 Tất cả
               </Button>
@@ -137,6 +139,7 @@ export default function ProductsPage() {
                   variant={selectedCategory === category ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setSelectedCategory(category!)}
+                  className={selectedCategory === category ? 'bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90' : ''}
                 >
                   {category}
                 </Button>
@@ -146,20 +149,22 @@ export default function ProductsPage() {
 
           {/* Promotion Banner */}
           {!searchQuery && showPromotion && (
-            <Card className="mb-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0">
-              <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <Badge className="mb-2 bg-white text-blue-600">B2B</Badge>
-                    <h2 className="text-2xl font-bold mb-2">Giảm tới 20%</h2>
-                    <p className="text-blue-100">Khuyến mãi mùa hè cho đơn hàng lớn</p>
-                    <p className="text-sm text-blue-200 mt-1">Ưu đãi dành cho đơn vị mua sỉ, thời gian có hạn.</p>
+            <Card className="mb-8 bg-gradient-to-r from-primary via-purple-600 to-pink-600 text-white border-0 shadow-xl overflow-hidden">
+              <CardContent className="p-6 md:p-8">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="flex-1 text-center md:text-left">
+                    <Badge className="mb-3 bg-white/20 backdrop-blur-sm text-white border-white/30">B2B</Badge>
+                    <h2 className="text-2xl md:text-4xl font-bold mb-2">Giảm tới 20%</h2>
+                    <p className="text-white/90 text-base md:text-lg">Khuyến mãi mùa hè cho đơn hàng lớn</p>
+                    <p className="text-sm text-white/70 mt-1">Ưu đãi dành cho đơn vị mua sỉ, thời gian có hạn.</p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="text-6xl">🛒</div>
+                    <div className="text-5xl md:text-7xl">🛒</div>
                     <Button
                       variant="secondary"
+                      size="lg"
                       onClick={() => router.push('/cart')}
+                      className="shadow-lg"
                     >
                       Mua ngay
                     </Button>
@@ -172,36 +177,36 @@ export default function ProductsPage() {
           {/* Flash Sale Section */}
           {!searchQuery && showFlashSale && (
             <div className="mb-8">
-              <Card className="mb-4 overflow-hidden">
-                <div className="relative h-48 bg-gradient-to-r from-orange-500 to-red-600">
+              <Card className="mb-6 overflow-hidden shadow-lg">
+                <div className="relative h-40 md:h-56 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <Badge className="mb-2 bg-white text-orange-600 text-lg px-4 py-1">⚡ FLASH SALE</Badge>
-                      <h2 className="text-3xl font-bold">Giảm giá sốc</h2>
-                      <p className="text-orange-100">Thời gian có hạn!</p>
+                    <div className="text-center text-white px-4">
+                      <Badge className="mb-3 bg-white/20 backdrop-blur-sm text-white border-white/30 text-lg md:text-xl px-4 py-2">⚡ FLASH SALE</Badge>
+                      <h2 className="text-2xl md:text-4xl font-bold">Giảm giá sốc</h2>
+                      <p className="text-white/90 text-base md:text-lg">Thời gian có hạn!</p>
                     </div>
                   </div>
                 </div>
               </Card>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Flash Sale</h2>
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
+                <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Flash Sale</h2>
+                <div className="flex items-center gap-3">
                   <span className="text-sm text-muted-foreground">Kết thúc trong:</span>
-                  <Badge variant="destructive" className="text-lg px-4 py-2">
+                  <Badge variant="destructive" className="text-lg md:text-xl px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500">
                     {formatTime(flashSaleTime)}
                   </Badge>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
                 {flashSaleProducts.map((product) => (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="relative h-40 bg-muted">
+                  <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+                    <div className="relative h-48 bg-muted">
                       {product.image ? (
                         <Image
                           src={product.image}
                           alt={product.name}
                           fill
-                          className="object-cover"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -209,12 +214,12 @@ export default function ProductsPage() {
                         </div>
                       )}
                       {product.badge && (
-                        <Badge className="absolute top-2 right-2 bg-orange-500">{product.badge}</Badge>
+                        <Badge className="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-red-500 shadow-lg">{product.badge}</Badge>
                       )}
                     </div>
-                    <CardContent className="p-3">
-                      <h3 className="font-semibold text-sm mb-1 line-clamp-2">{product.name}</h3>
-                      <p className="text-lg font-bold text-orange-600">
+                    <CardContent className="p-4">
+                      <h3 className="font-semibold text-base mb-2 line-clamp-2">{product.name}</h3>
+                      <p className="text-xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                         ${product.price}
                       </p>
                     </CardContent>
@@ -226,55 +231,63 @@ export default function ProductsPage() {
 
           {/* Services Section */}
           {!searchQuery && (
-            <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card className="p-4 text-center hover:shadow-md transition-shadow">
+            <div className="mb-8 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              <Card className="p-4 md:p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border-2 border-transparent hover:border-primary/20">
                 <div className="flex flex-col items-center">
-                  <Truck className="h-8 w-8 text-blue-600 mb-2" />
-                  <h3 className="font-semibold text-sm">Miễn phí vận chuyển</h3>
-                  <p className="text-xs text-gray-500 mt-1">Đơn hàng từ 500K</p>
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <Truck className="h-6 w-6 md:h-8 md:w-8 text-blue-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm md:text-base">Miễn phí vận chuyển</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Đơn hàng từ 500K</p>
                 </div>
               </Card>
-              <Card className="p-4 text-center hover:shadow-md transition-shadow">
+              <Card className="p-4 md:p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border-2 border-transparent hover:border-primary/20">
                 <div className="flex flex-col items-center">
-                  <Shield className="h-8 w-8 text-green-600 mb-2" />
-                  <h3 className="font-semibold text-sm">Thanh toán an toàn</h3>
-                  <p className="text-xs text-gray-500 mt-1">Bảo mật 100%</p>
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <Shield className="h-6 w-6 md:h-8 md:w-8 text-green-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm md:text-base">Thanh toán an toàn</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Bảo mật 100%</p>
                 </div>
               </Card>
-              <Card className="p-4 text-center hover:shadow-md transition-shadow">
+              <Card className="p-4 md:p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border-2 border-transparent hover:border-primary/20">
                 <div className="flex flex-col items-center">
-                  <Headphones className="h-8 w-8 text-purple-600 mb-2" />
-                  <h3 className="font-semibold text-sm">Hỗ trợ 24/7</h3>
-                  <p className="text-xs text-gray-500 mt-1">Luôn sẵn sàng</p>
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <Headphones className="h-6 w-6 md:h-8 md:w-8 text-purple-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm md:text-base">Hỗ trợ 24/7</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Luôn sẵn sàng</p>
                 </div>
               </Card>
-              <Card className="p-4 text-center hover:shadow-md transition-shadow">
+              <Card className="p-4 md:p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border-2 border-transparent hover:border-primary/20">
                 <div className="flex flex-col items-center">
-                  <RotateCcw className="h-8 w-8 text-orange-600 mb-2" />
-                  <h3 className="font-semibold text-sm">Đổi trả dễ dàng</h3>
-                  <p className="text-xs text-gray-500 mt-1">Trong 30 ngày</p>
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <RotateCcw className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm md:text-base">Đổi trả dễ dàng</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Trong 30 ngày</p>
                 </div>
               </Card>
             </div>
           )}
 
           {/* Product Grid */}
-          <h2 className="text-2xl font-bold mb-4">Sản phẩm nổi bật</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">Sản phẩm nổi bật</h2>
           {filteredProducts.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No products found</p>
+            <div className="text-center py-16">
+              <p className="text-muted-foreground text-lg">No products found</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {filteredProducts.map((product) => (
-                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="relative h-48 bg-muted">
+                <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group border-2 border-transparent hover:border-primary/20">
+                  <div className="relative h-48 sm:h-56 bg-muted overflow-hidden">
                     {product.image ? (
                       <Image
                         src={product.image}
                         alt={product.name}
                         fill
-                        className="object-cover"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -282,16 +295,16 @@ export default function ProductsPage() {
                       </div>
                     )}
                     {product.badge && (
-                      <Badge className="absolute top-2 right-2">{product.badge}</Badge>
+                      <Badge className="absolute top-3 right-3 bg-gradient-to-r from-primary to-purple-600 shadow-lg">{product.badge}</Badge>
                     )}
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                    <h3 className="font-semibold text-base md:text-lg mb-2 line-clamp-2">{product.name}</h3>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                       {product.description}
                     </p>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-2xl font-bold text-primary">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                         ${product.price}
                       </span>
                       {product.oldPrice && (
@@ -301,14 +314,15 @@ export default function ProductsPage() {
                       )}
                     </div>
                     {product.category && (
-                      <Badge variant="secondary" className="mt-2">
+                      <Badge variant="secondary" className="text-xs">
                         {product.category}
                       </Badge>
                     )}
                   </CardContent>
                   <CardFooter className="p-4 pt-0">
                     <Button
-                      className="w-full"
+                      className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-md"
+                      size="sm"
                       onClick={() => addToCart(product.id)}
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />

@@ -13,7 +13,8 @@ import { Platform } from 'react-native';
 const getApiBaseUrl = (port: number): string => {
   const platform = Platform.OS;
   const isDevice = Constants.isDevice;
-  const debuggerHost = Constants.expoConfig?.hostUri?.split(':').shift();
+  const hostUri = Constants.expoConfig?.hostUri;
+  const debuggerHost = hostUri ? hostUri.split(':').shift() : undefined;
 
   console.log(`[API Config] Platform: ${platform}, isDevice: ${isDevice}, debuggerHost: ${debuggerHost}`);
 
@@ -30,7 +31,8 @@ const getApiBaseUrl = (port: number): string => {
 };
 
 // Detect current Expo host for logging
-const debuggerHost = Constants.expoConfig?.hostUri?.split(':').shift();
+const hostUri = Constants.expoConfig?.hostUri;
+const debuggerHost = hostUri ? hostUri.split(':').shift() : undefined;
 
 // API URLs
 export const API_BASE_URL = getApiBaseUrl(3000); // gateway (cart endpoints)
