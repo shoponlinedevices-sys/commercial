@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Package, User, LogOut, Bell, Sparkles } from 'lucide-react';
+import { Home, Package, User, LogOut, Bell, Sparkles, ShoppingCart, FolderTree, Users, BarChart3, Megaphone, Settings } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
@@ -16,14 +16,18 @@ export default function Sidebar() {
   if (!isAuthenticated) return null;
 
   const navItems = [
-    { href: '/products', icon: Home, label: 'Trang chủ' },
+    { href: '/', icon: Home, label: 'Trang chủ' },
     { href: '/orders', icon: Package, label: 'Đơn hàng' },
-    { href: '/notifications', icon: Bell, label: 'Thông báo' },
-    { href: '/account', icon: User, label: 'Tài khoản' },
+    { href: '/products', icon: ShoppingCart, label: 'Sản phẩm' },
+    { href: '/categories', icon: FolderTree, label: 'Danh mục' },
+    { href: '/customers', icon: Users, label: 'Khách hàng' },
+    { href: '/reports', icon: BarChart3, label: 'Báo cáo' },
+    { href: '/marketing', icon: Megaphone, label: 'Marketing' },
+    { href: '/settings', icon: Settings, label: 'Cài đặt' },
   ];
 
   return (
-    <aside className="w-64 border-r border-border/50 bg-white/50 dark:bg-gray-950/50 backdrop-blur-xl min-h-screen fixed left-0 top-0 hidden lg:block z-40">
+    <aside className="w-64 border-r border-border/50 bg-white/50 dark:bg-gray-950/50 backdrop-blur-xl min-h-screen fixed left-0 top-0 z-40 hidden lg:block">
       <div className="p-6 flex flex-col h-full">
         {/* Logo */}
         <Link href="/products" className="flex items-center space-x-3 mb-8 group">

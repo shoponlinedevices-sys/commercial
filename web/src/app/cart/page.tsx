@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { cartService } from '@/services/cart.service';
@@ -13,6 +14,7 @@ import Header from '@/components/Header';
 import Image from 'next/image';
 
 export default function CartPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const { refreshCartCount } = useCart();
   const [cart, setCart] = useState<Cart | null>(null);
@@ -104,7 +106,7 @@ export default function CartPage() {
 
       alert('Order created successfully!');
       await clearCart();
-      window.location.href = `/orders`;
+      router.push('/orders');
     } catch (error) {
       console.error('Error creating order:', error);
       alert('Failed to create order');
@@ -148,7 +150,7 @@ export default function CartPage() {
             {!cart?.cartLines || cart.cartLines.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground mb-4">Your cart is empty</p>
-                <Button onClick={() => (window.location.href = '/products')}>
+                <Button onClick={() => router.push('/products')}>
                   Continue Shopping
                 </Button>
               </div>

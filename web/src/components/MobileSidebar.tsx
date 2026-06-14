@@ -30,12 +30,12 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden"
+        className="fixed inset-0 bg-black/50 z-50 lg:hidden"
         onClick={onClose}
       />
       
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-72 z-50 lg:hidden transform transition-transform duration-300 ease-in-out" style={{ backgroundColor: colors.layoutColor }}>
+      <aside className="fixed left-0 top-0 h-full w-72 z-[60] lg:hidden transform transition-transform duration-300 ease-in-out" style={{ backgroundColor: colors.layoutColor }}>
         <div className="p-4 h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">

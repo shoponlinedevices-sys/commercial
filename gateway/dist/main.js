@@ -18,9 +18,9 @@ async function bootstrap() {
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup('api', app, document);
-    await app.listen(3000, '0.0.0.0');
-    console.log('Backend running on port 3000');
-    console.log('Swagger documentation available at http://localhost:3000/api');
+    await app.listen(4000, '0.0.0.0');
+    console.log('Backend running on port 4000');
+    console.log('Swagger documentation available at http://localhost:4000/api');
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

@@ -7,6 +7,7 @@ import { cartService } from '@/services/cart.service';
 interface CartContextType {
   cartCount: number;
   refreshCartCount: () => Promise<void>;
+  addToCart: (productId: number, quantity?: number) => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -31,12 +32,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const addToCart = async (productId: number, quantity: number = 1) => {
+    if (!isAuthenticated || !user?.id) {
+      console.error('User not authenticated');
+      return;
+    }
+
+    try {
+      await cartService.addToCart({
+        userId: user.id,
+        productId,
+        quantity
+      });
+      await refreshCartCount();
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+  };
+
   useEffect(() => {
     refreshCartCount();
   }, [isAuthenticated, user?.id]);
 
   return (
-    <CartContext.Provider value={{ cartCount, refreshCartCount }}>
+    <CartContext.Provider value={{ cartCount, refreshCartCount, addToCart }}>
       {children}
     </CartContext.Provider>
   );

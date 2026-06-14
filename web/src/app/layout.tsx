@@ -12,13 +12,22 @@ export const metadata: Metadata = {
   description: "Modern e-commerce web application",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <meta name="format-detection" content="telephone=no" />
+      </head>
       <body className={inter.className}>
         <ThemeProvider>
           <AuthProvider>
