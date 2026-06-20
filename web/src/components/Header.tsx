@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Search, ShoppingCart, Bell, User, Menu, Sparkles, Settings } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,9 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useCart } from '@/context/CartContext';
+import { useNotification } from '@/context/NotificationContext';
 import { useRouter } from 'next/navigation';
-import { notificationService } from '@/services/notification.service';
-import { NotificationItem } from '@/types';
 import ColorPicker from '@/components/ColorPicker';
 import MobileSidebar from '@/components/MobileSidebar';
 import ThemeSettingsOverlay from '@/components/ThemeSettingsOverlay';
@@ -19,28 +18,11 @@ export default function Header() {
   const { user, isAuthenticated } = useAuth();
   const { colors } = useTheme();
   const { cartCount } = useCart();
+  const { notificationCount } = useNotification();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [notificationCount, setNotificationCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [themeSettingsOpen, setThemeSettingsOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isAuthenticated || !user?.id) return;
-
-    const fetchNotificationCount = async () => {
-      try {
-        const notifications = await notificationService.getUserNotifications(user.id.toString());
-        const count = notifications.filter(item => !item.isRead).length;
-        setNotificationCount(count);
-      } catch (error) {
-        console.error('Error fetching notification count:', error);
-        setNotificationCount(0);
-      }
-    };
-
-    fetchNotificationCount();
-  }, [isAuthenticated, user?.id]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

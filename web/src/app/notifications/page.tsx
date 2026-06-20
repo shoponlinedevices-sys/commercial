@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useNotification } from '@/context/NotificationContext';
 import { notificationService } from '@/services/notification.service';
 import { NotificationItem } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +14,7 @@ import { Button } from '@/components/ui/button';
 
 export default function NotificationsPage() {
   const { user } = useAuth();
+  const { refreshNotificationCount } = useNotification();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +39,7 @@ export default function NotificationsPage() {
     try {
       await notificationService.markAsRead(notificationId);
       await loadNotifications();
+      await refreshNotificationCount();
     } catch (error) {
       console.error('Error marking as read:', error);
     }

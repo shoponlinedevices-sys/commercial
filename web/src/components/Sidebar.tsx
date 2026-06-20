@@ -19,10 +19,7 @@ export default function Sidebar() {
     { href: '/', icon: Home, label: 'Trang chủ' },
     { href: '/orders', icon: Package, label: 'Đơn hàng' },
     { href: '/products', icon: ShoppingCart, label: 'Sản phẩm' },
-    { href: '/categories', icon: FolderTree, label: 'Danh mục' },
-    { href: '/customers', icon: Users, label: 'Khách hàng' },
     { href: '/reports', icon: BarChart3, label: 'Báo cáo' },
-    { href: '/marketing', icon: Megaphone, label: 'Marketing' },
     { href: '/settings', icon: Settings, label: 'Cài đặt' },
   ];
 
@@ -43,7 +40,7 @@ export default function Sidebar() {
         <nav className="space-y-1 flex-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || pathname.startsWith(item.href);
+            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'));
             return (
               <Link
                 key={item.href}
