@@ -24,7 +24,7 @@ const getApiBaseUrl = (port: number): string => {
   //   ? `http://${debuggerHost || 'localhost'}:${port}`
   //   : `https://thegioithietbi.online`;
 
-   const baseUrl = `https://thegioithietbi.online`;
+   const baseUrl = `https://api.thegioithietbi.online`;
   
   console.log(`[API Config] Using base URL: ${baseUrl}, port: ${port}`);
   return baseUrl;
@@ -35,7 +35,7 @@ const hostUri = Constants.expoConfig?.hostUri;
 const debuggerHost = hostUri ? hostUri.split(':').shift() : undefined;
 
 // API URLs
-export const API_BASE_URL = getApiBaseUrl(3000); // gateway (cart endpoints)
+export const API_BASE_URL = getApiBaseUrl(4000); // gateway (cart endpoints)
 export const AUTH_SERVICE_BASE_URL = getApiBaseUrl(3000); // gateway (auth endpoints - gateway routes to contacts-svc)
 export const PRODUCTS_SERVICE_BASE_URL = getApiBaseUrl(3000); // gateway (products endpoints)
 export const SALES_SERVICE_BASE_URL = getApiBaseUrl(3001); // sales-svc (orders endpoints - orders merged into sales-svc)
