@@ -3,21 +3,18 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 type ThemeColors = {
-  layoutColor: string;
   darkMode: boolean;
 };
 
 type ThemeContextType = {
   colors: ThemeColors;
-  setLayoutColor: (color: string) => void;
   toggleDarkMode: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const DEFAULT_COLORS: ThemeColors = {
-  layoutColor: '#ffffff',
-  darkMode: false,
+  darkMode: true,
 };
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -34,25 +31,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Save preferences to localStorage
     localStorage.setItem('themeColors', JSON.stringify(colors));
-    
-    // Apply dark mode to document
-    if (colors.darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
   }, [colors]);
-
-  const setLayoutColor = (color: string) => {
-    setColors(prev => ({ ...prev, layoutColor: color }));
-  };
 
   const toggleDarkMode = () => {
     setColors(prev => ({ ...prev, darkMode: !prev.darkMode }));
   };
 
   return (
-    <ThemeContext.Provider value={{ colors, setLayoutColor, toggleDarkMode }}>
+    <ThemeContext.Provider value={{ colors, toggleDarkMode }}>
       {children}
     </ThemeContext.Provider>
   );
