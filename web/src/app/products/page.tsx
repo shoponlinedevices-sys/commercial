@@ -149,20 +149,19 @@ export default function ProductsPage() {
 
           {/* Promotion Banner */}
           {!searchQuery && showPromotion && (
-            <Card className="mb-8 bg-gradient-to-r from-primary via-purple-600 to-pink-600 text-white border-0 shadow-xl overflow-hidden">
-              <CardContent className="p-6 md:p-8">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <Card className="mb-4 bg-gradient-to-r from-primary via-purple-600 to-pink-600 text-white border-0 shadow-xl overflow-hidden">
+              <CardContent className="p-4 md:p-5">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                   <div className="flex-1 text-center md:text-left">
-                    <Badge className="mb-3 bg-white/20 backdrop-blur-sm text-white border-white/30">B2B</Badge>
-                    <h2 className="text-2xl md:text-4xl font-bold mb-2">Giảm tới 20%</h2>
-                    <p className="text-white/90 text-base md:text-lg">Khuyến mãi mùa hè cho đơn hàng lớn</p>
-                    <p className="text-sm text-white/70 mt-1">Ưu đãi dành cho đơn vị mua sỉ, thời gian có hạn.</p>
+                    <Badge className="mb-2 bg-white/20 backdrop-blur-sm text-white border-white/30 text-xs">B2B</Badge>
+                    <h2 className="text-lg md:text-2xl font-bold mb-1">Giảm tới 20%</h2>
+                    <p className="text-white/90 text-sm md:text-base">Khuyến mãi mùa hè cho đơn hàng lớn</p>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-5xl md:text-7xl">🛒</div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-3xl md:text-4xl">🛒</div>
                     <Button
                       variant="secondary"
-                      size="lg"
+                      size="sm"
                       onClick={() => router.push('/cart')}
                       className="shadow-lg"
                     >
@@ -176,23 +175,23 @@ export default function ProductsPage() {
 
           {/* Flash Sale Section */}
           {!searchQuery && showFlashSale && (
-            <div className="mb-8">
-              <Card className="mb-6 overflow-hidden shadow-lg">
-                <div className="relative h-40 md:h-56 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500">
+            <div className="mb-6">
+              <Card className="mb-4 overflow-hidden shadow-lg">
+                <div className="relative h-24 md:h-32 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center text-white px-4">
-                      <Badge className="mb-3 bg-white/20 backdrop-blur-sm text-white border-white/30 text-lg md:text-xl px-4 py-2">⚡ FLASH SALE</Badge>
-                      <h2 className="text-2xl md:text-4xl font-bold">Giảm giá sốc</h2>
-                      <p className="text-white/90 text-base md:text-lg">Thời gian có hạn!</p>
+                      <Badge className="mb-2 bg-white/20 backdrop-blur-sm text-white border-white/30 text-sm md:text-base px-3 py-1">⚡ FLASH SALE</Badge>
+                      <h2 className="text-lg md:text-2xl font-bold">Giảm giá sốc</h2>
+                      <p className="text-white/90 text-xs md:text-sm">Thời gian có hạn!</p>
                     </div>
                   </div>
                 </div>
               </Card>
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
-                <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Flash Sale</h2>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">Kết thúc trong:</span>
-                  <Badge variant="destructive" className="text-lg md:text-xl px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                <h2 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Flash Sale</h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Kết thúc trong:</span>
+                  <Badge variant="destructive" className="text-sm md:text-base px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500">
                     {formatTime(flashSaleTime)}
                   </Badge>
                 </div>
