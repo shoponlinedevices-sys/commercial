@@ -32,6 +32,12 @@ export default function ProductsPage() {
     loadProducts();
   }, []);
 
+  // Update searchQuery when URL search parameter changes
+  useEffect(() => {
+    const searchParam = searchParams.get('search');
+    setSearchQuery(searchParam || '');
+  }, [searchParams]);
+
   useEffect(() => {
     filterProducts();
   }, [products, searchQuery, selectedCategory]);

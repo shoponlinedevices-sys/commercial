@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, ShoppingCart, Bell, User, Menu, Sparkles, Settings } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Search, ShoppingCart, Bell, User, Menu, Sparkles, Settings, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useCart } from '@/context/CartContext';
 import { useNotification } from '@/context/NotificationContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ColorPicker from '@/components/ColorPicker';
 import MobileSidebar from '@/components/MobileSidebar';
 import ThemeSettingsOverlay from '@/components/ThemeSettingsOverlay';
@@ -20,15 +20,38 @@ export default function Header() {
   const { cartCount } = useCart();
   const { notificationCount } = useNotification();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [themeSettingsOpen, setThemeSettingsOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
+  // Initialize search query from URL on mount
+  useEffect(() => {
+    const searchParam = searchParams.get('search');
+    if (searchParam) {
+      setSearchQuery(searchParam);
     }
+  }, [searchParams]);
+
+  // Keep focus on search input when navigating
+  useEffect(() => {
+    if (searchParams.get('search')) {
+      searchInputRef.current?.focus();
+    }
+  }, [searchParams]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    if (value.trim()) {
+      router.push(`/products?search=${encodeURIComponent(value)}`);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    router.push('/products');
   };
 
   if (!isAuthenticated) return null;
@@ -62,18 +85,28 @@ export default function Header() {
             </div>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="flex-1 max-w-2xl mx-4 lg:mx-8">
+            <div className="flex-1 max-w-2xl mx-4 lg:mx-8">
               <div className="relative group">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors ${colors.darkMode ? 'text-gray-400 group-focus-within:text-white' : 'text-muted-foreground group-focus-within:text-primary'}`} />
                 <Input
                   type="text"
                   placeholder="Tìm kiếm sản phẩm..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`pl-10 transition-all ${colors.darkMode ? 'bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20' : 'bg-muted/50 border-muted focus:border-primary focus:ring-2 focus:ring-primary/20'}`}
+                  onChange={handleSearchChange}
+                  ref={searchInputRef}
+                  className={`pl-10 pr-10 transition-all ${colors.darkMode ? 'bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20' : 'bg-muted/50 border-muted focus:border-primary focus:ring-2 focus:ring-primary/20'}`}
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors hover:opacity-70 ${colors.darkMode ? 'text-gray-400' : 'text-muted-foreground'}`}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
-            </form>
+            </div>
 
             {/* Right Actions */}
             <div className="flex items-center space-x-2 sm:space-x-4">
