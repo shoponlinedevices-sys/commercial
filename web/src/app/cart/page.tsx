@@ -115,16 +115,14 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Header />
-        <div className="flex flex-1">
-          <Sidebar />
-          <div className="flex-1 lg:ml-64">
-            <div className="container mx-auto px-4 py-8 pt-20 lg:pt-20">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                <p className="mt-4 text-muted-foreground">Loading cart...</p>
-              </div>
+      <div className="min-h-screen bg-gray-50 flex">
+        <Sidebar />
+        <div className="flex-1 lg:ml-64">
+          <Header />
+          <div className="container mx-auto px-4 py-8 mt-16">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Loading cart...</p>
             </div>
           </div>
         </div>
@@ -133,12 +131,11 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
-      <div className="flex flex-1">
-        <Sidebar />
-        <div className="flex-1 lg:ml-64">
-          <div className="container mx-auto px-4 py-8 pt-20 lg:pt-20">
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar />
+      <div className="flex-1 lg:ml-64">
+        <Header />
+        <div className="container mx-auto px-4 py-8 mt-16">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center text-xl lg:text-2xl">
@@ -233,7 +230,6 @@ export default function CartPage() {
           )}
         </Card>
         </div>
-      </div>
       </div>
     </div>
   );

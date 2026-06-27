@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 import { Home, Package, User, LogOut, Bell, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -30,12 +31,12 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/50 z-50 lg:hidden"
+        className="fixed inset-0 bg-black/50 z-[100] lg:hidden transition-opacity duration-300"
         onClick={onClose}
       />
       
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-72 z-[60] lg:hidden transform transition-transform duration-300 ease-in-out" style={{ backgroundColor: colors.layoutColor }}>
+      {/* Sidebar - Overlay layout with dark background */}
+      <aside className={`fixed left-0 top-0 h-full w-64 sm:w-72 z-[110] lg:hidden transform transition-transform duration-300 ease-in-out shadow-2xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`} style={{ backgroundColor: colors.darkMode ? '#0f172a' : '#ffffff' }}>
         <div className="p-4 h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
@@ -64,6 +65,8 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                   className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive
                       ? 'bg-primary text-primary-foreground'
+                      : colors.darkMode
+                      ? 'text-gray-300 hover:bg-white/10 hover:text-white'
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
@@ -75,14 +78,14 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
           </nav>
 
           {/* User Info & Logout */}
-          <div className="pt-6 border-t border-gray-200">
-            <div className="flex items-center space-x-3 mb-3">
+          <div className={`pt-6 border-t ${colors.darkMode ? 'border-white/20' : 'border-gray-200'}`}>
+            <div className={`flex items-center space-x-3 mb-3 p-3 rounded-xl ${colors.darkMode ? 'bg-white/10' : 'bg-gray-100'}`}>
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
                 {user?.username?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div>
-                <p className="font-semibold text-sm">{user?.username}</p>
-                <p className="text-xs text-gray-500">Thành viên</p>
+                <p className={`font-semibold text-sm ${colors.darkMode ? 'text-white' : ''}`}>{user?.username}</p>
+                <p className={`text-xs ${colors.darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Thành viên</p>
               </div>
             </div>
             <Button
@@ -92,7 +95,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
                 logout();
                 onClose();
               }}
-              className="w-full justify-start"
+              className={`w-full justify-start ${colors.darkMode ? 'text-gray-300 hover:bg-white/10 hover:text-white' : ''}`}
             >
               <LogOut className="h-4 w-4 mr-2" />
               Đăng xuất

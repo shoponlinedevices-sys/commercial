@@ -128,12 +128,13 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex">
       <Sidebar />
-      <Header />
-      
-      <main className="lg:ml-64 pt-16">
-        <div className="container mx-auto px-4 sm:px-6 py-8">
+      <div className="flex-1 lg:ml-64">
+        <Header />
+        
+        <main className="pt-16">
+          <div className="container mx-auto px-4 sm:px-6 py-8">
           {/* Banner Section */}
           <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-2xl p-8 mb-8 text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
@@ -241,6 +242,7 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+      </div>
     </div>
   );
 }

@@ -19,13 +19,14 @@ export default function Sidebar() {
     { href: '/', icon: Home, label: 'Trang chủ' },
     { href: '/orders', icon: Package, label: 'Đơn hàng' },
     { href: '/products', icon: ShoppingCart, label: 'Sản phẩm' },
-    { href: '/reports', icon: BarChart3, label: 'Báo cáo' },
+    // { href: '/reports', icon: BarChart3, label: 'Báo cáo' },
+    { href: '/account', icon: User, label: 'Tài khoản' },
     { href: '/settings', icon: Settings, label: 'Cài đặt' },
   ];
 
   return (
     <aside 
-      className="w-64 border-r border-border/50 backdrop-blur-xl min-h-screen fixed left-0 top-0 z-40 hidden lg:block"
+      className="w-64 border-r border-border/50 backdrop-blur-xl min-h-screen fixed left-0 top-0 z-30 hidden lg:block"
       style={{ backgroundColor: colors.darkMode ? '#0f172a' : '#ffffff' }}
     >
       <div className="p-6 flex flex-col h-full">

@@ -59,7 +59,7 @@ export default function Header() {
   return (
     <>
       <header 
-        className="fixed top-0 left-0 right-0 z-[60] border-b border-border/50 backdrop-blur-xl shadow-sm lg:left-64"
+        className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 backdrop-blur-xl shadow-sm lg:left-64"
         style={{ backgroundColor: colors.darkMode ? '#0f172a' : '#ffffff' }}
       >
         <div className="container mx-auto px-4 sm:px-6">
@@ -85,16 +85,16 @@ export default function Header() {
             </div>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-2xl mx-4 lg:mx-8">
+            <div className="flex-1 max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl mx-2 sm:mx-4 lg:mx-8">
               <div className="relative group">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors ${colors.darkMode ? 'text-gray-400 group-focus-within:text-white' : 'text-muted-foreground group-focus-within:text-primary'}`} />
                 <Input
                   type="text"
-                  placeholder="Tìm kiếm sản phẩm..."
+                  placeholder="Tìm kiếm..."
                   value={searchQuery}
                   onChange={handleSearchChange}
                   ref={searchInputRef}
-                  className={`pl-10 pr-10 transition-all ${colors.darkMode ? 'bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20' : 'bg-muted/50 border-muted focus:border-primary focus:ring-2 focus:ring-primary/20'}`}
+                  className={`pl-10 pr-10 transition-all text-sm sm:text-base ${colors.darkMode ? 'bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20' : 'bg-muted/50 border-muted focus:border-primary focus:ring-2 focus:ring-primary/20'}`}
                 />
                 {searchQuery && (
                   <button
@@ -109,14 +109,14 @@ export default function Header() {
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
               <ColorPicker />
               
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setThemeSettingsOpen(true)}
-                className={`relative transition-colors ${colors.darkMode ? 'text-white hover:bg-white/10' : 'hover:bg-primary/10'}`}
+                className={`relative transition-colors hidden sm:flex ${colors.darkMode ? 'text-white hover:bg-white/10' : 'hover:bg-primary/10'}`}
               >
                 <Settings className="h-5 w-5" />
               </Button>
@@ -149,11 +149,11 @@ export default function Header() {
                 )}
               </Button>
 
-              <div className={`flex items-center space-x-2 pl-2 sm:pl-4 border-l ${colors.darkMode ? 'border-white/20' : 'border-border'}`}>
-                <div className="w-9 h-9 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+              <div className={`flex items-center space-x-2 pl-1 sm:pl-2 md:pl-4 border-l ${colors.darkMode ? 'border-white/20' : 'border-border'}`}>
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg">
                   {user?.username?.charAt(0).toUpperCase() || 'U'}
                 </div>
-                <span className={`text-sm font-semibold hidden md:block ${colors.darkMode ? 'text-white' : ''}`}>
+                <span className={`text-xs sm:text-sm font-semibold hidden md:block ${colors.darkMode ? 'text-white' : ''}`}>
                   {user?.username}
                 </span>
               </div>

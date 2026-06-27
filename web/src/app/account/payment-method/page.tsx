@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CreditCard, Plus, Edit, Trash2, ArrowLeft, Check, Settings } from 'lucide-react';
-import Navigation from '@/components/Navigation';
+import Sidebar from '@/components/Sidebar';
+import Header from '@/components/Header';
 import { useRouter } from 'next/navigation';
 import {
   Dialog,
@@ -151,12 +152,15 @@ export default function PaymentMethodPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
-        <Navigation />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading...</p>
+      <div className="min-h-screen bg-gray-50 flex">
+        <Sidebar />
+        <div className="flex-1 lg:ml-64">
+          <Header />
+          <div className="container mx-auto px-4 py-8 mt-16">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Loading...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -164,9 +168,11 @@ export default function PaymentMethodPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar />
+      <div className="flex-1 lg:ml-64">
+        <Header />
+        <div className="container mx-auto px-4 py-8 mt-16">
         <Button
           variant="ghost"
           onClick={() => router.push('/account')}
@@ -421,6 +427,7 @@ export default function PaymentMethodPage() {
             ))}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
