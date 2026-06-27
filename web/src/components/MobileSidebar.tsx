@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { Home, Package, User, LogOut, Bell, X } from 'lucide-react';
+import { Home, Package, User, LogOut, Bell, X, ShoppingCart } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { Button } from '@/components/ui/button';
@@ -19,9 +19,9 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
   const { colors } = useTheme();
 
   const navItems = [
-    { href: '/products', icon: Home, label: 'Trang chủ' },
+    { href: '/', icon: Home, label: 'Trang chủ' },
     { href: '/orders', icon: Package, label: 'Đơn hàng' },
-    { href: '/notifications', icon: Bell, label: 'Thông báo' },
+    { href: '/products', icon: ShoppingCart, label: 'Sản phẩm' },
     { href: '/account', icon: User, label: 'Tài khoản' },
   ];
 
@@ -56,7 +56,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
           <nav className="space-y-2 flex-1">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href || pathname.startsWith(item.href);
+              const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'));
               return (
                 <Link
                   key={item.href}

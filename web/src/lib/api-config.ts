@@ -3,7 +3,7 @@
 
 export const API_CONFIG = {
   // Gateway URL (port 3000) - primary endpoint for cart, orders, notifications
-  GATEWAY_URL: process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000',
+  GATEWAY_URL: process.env.PUBLIC_GATEWAY || 'http://localhost:4000',
   
   // Direct microservice URLs (fallback)
   AUTH_SERVICE_URL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || 'http://localhost:3006',
