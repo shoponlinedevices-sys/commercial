@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
@@ -9,79 +9,8 @@ import Header from '@/components/Header';
 import CountdownTimer from '@/components/CountdownTimer';
 import { Button } from '@/components/ui/button';
 import { Truck, Shield, Headphones, RotateCcw, ShoppingBag, Sparkles } from 'lucide-react';
-
-const flashSaleProducts = [
-  {
-    id: 1,
-    name: 'Máy khoan động lực 850W',
-    price: 1850000,
-    originalPrice: 2300000,
-    discount: 20,
-    image: '/api/placeholder/200/200'
-  },
-  {
-    id: 2,
-    name: 'Bộ dụng cụ cơ lê, tuốc nơ vít 45 món',
-    price: 1200000,
-    originalPrice: 1600000,
-    discount: 25,
-    image: '/api/placeholder/200/200'
-  },
-  {
-    id: 3,
-    name: 'Ổ cắm chống giật 6 lỗ',
-    price: 600000,
-    originalPrice: 800000,
-    discount: 25,
-    image: '/api/placeholder/200/200'
-  },
-  {
-    id: 4,
-    name: 'Đèn bàn LED công nghiệp',
-    price: 250000,
-    originalPrice: 350000,
-    discount: 28,
-    image: '/api/placeholder/200/200'
-  }
-];
-
-const featuredProducts = [
-  {
-    id: 1,
-    name: 'Máy khoan động lực 850W',
-    description: 'Máy khoan công suất cao, đa năng',
-    price: 1850000,
-    image: '/api/placeholder/200/200'
-  },
-  {
-    id: 2,
-    name: 'Bộ dụng cụ cơ lê, tuốc nơ vít 45 món',
-    description: 'Bộ dụng cụ hoàn chỉnh cho thợ cơ khí',
-    price: 1200000,
-    image: '/api/placeholder/200/200'
-  },
-  {
-    id: 3,
-    name: 'Ổ cắm chống giật 6 lỗ',
-    description: 'An toàn tuyệt đối cho gia đình',
-    price: 600000,
-    image: '/api/placeholder/200/200'
-  },
-  {
-    id: 4,
-    name: 'Đèn bàn LED công nghiệp',
-    description: 'Tiết kiệm điện, ánh sáng mạnh',
-    price: 250000,
-    image: '/api/placeholder/200/200'
-  },
-  {
-    id: 5,
-    name: 'Bơm nước mini 220V',
-    description: 'Compact, hiệu suất cao',
-    price: 300000,
-    image: '/api/placeholder/200/200'
-  }
-];
+import { Product } from '@/types';
+import { productService } from '@/services/product.service';
 
 const serviceFeatures = [
   {
@@ -99,11 +28,11 @@ const serviceFeatures = [
     title: 'Hỗ trợ 24/7',
     description: 'Luôn sẵn sàng'
   },
-  {
-    icon: RotateCcw,
-    title: 'Đổi trả dễ dàng',
-    description: 'Trong 30 ngày'
-  }
+  // {
+  //   icon: RotateCcw,
+  //   title: 'Đổi trả dễ dàng',
+  //   description: 'Trong 30 ngày'
+  // }
 ];
 
 export default function HomePage() {
@@ -111,10 +40,21 @@ export default function HomePage() {
   const { addToCart } = useCart();
   const router = useRouter();
 
-  if (!isAuthenticated) {
-    router.push('/login');
-    return null;
-  }
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingAuth, setLoadingAuth] = useState(true);
+
+  useEffect(() => {
+  loadProducts();
+}, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    } else {
+      setLoadingAuth(false);
+    }
+  }, [isAuthenticated, router]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -126,6 +66,18 @@ export default function HomePage() {
   const handleAddToCart = (productId: number) => {
     addToCart(productId);
   };
+
+  const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await productService.getProducts();
+        setProducts(data);
+      } catch (error) {
+        console.error('Error loading products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -170,21 +122,25 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {flashSaleProducts.map((product) => (
+              {products.map((product) => (
                 <div
                   key={product.id}
                   className="bg-white rounded-xl p-4 hover:shadow-lg transition-shadow cursor-pointer"
                 >
                   <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                    <ShoppingBag className="h-12 w-12 text-gray-400" />
+                   <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <h3 className="font-semibold text-sm mb-2 line-clamp-2">{product.name}</h3>
                   <div className="flex items-center space-x-2 mb-2">
                     <span className="text-lg font-bold text-orange-600">{formatPrice(product.price)}</span>
-                    <span className="text-sm text-gray-400 line-through">{formatPrice(product.originalPrice)}</span>
+                    {/* <span className="text-sm text-gray-400 line-through">{formatPrice(product.originalPrice)}</span> */}
                   </div>
                   <div className="bg-orange-100 text-orange-600 text-xs font-bold px-2 py-1 rounded inline-block">
-                    -{product.discount}%
+                    {/* -{product.discount}% */}
                   </div>
                 </div>
               ))}
@@ -192,7 +148,7 @@ export default function HomePage() {
           </div>
 
           {/* Service Features Section */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
             {serviceFeatures.map((feature, index) => {
               const Icon = feature.icon;
               return (
@@ -215,13 +171,20 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {featuredProducts.map((product) => (
+              {products.map((product) => (
                 <div
                   key={product.id}
                   className="bg-card border border-border rounded-xl p-4 hover:shadow-lg transition-shadow cursor-pointer"
                 >
-                  <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                  {/* <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
                     <ShoppingBag className="h-12 w-12 text-gray-400" />
+                  </div> */}
+                 <div className="aspect-square rounded-lg overflow-hidden mb-3">
+                   <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <h3 className="font-semibold text-sm mb-1 line-clamp-2">{product.name}</h3>
                   <p className="text-xs text-muted-foreground mb-2 line-clamp-1">{product.description}</p>

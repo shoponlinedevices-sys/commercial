@@ -21,7 +21,7 @@ export default function Sidebar() {
     { href: '/products', icon: ShoppingCart, label: 'Sản phẩm' },
     // { href: '/reports', icon: BarChart3, label: 'Báo cáo' },
     { href: '/account', icon: User, label: 'Tài khoản' },
-    { href: '/settings', icon: Settings, label: 'Cài đặt' },
+    // { href: '/settings', icon: Settings, label: 'Cài đặt' },
   ];
 
   return (

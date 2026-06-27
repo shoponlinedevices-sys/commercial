@@ -1,18 +1,29 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost'],
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: '**',
+        protocol: "https",
+        hostname: "picsum.photos",
       },
       {
-        protocol: 'https',
-        hostname: '**',
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.boschchinhhang.com",
+      },
+      {
+        protocol: "https",
+        hostname: "pos.nvncdn.com",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        pathname: "/**",
       },
     ],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
