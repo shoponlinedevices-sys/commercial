@@ -74,8 +74,8 @@ export default function Header() {
               <Menu className="h-5 w-5" />
             </Button>
 
-            {/* Logo/Brand */}
-            <div className="flex items-center space-x-2 lg:hidden">
+            {/* Logo/Brand - Hidden on mobile, visible on desktop */}
+            <div className="hidden lg:flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-purple-600 rounded-lg flex items-center justify-center">
                 <Sparkles className="h-5 w-5 text-white" />
               </div>
@@ -85,7 +85,7 @@ export default function Header() {
             </div>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl mx-2 sm:mx-4 lg:mx-8">
+            <div className="flex-1 max-w-[200px] sm:max-w-md md:max-w-lg lg:max-w-2xl mx-1 sm:mx-4 lg:mx-8">
               <div className="relative group">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors ${colors.darkMode ? 'text-gray-400 group-focus-within:text-white' : 'text-muted-foreground group-focus-within:text-primary'}`} />
                 <Input
@@ -109,7 +109,7 @@ export default function Header() {
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
+            <div className="flex items-center space-x-0 sm:space-x-2 md:space-x-4">
               <ColorPicker />
               
               <Button
@@ -127,7 +127,7 @@ export default function Header() {
                 onClick={() => router.push('/cart')}
                 className={`relative transition-colors ${colors.darkMode ? 'text-white hover:bg-white/10' : 'hover:bg-primary/10'}`}
               >
-                <ShoppingCart className="h-5 w-5" />
+                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
                 {cartCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 min-w-[20px] flex items-center justify-center p-0 bg-gradient-to-r from-primary to-purple-600 rounded-full text-[10px] font-bold shadow-lg">
                     {cartCount}
@@ -141,7 +141,7 @@ export default function Header() {
                 onClick={() => router.push('/notifications')}
                 className={`relative transition-colors ${colors.darkMode ? 'text-white hover:bg-white/10' : 'hover:bg-primary/10'}`}
               >
-                <Bell className="h-5 w-5" />
+                <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
                 {notificationCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 min-w-[20px] flex items-center justify-center p-0 bg-gradient-to-r from-primary to-purple-600 rounded-full text-[10px] font-bold shadow-lg">
                     {notificationCount}
