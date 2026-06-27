@@ -163,19 +163,23 @@ export default function HomePage() {
           </div>
 
           {/* Service Features Section */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
-            {serviceFeatures.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <div key={index} className="bg-card border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
-                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-                    <Icon className="h-6 w-6 text-primary" />
+          <div className="bg-card border border-border rounded-xl p-4 mb-8 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-around gap-2">
+              {serviceFeatures.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={index} className="flex items-center gap-2 flex-1 justify-center">
+                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="text-center">
+                      <h3 className="font-semibold text-sm">{feature.title}</h3>
+                      <p className="text-xs text-muted-foreground">{feature.description}</p>
+                    </div>
                   </div>
-                  <h3 className="font-semibold mb-1">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
           {/* Featured Products Section */}
