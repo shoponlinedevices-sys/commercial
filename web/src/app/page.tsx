@@ -43,10 +43,21 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingAuth, setLoadingAuth] = useState(true);
+  const [showAllFlashSale, setShowAllFlashSale] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-  loadProducts();
-}, []);
+    loadProducts();
+  }, []);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -116,13 +127,17 @@ export default function HomePage() {
                   <CountdownTimer />
                 </div>
               </div>
-              <Button variant="outline" className="bg-white/10 text-white border-white/30 hover:bg-white/20">
-                Xem tất cả
+              <Button 
+                variant="outline" 
+                className="bg-white/10 text-white border-white/30 hover:bg-white/20"
+                onClick={() => setShowAllFlashSale(!showAllFlashSale)}
+              >
+                {showAllFlashSale ? 'Thu gọn' : 'Xem tất cả'}
               </Button>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {products.map((product) => (
+              {(showAllFlashSale ? products : products.slice(0, isMobile ? 2 : 4)).map((product) => (
                 <div
                   key={product.id}
                   className="bg-white rounded-xl p-4 hover:shadow-lg transition-shadow cursor-pointer"
