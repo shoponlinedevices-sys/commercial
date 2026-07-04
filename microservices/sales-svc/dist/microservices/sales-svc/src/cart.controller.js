@@ -29,7 +29,6 @@ let CartController = class CartController {
         return this.orderService.getCartByUserId(userId);
     }
     async addToCart(body) {
-        console.log('addToCart Test', body);
         return this.orderService.addToCart(body);
     }
     async removeCartLine(id) {

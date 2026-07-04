@@ -5,6 +5,7 @@ import { OrderEntity } from './order.entity';
 import { OrderLineEntity } from './order-line.entity';
 import { CartEntity } from './cart.entity';
 import { CartLineEntity } from './cart-line.entity';
+import { ProductEntity } from './product.entity';
 
 @Injectable()
 export class OrderService {
@@ -12,6 +13,10 @@ export class OrderService {
     @Inject('DATA_SOURCE')
     private readonly dataSource: DataSource,
   ) {}
+
+  private get productRepository() {
+    return this.dataSource.getRepository(ProductEntity);
+  }
 
   private get orderRepository() {
     return this.dataSource.getRepository(OrderEntity);
@@ -139,6 +144,16 @@ export class OrderService {
     cartLines?: any[];
   }) {
     try {
+      const product = await this.productRepository.findOne({
+        where: { id: data.productId },
+      });
+
+      console.log('addToCart', product);
+
+      if(!product) {
+        throw new Error('Product not found');
+      }
+      
       let cart = await this.cartRepository.findOne({
         where: { userId: data.userId },
       });
@@ -170,7 +185,7 @@ export class OrderService {
           cartId: cart.id,
           productId: data.productId,
           quantity: isNaN(validQuantity) ? 1 : validQuantity,
-          unitPrice: 0, // Will be updated when product info is fetched
+          unitPrice: product.price,
           status: 1,
           name: data.cartLines?.[0]?.name || 'Sản phẩm',
           image: data.image || data.cartLines?.[0]?.image || 'https://via.placeholder.com/150',

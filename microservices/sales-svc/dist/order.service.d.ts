@@ -5,6 +5,7 @@ import { CartLineEntity } from './cart-line.entity';
 export declare class OrderService {
     private readonly dataSource;
     constructor(dataSource: DataSource);
+    private get productRepository();
     private get orderRepository();
     private get orderLineRepository();
     private get cartRepository();

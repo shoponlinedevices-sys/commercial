@@ -20,9 +20,13 @@ const order_entity_1 = require("./order.entity");
 const order_line_entity_1 = require("./order-line.entity");
 const cart_entity_1 = require("./cart.entity");
 const cart_line_entity_1 = require("./cart-line.entity");
+const product_entity_1 = require("./product.entity");
 let OrderService = class OrderService {
     constructor(dataSource) {
         this.dataSource = dataSource;
+    }
+    get productRepository() {
+        return this.dataSource.getRepository(product_entity_1.ProductEntity);
     }
     get orderRepository() {
         return this.dataSource.getRepository(order_entity_1.OrderEntity);
@@ -112,6 +116,13 @@ let OrderService = class OrderService {
     }
     async addToCart(data) {
         try {
+            const product = await this.productRepository.findOne({
+                where: { id: data.productId },
+            });
+            console.log('addToCart', product);
+            if (!product) {
+                throw new Error('Product not found');
+            }
             let cart = await this.cartRepository.findOne({
                 where: { userId: data.userId },
             });
@@ -139,7 +150,7 @@ let OrderService = class OrderService {
                     cartId: cart.id,
                     productId: data.productId,
                     quantity: isNaN(validQuantity) ? 1 : validQuantity,
-                    unitPrice: 0,
+                    unitPrice: product.price,
                     status: 1,
                     name: data.cartLines?.[0]?.name || 'Sản phẩm',
                     image: data.image || data.cartLines?.[0]?.image || 'https://via.placeholder.com/150',
