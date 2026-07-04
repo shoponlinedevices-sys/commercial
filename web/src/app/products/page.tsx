@@ -9,7 +9,16 @@ import { Product } from '@/types';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Search, Truck, Shield, Headphones, RotateCcw } from 'lucide-react';
+import {
+  ShoppingCart,
+  Search,
+  Truck,
+  Shield,
+  Headphones,
+  RotateCcw,
+  Minus,
+  Plus,
+} from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import Image from 'next/image';
@@ -27,6 +36,7 @@ export default function ProductsPage() {
   const [showFlashSale, setShowFlashSale] = useState(true);
   const [showPromotion, setShowPromotion] = useState(true);
   const [flashSaleTime, setFlashSaleTime] = useState(24 * 60 * 60); // 24 hours in seconds
+  const [quantities, setQuantities] = useState<Record<number, number>>({});
 
   useEffect(() => {
     loadProducts();
@@ -86,6 +96,19 @@ export default function ProductsPage() {
     setFilteredProducts(filtered);
   };
 
+  const increaseQuantity = (productId: number) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [productId]: (prev[productId] || 1) + 1,
+    }));
+  };
+
+  const decreaseQuantity = (productId: number) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [productId]: Math.max(1, (prev[productId] || 1) - 1),
+    }));
+  };
   const categories = Array.from(new Set(products.map((p) => p.category).filter(Boolean)));
   const flashSaleProducts = filteredProducts.slice(0, 4);
 
@@ -95,7 +118,7 @@ export default function ProductsPage() {
       await cartService.addToCart({
         userId: user!.id,
         productId,
-        quantity: 1,
+        quantity: quantities[productId] || 1,
         image: productImage,
       });
       await refreshCartCount();
@@ -325,16 +348,42 @@ export default function ProductsPage() {
                       </Badge>
                     )}
                   </CardContent>
-                  <CardFooter className="p-4 pt-0">
+                <CardFooter className="p-4 pt-0 flex flex-col gap-3">
+
+                  <div className="flex items-center justify-center border rounded-md">
+
                     <Button
-                      className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-md"
-                      size="sm"
-                      onClick={() => addToCart(product.id, product.image)}
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => decreaseQuantity(product.id)}
                     >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      Add to Cart
+                      <Minus className="h-4 w-4" />
                     </Button>
-                  </CardFooter>
+
+                    <span className="w-10 text-center font-semibold">
+                      {quantities[product.id] || 1}
+                    </span>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => increaseQuantity(product.id)}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+
+                  </div>
+
+                  <Button
+                    className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-md"
+                    size="sm"
+                    onClick={() => addToCart(product.id, product.image)}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Add to Cart
+                  </Button>
+
+                </CardFooter>
                 </Card>
               ))}
             </div>
