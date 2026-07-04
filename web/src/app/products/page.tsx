@@ -89,13 +89,14 @@ export default function ProductsPage() {
   const categories = Array.from(new Set(products.map((p) => p.category).filter(Boolean)));
   const flashSaleProducts = filteredProducts.slice(0, 4);
 
-  const addToCart = async (productId: number) => {
+  const addToCart = async (productId: number, productImage?: string) => {
     try {
       const { cartService } = await import('@/services/cart.service');
       await cartService.addToCart({
         userId: user!.id,
         productId,
         quantity: 1,
+        image: productImage,
       });
       await refreshCartCount();
       alert('Product added to cart!');
@@ -328,7 +329,7 @@ export default function ProductsPage() {
                     <Button
                       className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-md"
                       size="sm"
-                      onClick={() => addToCart(product.id)}
+                      onClick={() => addToCart(product.id, product.image)}
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       Add to Cart

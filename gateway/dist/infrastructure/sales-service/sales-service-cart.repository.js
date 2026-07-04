@@ -120,14 +120,15 @@ let SalesServiceCartRepository = class SalesServiceCartRepository {
             throw error;
         }
     }
-    async addToCart(userId, productId, quantity) {
+    async addToCart(userId, productId, quantity, image) {
         try {
-            console.log(`[SalesServiceCartRepository] Adding to cart - userId: ${userId}, productId: ${productId}, quantity: ${quantity}`);
+            console.log(`[SalesServiceCartRepository] Adding to cart - userId: ${userId}, productId: ${productId}, quantity: ${quantity}, image: ${image}`);
             const salesServiceUrl = process.env.SALES_SERVICE_URL || 'http://localhost:3001';
             const response = await this.httpService.axiosRef.post(`${salesServiceUrl}/cart`, {
                 userId,
                 productId,
                 quantity,
+                image,
             });
             const cartData = response.data;
             console.log('[SalesServiceCartRepository] Item added to cart successfully:', JSON.stringify(cartData, null, 2));

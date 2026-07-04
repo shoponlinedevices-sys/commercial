@@ -15,6 +15,7 @@ export declare class CartController {
         userId: number;
         productId: number;
         quantity: number;
+        image?: string;
         cartLines?: any[];
     }): Promise<{
         cart: import("./cart.entity").CartEntity;

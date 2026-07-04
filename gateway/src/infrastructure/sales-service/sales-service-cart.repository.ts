@@ -160,15 +160,16 @@ export class SalesServiceCartRepository implements CartRepository {
     }
   }
 
-  async addToCart(userId: number, productId: number, quantity: number): Promise<Cart> {
+  async addToCart(userId: number, productId: number, quantity: number, image?: string): Promise<Cart> {
     try {
-      console.log(`[SalesServiceCartRepository] Adding to cart - userId: ${userId}, productId: ${productId}, quantity: ${quantity}`);
+      console.log(`[SalesServiceCartRepository] Adding to cart - userId: ${userId}, productId: ${productId}, quantity: ${quantity}, image: ${image}`);
       const salesServiceUrl = process.env.SALES_SERVICE_URL || 'http://localhost:3001';
 
       const response = await this.httpService.axiosRef.post(`${salesServiceUrl}/cart`, {
         userId,
         productId,
         quantity,
+        image,
       });
 
       const cartData = response.data;

@@ -72,6 +72,6 @@ __decorate([
     __metadata("design:type", Array)
 ], CartEntity.prototype, "cartLines", void 0);
 exports.CartEntity = CartEntity = __decorate([
-    (0, typeorm_1.Entity)('tbl_cart')
+    (0, typeorm_1.Entity)('cart')
 ], CartEntity);
 //# sourceMappingURL=cart.entity.js.map

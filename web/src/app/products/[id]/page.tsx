@@ -43,6 +43,7 @@ export default function ProductDetailPage() {
         userId: user!.id,
         productId: product.id,
         quantity: 1,
+        image: product.image,
       });
       alert('Product added to cart!');
     } catch (error) {

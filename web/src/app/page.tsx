@@ -74,8 +74,8 @@ export default function HomePage() {
     }).format(price);
   };
 
-  const handleAddToCart = (productId: number) => {
-    addToCart(productId);
+  const handleAddToCart = (productId: number, productImage?: string) => {
+    addToCart(productId, 1, productImage);
   };
 
   const loadProducts = async () => {
@@ -213,7 +213,7 @@ export default function HomePage() {
                       size="sm"
                       variant="outline"
                       className="text-xs"
-                      onClick={() => handleAddToCart(product.id)}
+                      onClick={() => handleAddToCart(product.id, product.image)}
                     >
                       Thêm vào giỏ
                     </Button>

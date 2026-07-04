@@ -65,7 +65,7 @@ export class CartController {
       }
 
       console.log('Controller: Calling cartService.addToCart');
-      const result = await this.cartService.addToCart(body.userId, body.productId, body.quantity);
+      const result = await this.cartService.addToCart(body.userId, body.productId, body.quantity, body.image);
       console.log('Controller: Cart created successfully:', JSON.stringify(result));
       return result;
     } catch (error) {

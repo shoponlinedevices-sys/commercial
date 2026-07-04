@@ -11,7 +11,7 @@ import {
 import { CartEntity } from './cart.entity';
 import { ProductEntity } from './product.entity';
 
-@Entity('tbl_cart_lines')
+@Entity('cart_lines')
 export class CartLineEntity {
   @PrimaryGeneratedColumn()
   id?: number;
@@ -35,6 +35,12 @@ export class CartLineEntity {
     default: '',
   })
   name: string = '';
+
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
+  image?: string;
 
   @Column({
     name: 'cart_id',

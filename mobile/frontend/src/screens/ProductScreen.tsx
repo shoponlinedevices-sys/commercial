@@ -347,6 +347,7 @@ const ProductScreen: React.FC<Props> = ({
         userId: Number(userInfo.id),
         productId: Number(product.id),
         quantity: Number(quantity),
+        image: product.image,
       };
 
       console.log('Frontend: Adding to cart with request:', JSON.stringify(cartRequest));

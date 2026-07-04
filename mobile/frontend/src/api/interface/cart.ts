@@ -26,5 +26,6 @@ export type IAddToCart = {
   userId: number;
   productId: number;
   quantity: number;
+  image?: string;
   cartLines?: ICartLine[];
 }

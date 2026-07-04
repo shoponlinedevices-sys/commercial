@@ -129,6 +129,9 @@ let OrderService = class OrderService {
             if (cartLine) {
                 const newQuantity = cartLine.quantity + (data.quantity || 0);
                 cartLine.quantity = isNaN(newQuantity) ? cartLine.quantity : newQuantity;
+                if (data.image) {
+                    cartLine.image = data.image;
+                }
             }
             else {
                 const validQuantity = data.quantity || 1;
@@ -139,7 +142,7 @@ let OrderService = class OrderService {
                     unitPrice: 0,
                     status: 1,
                     name: data.cartLines?.[0]?.name || 'Sản phẩm',
-                    image: data.cartLines?.[0]?.image || 'https://via.placeholder.com/150',
+                    image: data.image || data.cartLines?.[0]?.image || 'https://via.placeholder.com/150',
                 });
             }
             await this.cartLineRepository.save(cartLine);

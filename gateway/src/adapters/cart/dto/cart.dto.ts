@@ -45,6 +45,10 @@ export class AddToCartDto {
   quantity!: number;
 
   @IsOptional()
+  @IsString()
+  image?: string;
+
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CartLineDto)

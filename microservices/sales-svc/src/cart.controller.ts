@@ -25,6 +25,7 @@ export class CartController {
     userId: number;
     productId: number;
     quantity: number;
+    image?: string;
     cartLines?: any[];
   }) {
     return this.orderService.addToCart(body);

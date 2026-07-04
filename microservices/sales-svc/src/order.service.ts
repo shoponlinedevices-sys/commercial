@@ -135,6 +135,7 @@ export class OrderService {
     userId: number;
     productId: number;
     quantity: number;
+    image?: string;
     cartLines?: any[];
   }) {
     try {
@@ -159,6 +160,10 @@ export class OrderService {
       if (cartLine) {
         const newQuantity = cartLine.quantity + (data.quantity || 0);
         cartLine.quantity = isNaN(newQuantity) ? cartLine.quantity : newQuantity;
+        // Update image if provided
+        if (data.image) {
+          cartLine.image = data.image;
+        }
       } else {
         const validQuantity = data.quantity || 1;
         cartLine = this.cartLineRepository.create({
@@ -168,7 +173,7 @@ export class OrderService {
           unitPrice: 0, // Will be updated when product info is fetched
           status: 1,
           name: data.cartLines?.[0]?.name || 'Sản phẩm',
-          image: data.cartLines?.[0]?.image || 'https://via.placeholder.com/150',
+          image: data.image || data.cartLines?.[0]?.image || 'https://via.placeholder.com/150',
         });
       }
 

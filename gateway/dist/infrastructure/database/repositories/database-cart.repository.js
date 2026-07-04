@@ -104,6 +104,7 @@ let DatabaseCartRepository = class DatabaseCartRepository {
                             unitPrice: line.unitPrice.toString(),
                             totalPrice: (Number(line.unitPrice) * line.quantity).toString(),
                             name: line.name || product.name || 'Unknown Product',
+                            image: line.image || product.image,
                         });
                         const savedLine = await entityManager.save(entities_1.CartLineEntity, lineEntity);
                         console.log('Repository: Saved cart line with id:', savedLine.id);
@@ -132,6 +133,7 @@ let DatabaseCartRepository = class DatabaseCartRepository {
                         unitPrice: line.unitPrice.toString(),
                         totalPrice: (Number(line.unitPrice) * line.quantity).toString(),
                         name: line.name || product.name || 'Unknown Product',
+                        image: line.image || product.image,
                     });
                     lineEntities.push(lineEntity);
                 }
@@ -194,7 +196,7 @@ let DatabaseCartRepository = class DatabaseCartRepository {
             await entityManager.delete(entities_1.CartLineEntity, { cartId: cart.id });
         });
     }
-    async addToCart(userId, productId, quantity) {
+    async addToCart(userId, productId, quantity, image) {
         var _a;
         const product = await this.productRepo.findOne({ where: { id: productId } });
         if (!product) {
@@ -218,7 +220,8 @@ let DatabaseCartRepository = class DatabaseCartRepository {
                     status: 1,
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                    name: product.name
+                    name: product.name,
+                    image: image || product.image
                 }]
         });
     }

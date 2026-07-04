@@ -13,7 +13,7 @@ import { AccountEntity } from './account.entity';
 import { ProductEntity } from './product.entity';
 import { CartLineEntity } from './cart-line.entity';
 
-@Entity('tbl_cart')
+@Entity('cart')
 export class CartEntity {
   @PrimaryGeneratedColumn()
   id?: number;

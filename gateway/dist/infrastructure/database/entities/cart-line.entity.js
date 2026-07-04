@@ -48,6 +48,13 @@ __decorate([
 ], CartLineEntity.prototype, "name", void 0);
 __decorate([
     (0, typeorm_1.Column)({
+        type: 'text',
+        nullable: true,
+    }),
+    __metadata("design:type", String)
+], CartLineEntity.prototype, "image", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
         name: 'cart_id',
         type: 'int',
         nullable: true,
@@ -111,6 +118,6 @@ __decorate([
     __metadata("design:type", Date)
 ], CartLineEntity.prototype, "updatedAt", void 0);
 exports.CartLineEntity = CartLineEntity = __decorate([
-    (0, typeorm_1.Entity)('tbl_cart_lines')
+    (0, typeorm_1.Entity)('cart_lines')
 ], CartLineEntity);
 //# sourceMappingURL=cart-line.entity.js.map

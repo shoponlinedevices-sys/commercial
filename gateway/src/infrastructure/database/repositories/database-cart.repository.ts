@@ -127,6 +127,7 @@ export class DatabaseCartRepository implements CartRepository {
             unitPrice: line.unitPrice.toString(),
             totalPrice: (Number(line.unitPrice) * line.quantity).toString(),
             name: line.name || product.name || 'Unknown Product',
+            image: line.image || product.image,
           });
 
           const savedLine = await entityManager.save(CartLineEntity, lineEntity);
@@ -166,6 +167,7 @@ export class DatabaseCartRepository implements CartRepository {
           unitPrice: line.unitPrice.toString(),
           totalPrice: (Number(line.unitPrice) * line.quantity).toString(),
           name: line.name || product.name || 'Unknown Product',
+          image: line.image || product.image,
         });
         lineEntities.push(lineEntity);
       }
@@ -247,7 +249,7 @@ export class DatabaseCartRepository implements CartRepository {
     });
   }
 
-  async addToCart(userId: number, productId: number, quantity: number): Promise<Cart> {
+  async addToCart(userId: number, productId: number, quantity: number, image?: string): Promise<Cart> {
     // This should be implemented via microservice call to sales-svc
     // For now, delegate to create method as a temporary fix
     const product = await this.productRepo.findOne({ where: { id: productId } });
@@ -274,7 +276,8 @@ export class DatabaseCartRepository implements CartRepository {
         status: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
-        name: product.name
+        name: product.name,
+        image: image || product.image
       }]
     });
   }

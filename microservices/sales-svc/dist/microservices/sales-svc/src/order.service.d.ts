@@ -32,6 +32,7 @@ export declare class OrderService {
         userId: number;
         productId: number;
         quantity: number;
+        image?: string;
         cartLines?: any[];
     }): Promise<{
         cart: CartEntity;

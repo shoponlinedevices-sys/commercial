@@ -46,10 +46,10 @@ let CartService = class CartService {
             throw error;
         }
     }
-    async addToCart(userId, productId, quantity) {
-        console.log('Service: Adding to cart - userId:', userId, 'productId:', productId, 'quantity:', quantity);
+    async addToCart(userId, productId, quantity, image) {
+        console.log('Service: Adding to cart - userId:', userId, 'productId:', productId, 'quantity:', quantity, 'image:', image);
         try {
-            const result = await this.cartRepository.addToCart(userId, productId, quantity);
+            const result = await this.cartRepository.addToCart(userId, productId, quantity, image);
             console.log('Service: Item added to cart successfully:', JSON.stringify(result));
             return result;
         }
