@@ -29,9 +29,11 @@ let SalesServiceOrderRepository = class SalesServiceOrderRepository {
             productId: parseInt(line.productId, 10), quantity: line.quantity, unitPrice: line.unitPrice,
         })));
     }
-    async createOrder(userId, cartLines, fcmToken, customerEmail, customerName) {
+    async createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName) {
+        const calculatedTotal = cartLines.reduce((total, line) => total + Number(line.unitPrice || 0) * Number(line.quantity || 0), 0);
+        const orderTotal = Number.isFinite(totalAmount) && totalAmount > 0 ? totalAmount : calculatedTotal;
         const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.createOrder({
-            userId: userId.toString(), totalAmount: 0, orderLines: cartLines, fcmToken, customerEmail, customerName,
+            userId: userId.toString(), totalAmount: orderTotal, orderLines: cartLines, fcmToken, customerEmail, customerName,
         }));
         return this.toOrder(response.order);
     }

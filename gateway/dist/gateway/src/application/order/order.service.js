@@ -24,8 +24,8 @@ let OrderService = class OrderService {
     onModuleInit() {
         this.notificationService = this.notificationClient.getService('NotificationService');
     }
-    async createOrder(userId, cartLines, fcmToken, customerEmail, customerName) {
-        const order = await this.orderRepository.createOrder(userId, cartLines, fcmToken, customerEmail, customerName);
+    async createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName) {
+        const order = await this.orderRepository.createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName);
         if (fcmToken) {
             try {
                 await (0, rxjs_1.firstValueFrom)(this.notificationService.sendNotification({

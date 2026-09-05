@@ -22,8 +22,8 @@ export class OrderService implements OnModuleInit {
     this.notificationService = this.notificationClient.getService<NotificationGrpcService>('NotificationService');
   }
 
-  async createOrder(userId: number, cartLines: any[], fcmToken?: string, customerEmail?: string, customerName?: string): Promise<Order> {
-    const order = await this.orderRepository.createOrder(userId, cartLines, fcmToken, customerEmail, customerName);
+  async createOrder(userId: number, totalAmount: number, cartLines: any[], fcmToken?: string, customerEmail?: string, customerName?: string): Promise<Order> {
+    const order = await this.orderRepository.createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName);
 
     // Send notification if FCM token is provided
     if (fcmToken) {

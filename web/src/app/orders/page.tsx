@@ -76,7 +76,14 @@ export default function OrdersPage() {
             </Card>
           ) : (
             <div className="space-y-4">
-              {orders.map((order) => (
+              {orders.map((order) => {
+                const lineTotal = (order.orderLines || []).reduce(
+                  (total: number, line: any) => total + Number(line.unitPrice || 0) * Number(line.quantity || 0),
+                  0,
+                );
+                const displayedTotal = order.totalAmount || lineTotal;
+
+                return (
                 <Card key={order.id}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -90,7 +97,7 @@ export default function OrdersPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Tổng tiền:</span>
-                        <span className="font-semibold">{formatVnd(order.totalAmount || 0)}</span>
+                        <span className="font-semibold">{formatVnd(displayedTotal)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Ngày đặt:</span>
@@ -117,7 +124,8 @@ export default function OrdersPage() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

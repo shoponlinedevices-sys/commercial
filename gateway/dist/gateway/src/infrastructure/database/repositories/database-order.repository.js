@@ -24,7 +24,7 @@ let DatabaseOrderRepository = class DatabaseOrderRepository {
         this.cartLineRepo = this.dataSource.getRepository(entities_1.CartLineEntity);
         this.productRepo = this.dataSource.getRepository(entities_1.ProductEntity);
     }
-    async createOrder(userId, cartLines, fcmToken) {
+    async createOrder(userId, _totalAmount, cartLines, fcmToken, _customerEmail, _customerName) {
         return this.dataSource.transaction(async (entityManager) => {
             let totalPrice = 0;
             for (const line of cartLines) {

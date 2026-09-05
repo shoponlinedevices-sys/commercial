@@ -78,10 +78,18 @@ let OrderService = class OrderService {
         });
     }
     async createOrder(data) {
+        const calculatedTotal = data.orderLines.reduce((total, line) => {
+            const unitPrice = Number(line.unitPrice);
+            const quantity = Number(line.quantity);
+            return Number.isFinite(unitPrice) && Number.isFinite(quantity)
+                ? total + unitPrice * quantity
+                : total;
+        }, 0);
+        const totalAmount = calculatedTotal > 0 ? calculatedTotal : Number(data.totalAmount) || 0;
         const order = await this.dataSource.transaction(async (manager) => {
             const order = manager.create(order_entity_1.OrderEntity, {
                 userId: data.userId,
-                totalAmount: data.totalAmount,
+                totalAmount,
                 shippingAddress: data.shippingAddress,
                 fcmToken: data.fcmToken,
                 status: 'pending',

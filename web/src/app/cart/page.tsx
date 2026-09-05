@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -19,6 +19,8 @@ export default function CartPage() {
   const { refreshCartCount } = useCart();
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isOrdering, setIsOrdering] = useState(false);
+  const orderingInProgress = useRef(false);
 
   useEffect(() => {
     loadCart();
@@ -87,10 +89,15 @@ export default function CartPage() {
   };
 
   const checkout = async () => {
+    if (orderingInProgress.current) return;
+
     if (!cart?.cartLines || cart.cartLines.length === 0) {
       alert('Giỏ hàng đang trống');
       return;
     }
+
+    orderingInProgress.current = true;
+    setIsOrdering(true);
 
     try {
       const { orderService } = await import('@/services/order.service');
@@ -112,6 +119,9 @@ export default function CartPage() {
     } catch (error) {
       console.error('Error creating order:', error);
       alert('Không thể tạo đơn hàng');
+    } finally {
+      orderingInProgress.current = false;
+      setIsOrdering(false);
     }
   };
 
@@ -222,8 +232,8 @@ export default function CartPage() {
                 <Button variant="outline" onClick={clearCart} className="flex-1">
                   Xóa giỏ hàng
                 </Button>
-                <Button onClick={checkout} className="flex-1">
-                  Đặt hàng
+                <Button onClick={checkout} disabled={isOrdering} className="flex-1">
+                  {isOrdering ? 'Đang đặt hàng...' : 'Đặt hàng'}
                 </Button>
               </div>
             </CardFooter>

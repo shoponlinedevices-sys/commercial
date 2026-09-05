@@ -16,8 +16,8 @@ export class OrderController {
   @ApiResponse({ status: 201, description: 'Order created successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async createOrder(@Body() body: { userId: number; cartLines: any[]; fcmToken?: string; customerEmail?: string; customerName?: string }) {
-    const order = await this.orderService.createOrder(body.userId, body.cartLines, body.fcmToken, body.customerEmail, body.customerName);
+  async createOrder(@Body() body: { userId: number; totalAmount: number; cartLines: any[]; fcmToken?: string; customerEmail?: string; customerName?: string }) {
+    const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName);
     return order;
   }
 

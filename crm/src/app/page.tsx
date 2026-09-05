@@ -8,23 +8,31 @@ import {
 import { crmApi, FeatureSetting, GatewayOrder, GatewayProduct, UserProfile } from '@/lib/crm-api';
 
 type Status = 'Mới' | 'Đang xử lý' | 'Đã giao' | 'Đã hủy';
-type Order = { id: string; userId: string | number; customer: string; email: string; items: number; total: number; status: Status; date: string; initials: string; tone: string };
+type Order = { id: string; userId: string | number; customer: string; email: string; items: number; total: number; status: Status; createdAt: string; date: string; initials: string; tone: string };
 type PageType = 'dashboard' | 'orders' | 'customers' | 'products' | 'settings' | 'help';
 
 const formatVnd = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
 const statusToLabel: Record<string, Status> = { pending: 'Mới', processing: 'Đang xử lý', completed: 'Đã giao', delivered: 'Đã giao', cancelled: 'Đã hủy' };
-const labelToStatus: Record<Status, string> = { 'Mới': 'pending', 'Đang xử lý': 'processing', 'Đã giao': 'completed', 'Đã hủy': 'cancelled' };
+const labelToStatus: Record<Status, string> = { 'Mới': 'pending', 'Đang xử lý': 'processing', 'Đã giao': 'delivered', 'Đã hủy': 'cancelled' };
+const getOrderDateParts = (createdAt: string) => {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: 'numeric' }).formatToParts(new Date(createdAt));
+  return { year: parts.find((part) => part.type === 'year')?.value || '', month: parts.find((part) => part.type === 'month')?.value || '' };
+};
 const mapOrder = (order: GatewayOrder, customerProfile?: UserProfile): Order => {
   const customer = customerProfile?.full_name || customerProfile?.username || 'Khách hàng chưa cập nhật tên';
-  return { id: `#DH-${order.id}`, userId: order.userId, customer, email: customerProfile?.email || 'Chưa có email', items: order.orderLines?.reduce((sum, line) => sum + line.quantity, 0) || 0, total: Number(order.totalAmount), status: statusToLabel[order.status] || 'Mới', date: new Date(order.createdAt).toLocaleString('vi-VN'), initials: customer.split(' ').map((part) => part[0]).slice(-2).join('').toUpperCase(), tone: 'blue' };
+  const lineTotal = order.orderLines?.reduce((sum, line) => sum + Number(line.unitPrice) * line.quantity, 0) || 0;
+  const total = Number(order.totalAmount) || lineTotal;
+  return { id: `#DH-${order.id}`, userId: order.userId, customer, email: customerProfile?.email || 'Chưa có email', items: order.orderLines?.reduce((sum, line) => sum + line.quantity, 0) || 0, total, status: statusToLabel[order.status] || 'Mới', createdAt: order.createdAt, date: new Date(order.createdAt).toLocaleString('vi-VN'), initials: customer.split(' ').map((part) => part[0]).slice(-2).join('').toUpperCase(), tone: 'blue' };
 };
 
 export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [orders, setOrders] = useState<Order[]>([]);
-  const [todayRevenueOrders, setTodayRevenueOrders] = useState<Order[]>([]);
+  const [monthlyRevenueOrders, setMonthlyRevenueOrders] = useState<Order[]>([]);
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'Tất cả' | Status>('Tất cả');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [notice, setNotice] = useState('');
   const [token, setToken] = useState<string | null>(null);
@@ -55,13 +63,16 @@ export default function Dashboard() {
     setLoading(true);
     setError('');
     const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
-    const startOfDay = new Date(`${today}T00:00:00+07:00`).toISOString();
-    const startOfNextDay = new Date(new Date(`${today}T00:00:00+07:00`).getTime() + 24 * 60 * 60 * 1000).toISOString();
+    const startOfMonthDate = new Date(`${today.slice(0, 7)}-01T00:00:00+07:00`);
+    const startOfNextMonthDate = new Date(startOfMonthDate);
+    startOfNextMonthDate.setUTCMonth(startOfNextMonthDate.getUTCMonth() + 1);
+    const startOfMonth = startOfMonthDate.toISOString();
+    const startOfNextMonth = startOfNextMonthDate.toISOString();
     Promise.all([
       crmApi.getOrders(token),
-      crmApi.getOrders(token, { from: startOfDay, to: startOfNextDay, statuses: ['completed', 'delivered'] }),
+      crmApi.getOrders(token, { from: startOfMonth, to: startOfNextMonth, statuses: ['completed', 'delivered'] }),
     ]).then(([data, revenueData]) => {
-      setTodayRevenueOrders(revenueData.map((order) => mapOrder(order, customerProfiles[String(order.userId)])));
+      setMonthlyRevenueOrders(revenueData.map((order) => mapOrder(order, customerProfiles[String(order.userId)])));
       setOrders(data.map((order) => mapOrder(order, customerProfiles[String(order.userId)])));
       const userIds = Array.from(new Set(data.map((order) => String(order.userId))));
       return Promise.all(userIds.map(async (userId) => {
@@ -85,8 +96,13 @@ export default function Dashboard() {
 
   const filteredOrders = useMemo(() => orders.filter((order) => {
     const matchesQuery = `${order.id} ${order.customer} ${order.email}`.toLowerCase().includes(query.toLowerCase());
-    return matchesQuery && (status === 'Tất cả' || order.status === status);
-  }), [orders, query, status]);
+    const orderDate = getOrderDateParts(order.createdAt);
+    const matchesMonth = !selectedMonth || orderDate.month === selectedMonth;
+    const matchesYear = !selectedYear || orderDate.year === selectedYear;
+    return matchesQuery && (status === 'Tất cả' || order.status === status) && matchesMonth && matchesYear;
+  }), [orders, query, status, selectedMonth, selectedYear]);
+
+  const availableYears = useMemo(() => Array.from(new Set(orders.map((order) => getOrderDateParts(order.createdAt).year))).sort((first, second) => Number(second) - Number(first)), [orders]);
 
   const totalOrderPages = Math.max(1, Math.ceil(filteredOrders.length / ordersPerPage));
   const displayedOrders = currentPage === 'dashboard'
@@ -95,14 +111,14 @@ export default function Dashboard() {
 
   useEffect(() => {
     setOrderPage(1);
-  }, [query, status, currentPage]);
+  }, [query, status, selectedMonth, selectedYear, currentPage]);
 
   const stats = useMemo(() => {
-    const revenue = todayRevenueOrders.reduce((sum, order) => sum + order.total, 0);
+    const revenue = monthlyRevenueOrders.reduce((sum, order) => sum + order.total, 0);
     const pending = orders.filter(o => o.status === 'Mới').length;
     const totalOrders = orders.length;
-    return { revenue, pending, todayOrders: todayRevenueOrders.length, totalOrders };
-  }, [orders, todayRevenueOrders]);
+    return { revenue, pending, monthlyRevenueOrders: monthlyRevenueOrders.length, totalOrders };
+  }, [orders, monthlyRevenueOrders]);
 
   const customers = useMemo(() => Array.from(new Map(orders.map((order) => [order.customer, order])).values()), [orders]);
   const navigate = (page: PageType) => {
@@ -212,14 +228,14 @@ export default function Dashboard() {
           {currentPage === 'dashboard' && (
             <>
               <div className="intro"><div><p className="eyebrow">{new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase()}</p><h1>Chào buổi sáng, {user?.username || 'Thảo'} <span>✦</span></h1><p className="subtitle">Đây là những gì đang diễn ra với cửa hàng hôm nay.</p></div><button className="primary-button" onClick={() => setShowForm(true)}><Plus size={18} /> Tạo đơn hàng</button></div>
-              <div className="stats-grid"><Stat icon={<TrendingUp size={19} />} label="Doanh thu hôm nay" value={formatVnd(stats.revenue)} trend={stats.revenue > 0 ? '+' + stats.todayOrders + ' đơn' : '—'} hint="từ đơn hàng" tone="orange" /><Stat icon={<ClipboardList size={19} />} label="Tổng đơn hàng" value={String(stats.totalOrders)} trend={stats.totalOrders > 0 ? '+' + stats.todayOrders : '0'} hint="từ dữ liệu thực" tone="blue" /><Stat icon={<Clock3 size={19} />} label="Chờ xử lý" value={String(stats.pending).padStart(2, '0')} trend={stats.pending > 0 ? 'Cần chú ý' : 'Không có'} hint={stats.pending > 0 ? 'đơn hàng mới' : 'tất cả đã xử lý'} tone={stats.pending > 0 ? 'yellow' : 'green'} /><Stat icon={<Users size={19} />} label="Khách hàng riêng biệt" value={String(new Set(orders.map(o => o.customer)).size)} trend={stats.totalOrders > 0 ? 'Có dữ liệu' : '—'} hint="từ đơn hàng" tone="green" /></div>
+              <div className="stats-grid"><Stat icon={<TrendingUp size={19} />} label="Doanh thu tháng này" value={formatVnd(stats.revenue)} trend={stats.revenue > 0 ? stats.monthlyRevenueOrders + ' đơn đã giao' : '—'} hint="đơn đã giao hoặc hoàn thành" tone="orange" /><Stat icon={<ClipboardList size={19} />} label="Tổng đơn hàng" value={String(stats.totalOrders)} trend={stats.totalOrders > 0 ? '+' + stats.monthlyRevenueOrders : '0'} hint="từ dữ liệu thực" tone="blue" /><Stat icon={<Clock3 size={19} />} label="Chờ xử lý" value={String(stats.pending).padStart(2, '0')} trend={stats.pending > 0 ? 'Cần chú ý' : 'Không có'} hint={stats.pending > 0 ? 'đơn hàng mới' : 'tất cả đã xử lý'} tone={stats.pending > 0 ? 'yellow' : 'green'} /><Stat icon={<Users size={19} />} label="Khách hàng riêng biệt" value={String(new Set(orders.map(o => o.customer)).size)} trend={stats.totalOrders > 0 ? 'Có dữ liệu' : '—'} hint="từ đơn hàng" tone="green" /></div>
             </>
           )}
 
           {(currentPage === 'dashboard' || currentPage === 'orders') && (
             <section className="orders-section"><div className="section-heading"><div><h2>{currentPage === 'dashboard' ? 'Đơn hàng gần đây' : 'Quản lý đơn hàng'}</h2><p>{currentPage === 'dashboard' ? 'Theo dõi và xử lý các đơn hàng mới nhất' : 'Tìm kiếm, lọc và cập nhật trạng thái đơn hàng'}</p></div>{currentPage === 'dashboard' ? <button className="text-button" onClick={() => navigate('orders')}>Xem tất cả <span>→</span></button> : <button className="primary-button" onClick={() => setShowForm(true)}><Plus size={18} /> Tạo đơn hàng</button>}</div>
-                <div className="toolbar"><div className="search-field"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo mã đơn, tên khách hàng..." /></div><select value={status} onChange={(event) => setStatus(event.target.value as 'Tất cả' | Status)} aria-label="Lọc trạng thái"><option>Tất cả</option><option>Mới</option><option>Đang xử lý</option><option>Đã giao</option><option>Đã hủy</option></select><button className="filter-button" onClick={() => { setQuery(''); setStatus('Tất cả'); }}><span>⌘</span> Đặt lại</button></div>
-                <div className="table-wrap"><table><thead><tr><th>MÃ ĐƠN</th><th>KHÁCH HÀNG</th><th>SẢN PHẨM</th><th>TỔNG TIỀN</th><th>TRẠNG THÁI</th><th>THỜI GIAN</th><th /></tr></thead><tbody>{loading && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Đang tải dữ liệu...</td></tr>}{error && error.includes('Unauthorized') && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px', color: 'red' }}>⚠ Lỗi xác thực. Hãy <button onClick={logout} style={{ textDecoration: 'underline', cursor: 'pointer', background: 'none', border: 'none', color: 'red', fontWeight: 'bold' }}>đăng nhập lại</button></td></tr>}{error && !error.includes('Unauthorized') && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px', color: 'red' }}>Lỗi: {error}</td></tr>}{!loading && !error && displayedOrders.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Không tìm thấy đơn hàng nào.</td></tr>}{displayedOrders.map((order) => <tr key={order.id}><td><strong className="order-id">{order.id}</strong></td><td><div className="customer"><div className={`avatar avatar-${order.tone}`}>{order.initials}</div><div><strong>{order.customer}</strong><small>{order.email}</small></div></div></td><td>{order.items} sản phẩm</td><td><strong>{formatVnd(order.total)}</strong></td><td><select className={`status status-${order.status}`} value={order.status} onChange={(event) => changeStatus(order.id, event.target.value as Status)} aria-label={`Trạng thái ${order.id}`}><option>Mới</option><option>Đang xử lý</option><option>Đã giao</option><option>Đã hủy</option></select></td><td className="date-cell">{order.date}</td><td><button className="more-button" aria-label={`Tùy chọn ${order.id}`}>•••</button></td></tr>)}</tbody></table></div>
+                <div className="toolbar"><div className="search-field"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo mã đơn, tên khách hàng..." /></div><select value={status} onChange={(event) => setStatus(event.target.value as 'Tất cả' | Status)} aria-label="Lọc trạng thái"><option>Tất cả</option><option>Mới</option><option>Đang xử lý</option><option>Đã giao</option><option>Đã hủy</option></select><select value={selectedMonth} onChange={(event) => setSelectedMonth(event.target.value)} aria-label="Lọc theo tháng"><option value="">Tất cả tháng</option>{Array.from({ length: 12 }, (_, index) => String(index + 1)).map((month) => <option key={month} value={month}>Tháng {month}</option>)}</select><select value={selectedYear} onChange={(event) => setSelectedYear(event.target.value)} aria-label="Lọc theo năm"><option value="">Tất cả năm</option>{availableYears.map((year) => <option key={year} value={year}>{year}</option>)}</select><button className="filter-button" onClick={() => { setQuery(''); setStatus('Tất cả'); setSelectedMonth(''); setSelectedYear(''); }}><span>⌘</span> Đặt lại</button></div>
+                <div className="table-wrap"><table><thead><tr><th>MÃ ĐƠN</th><th>KHÁCH HÀNG</th><th>SẢN PHẨM</th><th>TỔNG TIỀN</th><th>TRẠNG THÁI</th><th>THỜI GIAN</th><th /></tr></thead><tbody>{loading && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Đang tải dữ liệu...</td></tr>}{error && error.includes('Unauthorized') && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px', color: 'red' }}>⚠ Lỗi xác thực. Hãy <button onClick={logout} style={{ textDecoration: 'underline', cursor: 'pointer', background: 'none', border: 'none', color: 'red', fontWeight: 'bold' }}>đăng nhập lại</button></td></tr>}{error && !error.includes('Unauthorized') && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px', color: 'red' }}>Lỗi: {error}</td></tr>}{!loading && !error && displayedOrders.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Không tìm thấy đơn hàng nào.</td></tr>}{displayedOrders.map((order) => <tr key={order.id}><td><strong className="order-id">{order.id}</strong></td><td><div className="customer"><div className={`avatar avatar-${order.tone}`}>{order.initials}</div><div><strong>{order.customer}</strong><small>{order.email}</small></div></div></td><td>{order.items} sản phẩm</td><td><strong>{formatVnd(order.total)}</strong></td><td><select className={`status status-${order.status}`} value={order.status} onChange={(event) => changeStatus(order.id, event.target.value as Status)} aria-label={`Trạng thái ${order.id}`}><option>Mới</option><option>Đang xử lý</option><option>Đã giao</option><option>Đã hủy</option></select></td><td className="date-cell">{order.date}</td><td>{order.status === 'Mới' ? <button className="deliver-button" onClick={() => changeStatus(order.id, 'Đã giao')} aria-label={`Đánh dấu đã giao ${order.id}`} title="Đánh dấu đã giao"><PackageCheck size={17} /></button> : <button className="more-button" aria-label={`Tùy chọn ${order.id}`}>•••</button>}</td></tr>)}</tbody></table></div>
                 {currentPage === 'orders' && <div className="pagination"><span>{filteredOrders.length === 0 ? '0' : (orderPage - 1) * ordersPerPage + 1}-{Math.min(orderPage * ordersPerPage, filteredOrders.length)} trên {filteredOrders.length} đơn hàng</span><div><button aria-label="Trang trước" disabled={orderPage === 1} onClick={() => setOrderPage((page) => Math.max(1, page - 1))}><ChevronLeft size={16} /></button><strong>Trang {orderPage} / {totalOrderPages}</strong><button aria-label="Trang sau" disabled={orderPage === totalOrderPages} onClick={() => setOrderPage((page) => Math.min(totalOrderPages, page + 1))}><ChevronRight size={16} /></button></div></div>}
             </section>
           )}

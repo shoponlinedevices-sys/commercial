@@ -16,7 +16,7 @@ export class DatabaseOrderRepository implements OrderRepository {
     this.productRepo = this.dataSource.getRepository(ProductEntity);
   }
 
-  async createOrder(userId: number, cartLines: any[], fcmToken?: string): Promise<Order> {
+  async createOrder(userId: number, _totalAmount: number, cartLines: any[], fcmToken?: string, _customerEmail?: string, _customerName?: string): Promise<Order> {
     return this.dataSource.transaction(async (entityManager: any) => {
       // Calculate total price
       let totalPrice = 0;

@@ -22,7 +22,7 @@ let OrderController = class OrderController {
         this.orderService = orderService;
     }
     async createOrder(body) {
-        const order = await this.orderService.createOrder(body.userId, body.cartLines, body.fcmToken, body.customerEmail, body.customerName);
+        const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName);
         return order;
     }
     async getAllOrders(from, to, status) {
