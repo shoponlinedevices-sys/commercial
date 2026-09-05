@@ -9,10 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GrpcClientsModule = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
-const path_1 = require("path");
 const email_provider_1 = require("./providers/email.provider");
 const notification_provider_1 = require("./providers/notification.provider");
 const contacts_grpc_client_1 = require("./contacts-grpc.client");
+const grpc_path_1 = require("./grpc-path");
 let GrpcClientsModule = class GrpcClientsModule {
 };
 exports.GrpcClientsModule = GrpcClientsModule;
@@ -26,7 +26,7 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                     transport: microservices_1.Transport.GRPC,
                     options: {
                         package: 'notification',
-                        protoPath: (0, path_1.join)(__dirname, '../../../../packages/contracts/proto/notification.proto'),
+                        protoPath: (0, grpc_path_1.contractsProtoPath)('notification.proto'),
                         url: process.env.NOTIFICATION_GRPC_URL || 'localhost:50051',
                     },
                 },
@@ -35,7 +35,7 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                     transport: microservices_1.Transport.GRPC,
                     options: {
                         package: 'email',
-                        protoPath: (0, path_1.join)(__dirname, '../../../../packages/contracts/proto/email.proto'),
+                        protoPath: (0, grpc_path_1.contractsProtoPath)('email.proto'),
                         url: process.env.EMAIL_GRPC_URL || 'localhost:50056',
                     },
                 },
@@ -44,7 +44,7 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                     transport: microservices_1.Transport.GRPC,
                     options: {
                         package: 'product',
-                        protoPath: (0, path_1.join)(__dirname, '../../../../packages/contracts/proto/product.proto'),
+                        protoPath: (0, grpc_path_1.contractsProtoPath)('product.proto'),
                         url: process.env.PRODUCTS_GRPC_URL || 'localhost:50053',
                     },
                 },
@@ -53,7 +53,7 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                     transport: microservices_1.Transport.GRPC,
                     options: {
                         package: 'contacts',
-                        protoPath: (0, path_1.join)(__dirname, '../../../../packages/contracts/proto/contacts.proto'),
+                        protoPath: (0, grpc_path_1.contractsProtoPath)('contacts.proto'),
                         url: process.env.CONTACTS_GRPC_URL || 'localhost:50054',
                     },
                 },
@@ -62,7 +62,7 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                     transport: microservices_1.Transport.GRPC,
                     options: {
                         package: 'auth',
-                        protoPath: (0, path_1.join)(__dirname, '../../../../packages/contracts/proto/auth.proto'),
+                        protoPath: (0, grpc_path_1.contractsProtoPath)('auth.proto'),
                         url: process.env.CONTACTS_GRPC_URL || 'localhost:50054',
                         loader: { keepCase: true },
                     },
@@ -72,7 +72,7 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                     transport: microservices_1.Transport.GRPC,
                     options: {
                         package: 'orders',
-                        protoPath: (0, path_1.join)(__dirname, '../../../../packages/contracts/proto/orders.proto'),
+                        protoPath: (0, grpc_path_1.contractsProtoPath)('orders.proto'),
                         url: process.env.SALES_GRPC_URL || 'localhost:50055',
                     },
                 },
@@ -81,14 +81,14 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                     transport: microservices_1.Transport.GRPC,
                     options: {
                         package: 'feature_settings',
-                        protoPath: (0, path_1.join)(__dirname, '../../../../packages/contracts/proto/feature-settings.proto'),
+                        protoPath: (0, grpc_path_1.contractsProtoPath)('feature-settings.proto'),
                         url: process.env.SALES_GRPC_URL || 'localhost:50055',
                     },
                 },
             ]),
         ],
         providers: [contacts_grpc_client_1.ContactsGrpcClient, notification_provider_1.NotificationProvider, email_provider_1.EmailProvider],
-        exports: [contacts_grpc_client_1.ContactsGrpcClient, notification_provider_1.NotificationProvider, email_provider_1.EmailProvider],
+        exports: [microservices_1.ClientsModule, contacts_grpc_client_1.ContactsGrpcClient, notification_provider_1.NotificationProvider, email_provider_1.EmailProvider],
     })
 ], GrpcClientsModule);
 //# sourceMappingURL=grpc-clients.module.js.map

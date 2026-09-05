@@ -1,9 +1,9 @@
 import { Global, Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
 import { EmailProvider } from './providers/email.provider';
 import { NotificationProvider } from './providers/notification.provider';
 import { ContactsGrpcClient } from './contacts-grpc.client';
+import { contractsProtoPath } from './grpc-path';
 
 @Global()
 @Module({
@@ -14,7 +14,7 @@ import { ContactsGrpcClient } from './contacts-grpc.client';
         transport: Transport.GRPC,
         options: {
           package: 'notification',
-          protoPath: join(__dirname, '../../../../packages/contracts/proto/notification.proto'),
+          protoPath: contractsProtoPath('notification.proto'),
           url: process.env.NOTIFICATION_GRPC_URL || 'localhost:50051',
         },
       },
@@ -23,7 +23,7 @@ import { ContactsGrpcClient } from './contacts-grpc.client';
         transport: Transport.GRPC,
         options: {
           package: 'email',
-          protoPath: join(__dirname, '../../../../packages/contracts/proto/email.proto'),
+          protoPath: contractsProtoPath('email.proto'),
           url: process.env.EMAIL_GRPC_URL || 'localhost:50056',
         },
       },
@@ -32,7 +32,7 @@ import { ContactsGrpcClient } from './contacts-grpc.client';
         transport: Transport.GRPC,
         options: {
           package: 'product',
-          protoPath: join(__dirname, '../../../../packages/contracts/proto/product.proto'),
+          protoPath: contractsProtoPath('product.proto'),
           url: process.env.PRODUCTS_GRPC_URL || 'localhost:50053',
         },
       },
@@ -41,7 +41,7 @@ import { ContactsGrpcClient } from './contacts-grpc.client';
         transport: Transport.GRPC,
         options: {
           package: 'contacts',
-          protoPath: join(__dirname, '../../../../packages/contracts/proto/contacts.proto'),
+          protoPath: contractsProtoPath('contacts.proto'),
           url: process.env.CONTACTS_GRPC_URL || 'localhost:50054',
         },
       },
@@ -50,7 +50,7 @@ import { ContactsGrpcClient } from './contacts-grpc.client';
         transport: Transport.GRPC,
         options: {
           package: 'auth',
-          protoPath: join(__dirname, '../../../../packages/contracts/proto/auth.proto'),
+          protoPath: contractsProtoPath('auth.proto'),
           url: process.env.CONTACTS_GRPC_URL || 'localhost:50054',
           loader: { keepCase: true },
         },
@@ -60,7 +60,7 @@ import { ContactsGrpcClient } from './contacts-grpc.client';
         transport: Transport.GRPC,
         options: {
           package: 'orders',
-          protoPath: join(__dirname, '../../../../packages/contracts/proto/orders.proto'),
+          protoPath: contractsProtoPath('orders.proto'),
           url: process.env.SALES_GRPC_URL || 'localhost:50055',
         },
       },
@@ -69,13 +69,13 @@ import { ContactsGrpcClient } from './contacts-grpc.client';
         transport: Transport.GRPC,
         options: {
           package: 'feature_settings',
-          protoPath: join(__dirname, '../../../../packages/contracts/proto/feature-settings.proto'),
+          protoPath: contractsProtoPath('feature-settings.proto'),
           url: process.env.SALES_GRPC_URL || 'localhost:50055',
         },
       },
     ]),
   ],
   providers: [ContactsGrpcClient, NotificationProvider, EmailProvider],
-  exports: [ContactsGrpcClient, NotificationProvider, EmailProvider],
+  exports: [ClientsModule, ContactsGrpcClient, NotificationProvider, EmailProvider],
 })
 export class GrpcClientsModule {}

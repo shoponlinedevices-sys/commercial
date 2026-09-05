@@ -19,7 +19,7 @@ import { Cart } from '../../domain/cart/cart.entity';
           port: Number(process.env.DB_PORT || 3306),
           username: process.env.DB_USERNAME || 'root',
           password: process.env.DB_PASSWORD || '',
-          database: process.env.DB_DATABASE || 'commercial',
+          database: process.env.DB_NAME || process.env.DB_DATABASE || 'commercial',
           entities: [AccountEntity, ProductEntity, CartEntity, CartLineEntity, OrderEntity, NotificationEntity, DeliveryAddressEntity, PaymentMethodEntity],
           synchronize: false,
           logging: true,

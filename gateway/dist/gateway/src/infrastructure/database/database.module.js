@@ -30,7 +30,7 @@ exports.DatabaseModule = DatabaseModule = __decorate([
                         port: Number(process.env.DB_PORT || 3306),
                         username: process.env.DB_USERNAME || 'root',
                         password: process.env.DB_PASSWORD || '',
-                        database: process.env.DB_DATABASE || 'commercial',
+                        database: process.env.DB_NAME || process.env.DB_DATABASE || 'commercial',
                         entities: [account_entity_1.AccountEntity, product_entity_1.ProductEntity, entities_1.CartEntity, entities_1.CartLineEntity, entities_1.OrderEntity, notification_entity_1.NotificationEntity, delivery_address_entity_1.DeliveryAddressEntity, payment_method_entity_1.PaymentMethodEntity],
                         synchronize: false,
                         logging: true,

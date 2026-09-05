@@ -25,9 +25,9 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
-  await app.listen(process.env.PORT || 3003);
+  await app.listen(process.env.PORT || 3010);
   
-  console.log(`Email Service running on HTTP port ${process.env.PORT || 3003}`);
+  console.log(`Email Service running on HTTP port ${process.env.PORT || 3010}`);
   console.log(`Email Service gRPC running on port ${process.env.GRPC_PORT || 50056}`);
 }
 

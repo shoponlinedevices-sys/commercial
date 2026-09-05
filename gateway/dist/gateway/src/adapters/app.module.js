@@ -21,6 +21,7 @@ const payment_method_module_1 = require("./payment-method/payment-method.module"
 const email_module_1 = require("./email/email.module");
 const feature_settings_module_1 = require("./feature-settings/feature-settings.module");
 const grpc_clients_module_1 = require("../infrastructure/grpc/grpc-clients.module");
+const identity_module_1 = require("./identity/identity.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -31,7 +32,7 @@ exports.AppModule = AppModule = __decorate([
                 isGlobal: true,
                 envFilePath: '.env',
             }),
-            grpc_clients_module_1.GrpcClientsModule, cart_module_1.CartModule, product_module_1.ProductModule, auth_module_1.AuthModule, ads_module_1.AdsModule, order_module_1.OrderModule, notification_module_1.NotificationModule, user_profile_module_1.UserProfileModule, delivery_address_module_1.DeliveryAddressModule, payment_method_module_1.PaymentMethodModule, email_module_1.EmailModule, feature_settings_module_1.FeatureSettingsModule
+            grpc_clients_module_1.GrpcClientsModule, identity_module_1.IdentityModule, cart_module_1.CartModule, product_module_1.ProductModule, auth_module_1.AuthModule, ads_module_1.AdsModule, order_module_1.OrderModule, notification_module_1.NotificationModule, user_profile_module_1.UserProfileModule, delivery_address_module_1.DeliveryAddressModule, payment_method_module_1.PaymentMethodModule, email_module_1.EmailModule, feature_settings_module_1.FeatureSettingsModule
         ],
     })
 ], AppModule);

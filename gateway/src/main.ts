@@ -20,9 +20,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(4000, '0.0.0.0');
+  const port = Number(process.env.GATEWAY_PORT || process.env.PORT || 4000);
+  await app.listen(port, '0.0.0.0');
 
-  console.log('Backend running on port 4000');
-  console.log('Swagger documentation available at http://localhost:4000/api');
+  console.log(`Backend running on port ${port}`);
+  console.log(`Swagger documentation available at http://localhost:${port}/api`);
 }
 bootstrap();
