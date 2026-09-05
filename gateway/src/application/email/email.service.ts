@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { EmailEntity } from '../../infrastructure/database/entities/email.entity';
-import { EmailProvider } from '../../infra/provider/email-provider';
+import { EmailProvider } from '../../infrastructure/grpc/providers/email.provider';
 
 @Injectable()
 export class EmailService {

@@ -21,6 +21,13 @@ export class OrderController {
     return order;
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  @ApiOperation({ summary: 'Get all orders for CRM' })
+  async getAllOrders() {
+    return this.orderService.findAll();
+  }
+
   // @UseGuards(JwtAuthGuard)
   @Get('user/:userId')
   @ApiOperation({ summary: 'Get orders by user ID' })
@@ -31,5 +38,12 @@ export class OrderController {
     const parsedUserId = parseInt(userId, 10);
     console.log(`[OrderController] Parsed userId: ${parsedUserId}`);
     return this.orderService.findByUserId(parsedUserId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/status')
+  @ApiOperation({ summary: 'Update order status' })
+  async updateOrderStatus(@Param('id') id: string, @Body() body: { status: string }) {
+    return this.orderService.updateStatus(id, body.status);
   }
 }

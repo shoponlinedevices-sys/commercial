@@ -11,6 +11,7 @@ export declare class OrderService {
     private get cartRepository();
     private get cartLineRepository();
     getUserOrders(userId: string): Promise<OrderEntity[]>;
+    getAllOrders(): Promise<OrderEntity[]>;
     getOrderById(orderId: string): Promise<OrderEntity>;
     createOrder(data: {
         userId: string;

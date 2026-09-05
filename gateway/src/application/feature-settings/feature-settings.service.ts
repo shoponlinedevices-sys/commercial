@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
+import { Inject, OnModuleInit } from '@nestjs/common';
+import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 
 export interface FeatureSetting {
@@ -14,32 +15,37 @@ export interface FeatureSetting {
   updatedAt: string;
 }
 
-@Injectable()
-export class FeatureSettingsService {
-  private readonly salesServiceUrl = 'http://localhost:3001';
+interface FeatureSettingsGrpcService {
+  getAllSettings(data: {}): any;
+  getEnabledSettings(data: {}): any;
+  getSettingByKey(data: { featureKey: string }): any;
+  updateSetting(data: { featureKey: string; isEnabled?: boolean; config?: string; startTime?: string; endTime?: string }): any;
+}
 
-  constructor(private readonly httpService: HttpService) {}
+@Injectable()
+export class FeatureSettingsService implements OnModuleInit {
+  private featureSettingsGrpc!: FeatureSettingsGrpcService;
+
+  constructor(@Inject('GRPC_FEATURE_SETTINGS_SERVICE') private readonly client: ClientGrpc) {}
+
+  onModuleInit() {
+    this.featureSettingsGrpc = this.client.getService<FeatureSettingsGrpcService>('FeatureSettingsService');
+  }
 
   async getAllSettings(): Promise<FeatureSetting[]> {
-    const response = await firstValueFrom(
-      this.httpService.get<FeatureSetting[]>(`${this.salesServiceUrl}/feature-settings`)
-    );
-    return response.data;
+    const response: any = await firstValueFrom(this.featureSettingsGrpc.getAllSettings({}));
+    return response.settings || [];
   }
 
   async getEnabledSettings(): Promise<FeatureSetting[]> {
-    const response = await firstValueFrom(
-      this.httpService.get<FeatureSetting[]>(`${this.salesServiceUrl}/feature-settings/enabled`)
-    );
-    return response.data;
+    const response: any = await firstValueFrom(this.featureSettingsGrpc.getEnabledSettings({}));
+    return response.settings || [];
   }
 
   async getSettingByKey(featureKey: string): Promise<FeatureSetting | null> {
     try {
-      const response = await firstValueFrom(
-        this.httpService.get<FeatureSetting>(`${this.salesServiceUrl}/feature-settings/${featureKey}`)
-      );
-      return response.data;
+      const response: any = await firstValueFrom(this.featureSettingsGrpc.getSettingByKey({ featureKey }));
+      return response.setting || null;
     } catch (error) {
       return null;
     }
@@ -54,9 +60,13 @@ export class FeatureSettingsService {
       endTime?: string;
     }
   ): Promise<FeatureSetting> {
-    const response = await firstValueFrom(
-      this.httpService.put<FeatureSetting>(`${this.salesServiceUrl}/feature-settings/${featureKey}`, data)
-    );
-    return response.data;
+    const response: any = await firstValueFrom(this.featureSettingsGrpc.updateSetting({
+      featureKey,
+      isEnabled: data.isEnabled,
+      config: data.config ? JSON.stringify(data.config) : undefined,
+      startTime: data.startTime,
+      endTime: data.endTime,
+    }));
+    return response.setting;
   }
 }

@@ -42,6 +42,13 @@ export class OrderService {
     });
   }
 
+  async getAllOrders() {
+    return this.orderRepository.find({
+      order: { createdAt: 'DESC' },
+      relations: ['orderLines'],
+    });
+  }
+
   async getOrderById(orderId: string) {
     return this.orderRepository.findOne({
       where: { id: orderId },

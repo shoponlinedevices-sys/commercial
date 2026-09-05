@@ -69,7 +69,7 @@ export default function Sidebar() {
 
         {/* User Info & Logout */}
         <div className={`pt-6 border-t ${colors.darkMode ? 'border-white/20' : 'border-border/50'}`}>
-          <div className={`flex items-center space-x-3 mb-4 p-3 rounded-xl ${colors.darkMode ? 'bg-white/10' : 'bg-muted/50'}`}>
+          <div className="flex items-center space-x-3 mb-4 p-3 rounded-xl">
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">
               {user?.username?.charAt(0).toUpperCase() || 'U'}
             </div>

@@ -5,12 +5,14 @@ package orders;
 service OrdersService {
   // Orders
   rpc GetUserOrders (GetUserOrdersRequest) returns (GetUserOrdersResponse);
+  rpc GetAllOrders (GetAllOrdersRequest) returns (GetAllOrdersResponse);
   rpc GetOrder (GetOrderRequest) returns (GetOrderResponse);
   rpc CreateOrder (CreateOrderRequest) returns (CreateOrderResponse);
   rpc UpdateOrderStatus (UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
   
   // Cart
   rpc GetCart (GetCartRequest) returns (GetCartResponse);
+  rpc GetAllCarts (GetAllCartsRequest) returns (GetAllCartsResponse);
   rpc GetCartByUserId (GetCartByUserIdRequest) returns (GetCartByUserIdResponse);
   rpc AddToCart (AddToCartRequest) returns (AddToCartResponse);
   rpc GetCartLinesByUserId (GetCartLinesByUserIdRequest) returns (GetCartLinesByUserIdResponse);
@@ -24,6 +26,12 @@ message GetUserOrdersRequest {
 }
 
 message GetUserOrdersResponse {
+  repeated Order orders = 1;
+}
+
+message GetAllOrdersRequest {}
+
+message GetAllOrdersResponse {
   repeated Order orders = 1;
 }
 
@@ -88,6 +96,12 @@ message GetCartResponse {
   Cart cart = 1;
 }
 
+message GetAllCartsRequest {}
+
+message GetAllCartsResponse {
+  repeated Cart carts = 1;
+}
+
 message GetCartByUserIdRequest {
   int32 userId = 1;
 }
@@ -101,6 +115,7 @@ message AddToCartRequest {
   int32 productId = 2;
   int32 quantity = 3;
   repeated CartLine cartLines = 4;
+  string image = 5;
 }
 
 message AddToCartResponse {
@@ -148,4 +163,6 @@ message CartLine {
   int32 quantity = 4;
   double unitPrice = 5;
   int32 status = 6;
+  string name = 7;
+  string image = 8;
 }

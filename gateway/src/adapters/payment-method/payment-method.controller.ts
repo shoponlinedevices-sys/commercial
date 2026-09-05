@@ -1,23 +1,30 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { PaymentMethodService, PaymentMethod, AccountPaymentSettings } from '../../application/payment-method/payment-method.service';
+import { ContactsGrpcClient } from '../../infrastructure/grpc/contacts-grpc.client';
 
 @Controller('payment-method')
 export class PaymentMethodController {
-  constructor(private readonly paymentMethodService: PaymentMethodService) {}
+  constructor(
+    private readonly paymentMethodService: PaymentMethodService,
+    private readonly contactsClient: ContactsGrpcClient,
+  ) {}
 
   @Get('user/:userId')
   async getPaymentMethods(@Param('userId') userId: string): Promise<PaymentMethod[]> {
-    return await this.paymentMethodService.getPaymentMethods(parseInt(userId));
+    const response: any = await this.contactsClient.getPaymentMethods({ userId: parseInt(userId) });
+    return response.paymentMethods || [];
   }
 
   @Get(':id')
   async getPaymentMethod(@Param('id') id: string): Promise<PaymentMethod | null> {
-    return await this.paymentMethodService.getPaymentMethod(parseInt(id));
+    const response: any = await this.contactsClient.getPaymentMethod({ id: parseInt(id) });
+    return response.paymentMethod || null;
   }
 
   @Get('default/:userId')
   async getDefaultPaymentMethod(@Param('userId') userId: string): Promise<PaymentMethod | null> {
-    return await this.paymentMethodService.getDefaultPaymentMethod(parseInt(userId));
+    const response: any = await this.contactsClient.getDefaultPaymentMethod({ userId: parseInt(userId) });
+    return response.paymentMethod || null;
   }
 
   @Get('available/:userId')
@@ -43,7 +50,8 @@ export class PaymentMethodController {
     @Param('userId') userId: string,
     @Body() data: Omit<PaymentMethod, 'id' | 'user_id'>,
   ): Promise<PaymentMethod> {
-    return await this.paymentMethodService.createPaymentMethod(parseInt(userId), data);
+    const response: any = await this.contactsClient.createPaymentMethod({ userId: parseInt(userId), ...data });
+    return response.paymentMethod;
   }
 
   @Put(':id')
@@ -51,12 +59,13 @@ export class PaymentMethodController {
     @Param('id') id: string,
     @Body() data: Partial<PaymentMethod>,
   ): Promise<PaymentMethod> {
-    return await this.paymentMethodService.updatePaymentMethod(parseInt(id), data);
+    const response: any = await this.contactsClient.updatePaymentMethod({ id: parseInt(id), ...data });
+    return response.paymentMethod;
   }
 
   @Delete(':id')
   async deletePaymentMethod(@Param('id') id: string): Promise<void> {
-    await this.paymentMethodService.deletePaymentMethod(parseInt(id));
+    await this.contactsClient.deletePaymentMethod({ id: parseInt(id) });
   }
 
   @Put('default/:userId/:paymentMethodId')
@@ -64,6 +73,6 @@ export class PaymentMethodController {
     @Param('userId') userId: string,
     @Param('paymentMethodId') paymentMethodId: string,
   ): Promise<void> {
-    await this.paymentMethodService.setDefaultPaymentMethod(parseInt(userId), parseInt(paymentMethodId));
+    await this.contactsClient.setDefaultPaymentMethod({ userId: parseInt(userId), paymentMethodId: parseInt(paymentMethodId) });
   }
 }

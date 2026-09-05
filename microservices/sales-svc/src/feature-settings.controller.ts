@@ -1,4 +1,5 @@
 import { Controller, Get, Put, Body, Param } from '@nestjs/common';
+import { GrpcMethod } from '@nestjs/microservices';
 import { FeatureSettingsService } from './feature-settings.service';
 
 @Controller('feature-settings')
@@ -47,5 +48,32 @@ export class FeatureSettingsController {
     }
 
     return this.featureSettingsService.updateSetting(featureKey, updateData);
+  }
+
+  @GrpcMethod('FeatureSettingsService', 'GetAllSettings')
+  async getAllSettingsGrpc() {
+    return { settings: await this.featureSettingsService.getAllSettings() };
+  }
+
+  @GrpcMethod('FeatureSettingsService', 'GetEnabledSettings')
+  async getEnabledSettingsGrpc() {
+    return { settings: await this.featureSettingsService.getEnabledSettings() };
+  }
+
+  @GrpcMethod('FeatureSettingsService', 'GetSettingByKey')
+  async getSettingByKeyGrpc(data: { featureKey: string }) {
+    return { setting: await this.featureSettingsService.getSettingByKey(data.featureKey) };
+  }
+
+  @GrpcMethod('FeatureSettingsService', 'UpdateSetting')
+  async updateSettingGrpc(data: { featureKey: string; isEnabled?: boolean; config?: string; startTime?: string; endTime?: string }) {
+    return {
+      setting: await this.featureSettingsService.updateSetting(data.featureKey, {
+        isEnabled: data.isEnabled,
+        config: data.config ? JSON.parse(data.config) : undefined,
+        startTime: data.startTime ? new Date(data.startTime) : undefined,
+        endTime: data.endTime ? new Date(data.endTime) : undefined,
+      }),
+    };
   }
 }

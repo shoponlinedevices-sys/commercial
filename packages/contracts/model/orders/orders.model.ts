@@ -77,8 +77,10 @@ export interface ICartLine {
   cartId?: number;
   productId: number;
   quantity: number;
-  unitPrice: number;
+  unitPrice: number | string;
   status: number;
+  name?: string;
+  image?: string;
 }
 
 export interface IGetCartRequest {
@@ -102,6 +104,7 @@ export interface IAddToCartRequest {
   productId: number;
   quantity: number;
   cartLines?: ICartLine[];
+  image?: string;
 }
 
 export interface IAddToCartResponse {

@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import { GrpcMethod } from '@nestjs/microservices';
 import { ContactsService } from './contacts.service';
 
 @Controller()
@@ -128,5 +129,85 @@ export class ContactsController {
       parseInt(userId),
       parseInt(paymentMethodId),
     );
+  }
+
+  @GrpcMethod('ContactsService', 'GetUserProfile')
+  getUserProfileGrpc(data: { userId: number }) {
+    return this.contactsService.getUserProfile(data.userId);
+  }
+
+  @GrpcMethod('ContactsService', 'UpdateUserProfile')
+  updateUserProfileGrpc(data: any) {
+    return this.contactsService.updateUserProfile(data);
+  }
+
+  @GrpcMethod('ContactsService', 'GetDeliveryAddresses')
+  getDeliveryAddressesGrpc(data: { userId: number }) {
+    return this.contactsService.getDeliveryAddresses(data.userId);
+  }
+
+  @GrpcMethod('ContactsService', 'GetDeliveryAddress')
+  getDeliveryAddressGrpc(data: { id: number }) {
+    return this.contactsService.getDeliveryAddress(data.id);
+  }
+
+  @GrpcMethod('ContactsService', 'GetDefaultDeliveryAddress')
+  getDefaultDeliveryAddressGrpc(data: { userId: number }) {
+    return this.contactsService.getDefaultDeliveryAddress(data.userId);
+  }
+
+  @GrpcMethod('ContactsService', 'CreateDeliveryAddress')
+  createDeliveryAddressGrpc(data: any) {
+    return this.contactsService.createDeliveryAddress(data);
+  }
+
+  @GrpcMethod('ContactsService', 'UpdateDeliveryAddress')
+  updateDeliveryAddressGrpc(data: any) {
+    return this.contactsService.updateDeliveryAddress(data);
+  }
+
+  @GrpcMethod('ContactsService', 'DeleteDeliveryAddress')
+  deleteDeliveryAddressGrpc(data: { id: number }) {
+    return this.contactsService.deleteDeliveryAddress(data.id);
+  }
+
+  @GrpcMethod('ContactsService', 'SetDefaultDeliveryAddress')
+  setDefaultDeliveryAddressGrpc(data: { userId: number; addressId: number }) {
+    return this.contactsService.setDefaultDeliveryAddress(data.userId, data.addressId);
+  }
+
+  @GrpcMethod('ContactsService', 'GetPaymentMethods')
+  getPaymentMethodsGrpc(data: { userId: number }) {
+    return this.contactsService.getPaymentMethods(data.userId);
+  }
+
+  @GrpcMethod('ContactsService', 'GetPaymentMethod')
+  getPaymentMethodGrpc(data: { id: number }) {
+    return this.contactsService.getPaymentMethod(data.id);
+  }
+
+  @GrpcMethod('ContactsService', 'GetDefaultPaymentMethod')
+  getDefaultPaymentMethodGrpc(data: { userId: number }) {
+    return this.contactsService.getDefaultPaymentMethod(data.userId);
+  }
+
+  @GrpcMethod('ContactsService', 'CreatePaymentMethod')
+  createPaymentMethodGrpc(data: any) {
+    return this.contactsService.createPaymentMethod(data);
+  }
+
+  @GrpcMethod('ContactsService', 'UpdatePaymentMethod')
+  updatePaymentMethodGrpc(data: any) {
+    return this.contactsService.updatePaymentMethod(data);
+  }
+
+  @GrpcMethod('ContactsService', 'DeletePaymentMethod')
+  deletePaymentMethodGrpc(data: { id: number }) {
+    return this.contactsService.deletePaymentMethod(data.id);
+  }
+
+  @GrpcMethod('ContactsService', 'SetDefaultPaymentMethod')
+  setDefaultPaymentMethodGrpc(data: { userId: number; paymentMethodId: number }) {
+    return this.contactsService.setDefaultPaymentMethod(data.userId, data.paymentMethodId);
   }
 }

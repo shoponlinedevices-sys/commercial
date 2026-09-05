@@ -20,7 +20,7 @@ async function bootstrap() {
         __dirname,
         '../../../packages/contracts/proto/email.proto',
       ),
-      url: `0.0.0.0:${process.env.GRPC_PORT || 50053}`,
+      url: `0.0.0.0:${process.env.GRPC_PORT || 50056}`,
     },
   });
 
@@ -28,7 +28,7 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 3003);
   
   console.log(`Email Service running on HTTP port ${process.env.PORT || 3003}`);
-  console.log(`Email Service gRPC running on port ${process.env.GRPC_PORT || 50053}`);
+  console.log(`Email Service gRPC running on port ${process.env.GRPC_PORT || 50056}`);
 }
 
 bootstrap();

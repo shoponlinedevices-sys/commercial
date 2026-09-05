@@ -15,11 +15,11 @@ import { Cart } from '../../domain/cart/cart.entity';
       useFactory: async () => {
         const dataSource = new DataSource({
           type: 'mysql',
-          host: 'localhost',
-          port: 3306,
-          username: 'root',
-          password: '06081990',
-          database: 'commercial',
+          host: process.env.DB_HOST || 'localhost',
+          port: Number(process.env.DB_PORT || 3306),
+          username: process.env.DB_USERNAME || 'root',
+          password: process.env.DB_PASSWORD || '',
+          database: process.env.DB_DATABASE || 'commercial',
           entities: [AccountEntity, ProductEntity, CartEntity, CartLineEntity, OrderEntity, NotificationEntity, DeliveryAddressEntity, PaymentMethodEntity],
           synchronize: false,
           logging: true,
@@ -30,21 +30,7 @@ import { Cart } from '../../domain/cart/cart.entity';
     },
     {
       provide: 'DATA_SOURCE',
-      useFactory: async () => {
-        const dataSource = new DataSource({
-          type: 'mysql',
-          host: 'localhost',
-          port: 3306,
-          username: 'root',
-          password: '06081990',
-          database: 'commercial',
-          entities: [AccountEntity, ProductEntity, CartEntity, CartLineEntity, OrderEntity, NotificationEntity, DeliveryAddressEntity, PaymentMethodEntity],
-          synchronize: false,
-          logging: true,
-        });
-        await dataSource.initialize();
-        return dataSource;
-      },
+      useExisting: 'DATABASE_CONNECTION',
     },
   ],
   exports: ['DATABASE_CONNECTION', 'DATA_SOURCE'],

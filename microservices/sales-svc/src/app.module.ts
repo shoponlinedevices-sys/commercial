@@ -9,6 +9,7 @@ import { FeatureSettingsModule } from './feature-settings.module';
 import { ProductModule } from './product.module';
 import { ContactsModule } from './contacts.module';
 import { CartController } from './cart.controller';
+import { OrdersGrpcController } from './orders.grpc.controller';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { CartController } from './cart.controller';
     ProductModule,
     ContactsModule,
   ],
-  controllers: [CartController],
+  controllers: [CartController, OrdersGrpcController],
   providers: [
     {
       provide: 'DATA_SOURCE',

@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
-import CountdownTimer from '@/components/CountdownTimer';
 import { Button } from '@/components/ui/button';
-import { Truck, Shield, Headphones, RotateCcw, ShoppingBag, Sparkles } from 'lucide-react';
+import { Truck, Shield, Headphones, RotateCcw, ArrowRight, Search } from 'lucide-react';
 import { Product } from '@/types';
 import { productService } from '@/services/product.service';
+import { featureSettingsService, FeatureSetting } from '@/services/feature-settings.service';
+import ProductCard from '@/components/ProductCard';
+import PromotionSections from '@/components/PromotionSections';
 
 const serviceFeatures = [
   {
@@ -28,11 +29,11 @@ const serviceFeatures = [
     title: 'Hỗ trợ 24/7',
     description: 'Luôn sẵn sàng'
   },
-  // {
-  //   icon: RotateCcw,
-  //   title: 'Đổi trả dễ dàng',
-  //   description: 'Trong 30 ngày'
-  // }
+  {
+    icon: RotateCcw,
+    title: 'Đổi trả dễ dàng',
+    description: 'Trong 30 ngày'
+  }
 ];
 
 export default function HomePage() {
@@ -41,190 +42,93 @@ export default function HomePage() {
   const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [flashSale, setFlashSale] = useState<FeatureSetting | null>(null);
+  const [promotion, setPromotion] = useState<FeatureSetting | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loadingAuth, setLoadingAuth] = useState(true);
-  const [showAllFlashSale, setShowAllFlashSale] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     loadProducts();
+    loadPromotions();
   }, []);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
+  const handleAddToCart = (product: Product) => {
     if (!isAuthenticated) {
-      router.push('/login');
-    } else {
-      setLoadingAuth(false);
+      router.push('/login?redirect=/products');
+      return;
     }
-  }, [isAuthenticated, router]);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price);
-  };
-
-  const handleAddToCart = (productId: number, productImage?: string) => {
-    addToCart(productId, 1, productImage);
+    addToCart(product.id, 1, product.image);
   };
 
   const loadProducts = async () => {
-      try {
-        setLoading(true);
-        const data = await productService.getProducts();
-        setProducts(data);
-      } catch (error) {
-        console.error('Error loading products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      setLoading(true);
+      setLoadError(false);
+      const data = await productService.getProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      setLoadError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadPromotions = async () => {
+    const [flashSaleSetting, promotionSetting] = await Promise.all([
+      featureSettingsService.getSetting('flash_sale'),
+      featureSettingsService.getSetting('promotion'),
+    ]);
+    setFlashSale(flashSaleSetting);
+    setPromotion(promotionSetting);
+  };
+
+  const categories = Array.from(new Set(products.map((product) => product.category).filter(Boolean)));
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <Sidebar />
-      <div className="flex-1 lg:ml-64">
-        <Header />
-        
-        <main className="pt-16">
-          <div className="container mx-auto px-4 sm:px-6 py-8">
-          {/* Banner Section */}
-          <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-2xl p-8 mb-8 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
-            <div className="relative z-10">
-              <div className="flex items-center space-x-2 mb-4">
-                <Sparkles className="h-6 w-6" />
-                <span className="text-lg font-semibold">Khuyến mãi đặc biệt</span>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        <section className="relative overflow-hidden border-b bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/.16),transparent_40%),linear-gradient(120deg,hsl(var(--background)),hsl(var(--muted)/.55))]">
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16 lg:py-16">
+            <div>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Commercial store</p>
+              <h1 className="max-w-2xl text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-6xl">Thiết bị tốt cho mọi công trình</h1>
+              <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground">Dụng cụ, thiết bị điện và vật tư công nghiệp đáng tin cậy, giá minh bạch, giao nhanh cho cả đơn lẻ và đơn số lượng lớn.</p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button size="lg" onClick={() => router.push('/products')}>Khám phá sản phẩm <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                <Button size="lg" variant="outline" onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })}>Xem hàng nổi bật</Button>
               </div>
-              <h1 className="text-4xl font-bold mb-2">Giảm tới 20%</h1>
-              <p className="text-lg mb-6 opacity-90">Mùa hè sôi động - Đặt sỉ giá tốt nhất</p>
-              <Button className="bg-white text-purple-600 hover:bg-gray-100 font-semibold px-8">
-                Mua ngay
-              </Button>
+              <p className="mt-5 text-xs text-muted-foreground">Đã có sản phẩm sẵn sàng giao hôm nay</p>
+            </div>
+            <div className="relative rounded-2xl border border-primary/20 bg-primary p-7 text-primary-foreground shadow-xl sm:p-9">
+              <div className="absolute right-6 top-6 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">Mua sắm dễ dàng</div>
+              <Search className="mb-10 h-10 w-10" aria-hidden="true" />
+              <p className="text-sm font-medium text-primary-foreground/75">Tìm kiếm thông minh</p>
+              <h2 className="mt-2 max-w-sm text-2xl font-bold leading-tight">Tìm đúng sản phẩm, đặt hàng nhanh</h2>
+              <p className="mt-3 max-w-sm text-sm leading-6 text-primary-foreground/80">Tìm theo tên, lọc theo danh mục và xem đầy đủ thông tin trước khi thêm vào giỏ.</p>
+              <Button variant="secondary" className="mt-7" onClick={() => router.push('/products')}>Bắt đầu mua sắm <ArrowRight className="ml-2 h-4 w-4" /></Button>
             </div>
           </div>
+        </section>
 
-          {/* Flash Sale Section */}
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
-                  <ShoppingBag className="h-8 w-8 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white">FLASH SALE</h2>
-                  <CountdownTimer />
-                </div>
-              </div>
-              <Button 
-                variant="outline" 
-                className="bg-white/10 text-white border-white/30 hover:bg-white/20"
-                onClick={() => setShowAllFlashSale(!showAllFlashSale)}
-              >
-                {showAllFlashSale ? 'Thu gọn' : 'Xem tất cả'}
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {(showAllFlashSale ? products : products.slice(0, isMobile ? 2 : 4)).map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white rounded-xl p-4 hover:shadow-lg transition-shadow cursor-pointer"
-                >
-                  <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                   <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="font-semibold text-sm mb-2 line-clamp-2">{product.name}</h3>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-lg font-bold text-orange-600">{formatPrice(product.price)}</span>
-                    {/* <span className="text-sm text-gray-400 line-through">{formatPrice(product.originalPrice)}</span> */}
-                  </div>
-                  <div className="bg-orange-100 text-orange-600 text-xs font-bold px-2 py-1 rounded inline-block">
-                    {/* -{product.discount}% */}
-                  </div>
-                </div>
-              ))}
-            </div>
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {serviceFeatures.map((feature) => {
+              const Icon = feature.icon;
+              return <div key={feature.title} className="flex items-center gap-3 border-b pb-4 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-5 last:border-0"><div className="rounded-lg bg-primary/10 p-2 text-primary"><Icon className="h-5 w-5" /></div><div><h3 className="text-sm font-semibold">{feature.title}</h3><p className="mt-0.5 text-xs text-muted-foreground">{feature.description}</p></div></div>;
+            })}
           </div>
+        </section>
 
-          {/* Service Features Section */}
-          <div className="bg-card border border-border rounded-xl p-4 mb-8 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-around gap-2">
-              {serviceFeatures.map((feature, index) => {
-                const Icon = feature.icon;
-                return (
-                  <div key={index} className="flex items-center gap-2 flex-1 justify-center">
-                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Icon className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="text-center">
-                      <h3 className="font-semibold text-sm">{feature.title}</h3>
-                      <p className="text-xs text-muted-foreground">{feature.description}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+        <PromotionSections products={products} flashSale={flashSale} promotion={promotion} onAddToCart={handleAddToCart} />
 
-          {/* Featured Products Section */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Sản phẩm nổi bật</h2>
-              <Button variant="outline">Xem tất cả</Button>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {products.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-card border border-border rounded-xl p-4 hover:shadow-lg transition-shadow cursor-pointer"
-                >
-                  {/* <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                    <ShoppingBag className="h-12 w-12 text-gray-400" />
-                  </div> */}
-                 <div className="aspect-square rounded-lg overflow-hidden mb-3">
-                   <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1 line-clamp-2">{product.name}</h3>
-                  <p className="text-xs text-muted-foreground mb-2 line-clamp-1">{product.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-primary">{formatPrice(product.price)}</span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-xs"
-                      onClick={() => handleAddToCart(product.id, product.image)}
-                    >
-                      Thêm vào giỏ
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6" id="featured-products">
+          <div className="mb-6 flex items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Danh mục sản phẩm</p><h2 className="mt-1 text-2xl font-bold">Mua sắm theo nhu cầu</h2></div><Button variant="ghost" onClick={() => router.push('/products')}>Tất cả sản phẩm <ArrowRight className="ml-2 h-4 w-4" /></Button></div>
+          {categories.length > 0 && <div className="mb-8 flex flex-wrap gap-2">{categories.slice(0, 8).map((category) => <Button key={category} variant="outline" size="sm" onClick={() => router.push(`/products?category=${encodeURIComponent(category as string)}`)}>{category}</Button>)}</div>}
+          {loading ? <p className="py-12 text-center text-muted-foreground">Đang tải sản phẩm...</p> : loadError ? <div className="rounded-xl border border-dashed p-10 text-center"><p className="font-semibold">Không thể tải sản phẩm lúc này</p><p className="mt-1 text-sm text-muted-foreground">Vui lòng thử lại sau ít phút.</p><Button variant="outline" className="mt-4" onClick={loadProducts}>Thử lại</Button></div> : products.length === 0 ? <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">Chưa có sản phẩm để hiển thị.</div> : <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">{products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />)}</div>}
+        </section>
       </main>
-      </div>
     </div>
   );
 }

@@ -1,1 +1,0 @@
-{"version":3,"file":"grpc-orders.options.js","sourceRoot":"","sources":["../../src/infra/grpc-orders.options.ts"],"names":[],"mappings":";;;AAAA,+BAA4B;AAC5B,yDAAkD;AAErC,QAAA,uBAAuB,GAAG;IACrC,SAAS,EAAE,yBAAS,CAAC,IAAI;IACzB,OAAO,EAAE;QACP,OAAO,EAAE,QAAQ;QACjB,SAAS,EAAE,IAAA,WAAI,EAAC,SAAS,EAAE,gDAAgD,CAAC;QAC5E,GAAG,EAAE,iBAAiB;KACvB;CACF,CAAC"}

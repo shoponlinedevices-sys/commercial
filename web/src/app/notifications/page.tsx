@@ -8,7 +8,6 @@ import { NotificationItem } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Check } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 
@@ -48,13 +47,12 @@ export default function NotificationsPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex">
-        <Sidebar />
-        <div className="flex-1 lg:ml-64">
+        <div className="flex-1">
           <Header />
           <div className="container mx-auto px-4 py-8 mt-16 lg:mt-0">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Loading notifications...</p>
+              <p className="mt-4 text-muted-foreground">Đang tải thông báo...</p>
             </div>
           </div>
         </div>
@@ -64,18 +62,17 @@ export default function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar />
-      <div className="flex-1 lg:ml-64">
+      <div className="flex-1">
         <Header />
         <div className="container mx-auto px-4 py-8 mt-16 lg:mt-0">
           <h1 className="text-3xl font-bold mb-6 flex items-center">
             <Bell className="h-8 w-8 mr-2" />
-            Notifications
+            Thông báo
           </h1>
           {notifications.length === 0 ? (
             <Card>
               <CardContent className="text-center py-12">
-                <p className="text-muted-foreground">No notifications</p>
+                <p className="text-muted-foreground">Bạn chưa có thông báo nào</p>
               </CardContent>
             </Card>
           ) : (
@@ -88,7 +85,7 @@ export default function NotificationsPage() {
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg">{notification.title}</CardTitle>
-                      {!notification.isRead && <Badge>Unread</Badge>}
+                      {!notification.isRead && <Badge>Chưa đọc</Badge>}
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -100,7 +97,7 @@ export default function NotificationsPage() {
                         onClick={() => markAsRead(notification.id.toString())}
                       >
                         <Check className="h-4 w-4 mr-2" />
-                        Mark as Read
+                        Đánh dấu đã đọc
                       </Button>
                     )}
                   </CardContent>

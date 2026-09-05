@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, ShoppingCart, Bell, User, Menu, Sparkles, Settings, X } from 'lucide-react';
+import Link from 'next/link';
+import { Search, ShoppingCart, Bell, Menu, Sparkles, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,9 +11,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useCart } from '@/context/CartContext';
 import { useNotification } from '@/context/NotificationContext';
 import { useRouter, useSearchParams } from 'next/navigation';
-import ColorPicker from '@/components/ColorPicker';
 import MobileSidebar from '@/components/MobileSidebar';
-import ThemeSettingsOverlay from '@/components/ThemeSettingsOverlay';
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -23,7 +22,6 @@ export default function Header() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [themeSettingsOpen, setThemeSettingsOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize search query from URL on mount
@@ -54,16 +52,14 @@ export default function Header() {
     router.push('/products');
   };
 
-  if (!isAuthenticated) return null;
-
   return (
     <>
       <header 
-        className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 backdrop-blur-xl shadow-sm lg:left-64"
+        className="sticky top-0 z-50 border-b border-border/70 bg-background/95 backdrop-blur"
         style={{ backgroundColor: colors.darkMode ? '#0f172a' : '#ffffff' }}
       >
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="flex min-h-16 items-center gap-3 py-2">
             {/* Mobile Menu Toggle */}
             <Button
               variant="ghost"
@@ -74,18 +70,23 @@ export default function Header() {
               <Menu className="h-5 w-5" />
             </Button>
 
-            {/* Logo/Brand - Hidden on mobile, visible on desktop */}
-            <div className="hidden lg:flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-purple-600 rounded-lg flex items-center justify-center">
+            {/* Store brand */}
+            <Link href="/" className="flex shrink-0 items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <Sparkles className="h-5 w-5 text-white" />
               </div>
-              <span className="font-bold text-lg bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              <span className="hidden font-bold text-lg text-foreground sm:inline">
                 Commercial
               </span>
-            </div>
+            </Link>
+
+            <nav className="hidden items-center gap-5 text-sm font-medium lg:flex">
+              <Link href="/products" className="text-muted-foreground transition-colors hover:text-primary">Sản phẩm</Link>
+              <Link href="/orders" className="text-muted-foreground transition-colors hover:text-primary">Đơn hàng</Link>
+            </nav>
 
             {/* Search Bar */}
-            <div className="flex-1 max-w-[200px] sm:max-w-md md:max-w-lg lg:max-w-2xl mx-1 sm:mx-4 lg:mx-8">
+            <div className="mx-1 min-w-0 flex-1 sm:mx-4">
               <div className="relative group">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors ${colors.darkMode ? 'text-gray-400 group-focus-within:text-white' : 'text-muted-foreground group-focus-within:text-primary'}`} />
                 <Input
@@ -109,18 +110,7 @@ export default function Header() {
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center space-x-0 sm:space-x-2 md:space-x-4">
-              <ColorPicker />
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setThemeSettingsOpen(true)}
-                className={`relative transition-colors hidden sm:flex ${colors.darkMode ? 'text-white hover:bg-white/10' : 'hover:bg-primary/10'}`}
-              >
-                <Settings className="h-5 w-5" />
-              </Button>
-              
+            <div className="flex shrink-0 items-center gap-1 sm:gap-2">
               <Button
                 variant="ghost"
                 size="icon"
@@ -135,7 +125,7 @@ export default function Header() {
                 )}
               </Button>
               
-              <Button
+              {isAuthenticated && <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => router.push('/notifications')}
@@ -147,23 +137,22 @@ export default function Header() {
                     {notificationCount}
                   </Badge>
                 )}
-              </Button>
+              </Button>}
 
-              <div className={`flex items-center space-x-2 pl-1 sm:pl-2 md:pl-4 border-l ${colors.darkMode ? 'border-white/20' : 'border-border'}`}>
+              {isAuthenticated ? <Link href="/account" className={`flex items-center gap-2 border-l pl-2 sm:pl-4 ${colors.darkMode ? 'border-white/20' : 'border-border'}`}>
                 <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg">
                   {user?.username?.charAt(0).toUpperCase() || 'U'}
                 </div>
                 <span className={`text-xs sm:text-sm font-semibold hidden md:block ${colors.darkMode ? 'text-white' : ''}`}>
                   {user?.username}
                 </span>
-              </div>
+              </Link> : <Link href="/login" className="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">Đăng nhập</Link>}
             </div>
           </div>
         </div>
       </header>
       
       <MobileSidebar isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
-      <ThemeSettingsOverlay isOpen={themeSettingsOpen} onClose={() => setThemeSettingsOpen(false)} />
     </>
   );
 }

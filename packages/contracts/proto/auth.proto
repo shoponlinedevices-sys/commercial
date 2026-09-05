@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+  rpc Login (LoginRequest) returns (LoginResponse);
+  rpc Register (RegisterRequest) returns (UserResponse);
+  rpc Refresh (RefreshRequest) returns (RefreshResponse);
+  rpc ForgotPassword (ForgotPasswordRequest) returns (ForgotPasswordResponse);
+  rpc ChangePassword (ChangePasswordRequest) returns (MessageResponse);
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message RegisterRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message RefreshRequest {
+  string refresh_token = 1;
+}
+
+message ForgotPasswordRequest {
+  string username = 1;
+}
+
+message ChangePasswordRequest {
+  int32 userId = 1;
+  string currentPassword = 2;
+  string newPassword = 3;
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  User user = 3;
+}
+
+message RefreshResponse {
+  string access_token = 1;
+}
+
+message UserResponse {
+  int32 id = 1;
+  string username = 2;
+  string email = 3;
+}
+
+message ForgotPasswordResponse {
+  string username = 1;
+  string email = 2;
+  string temporaryPassword = 3;
+}
+
+message MessageResponse {
+  string message = 1;
+}
+
+message User {
+  int32 id = 1;
+  string username = 2;
+  string email = 3;
+}

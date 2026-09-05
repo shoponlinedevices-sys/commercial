@@ -21,6 +21,14 @@ export class NotificationController {
     );
   }
 
+  @GrpcMethod('NotificationService', 'CreateNotification')
+  createNotificationGrpc(data: any) {
+    return this.notificationService.createNotification({
+      ...data,
+      metadata: data.metadata || {},
+    });
+  }
+
   @Get('user/:userId')
   async getUserNotifications(@Param('userId') userId: string) {
     return this.notificationService.getUserNotifications(userId);

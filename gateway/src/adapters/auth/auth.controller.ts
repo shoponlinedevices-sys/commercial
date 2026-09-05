@@ -1,7 +1,17 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { IdentityService, UserInfo } from '../../domain/identity/identity.service';
 import { EmailService } from '../../application/email/email.service';
+import { Inject, OnModuleInit } from '@nestjs/common';
+import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
+
+interface AuthGrpcService {
+  login(data: LoginRequest): any;
+  refresh(data: RefreshRequest): any;
+  register(data: RegisterRequest): any;
+  forgotPassword(data: ForgotPasswordRequest): any;
+  changePassword(data: ChangePasswordRequest): any;
+}
 
 type LoginRequest = {
   username: string;
@@ -30,16 +40,26 @@ type ChangePasswordRequest = {
 type LoginResponse = {
   access_token: string;
   refresh_token: string;
-  user: UserInfo;
+  user: {
+    id: number;
+    username: string;
+    email?: string;
+  };
 };
 
 @ApiTags('Authentication')
 @Controller('auth')
-export class AuthController {
+export class AuthController implements OnModuleInit {
+  private authGrpcService!: AuthGrpcService;
+
   constructor(
-    private readonly identityService: IdentityService,
     private readonly emailService: EmailService,
+    @Inject('GRPC_AUTH_SERVICE') private readonly authClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.authGrpcService = this.authClient.getService<AuthGrpcService>('AuthService');
+  }
 
   @Post('login')
   @ApiOperation({ summary: 'User login' })
@@ -47,28 +67,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Login successful', schema: { example: { access_token: 'jwt_token', refresh_token: 'refresh_token', user: { id: 1, username: 'user123' } } } })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(@Body() body: LoginRequest): Promise<LoginResponse> {
-    console.log(`[AuthController] login called with body:`, body);
-    const { username, password } = body;
-    console.log(`[AuthController] Extracted username: ${username}, password length: ${password?.length || 0}`);
-    try {
-      // Route to contacts-svc for authentication
-      const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!authResponse.ok) {
-        throw new Error('Authentication failed');
-      }
-
-      const result = await authResponse.json();
-      console.log(`[AuthController] Login success:`, { user: result.user });
-      return result;
-    } catch (error) {
-      console.error(`[AuthController] Login error:`, error);
-      throw error;
-    }
+    return firstValueFrom(this.authGrpcService.login(body));
   }
 
   @Post('refresh')
@@ -77,19 +76,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
   async refresh(@Body() body: RefreshRequest): Promise<{ access_token: string }> {
-    console.log('[AuthController] refresh called');
-    // Route to contacts-svc for token refresh
-    const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: body.refresh_token }),
-    });
-
-    if (!authResponse.ok) {
-      throw new Error('Token refresh failed');
-    }
-
-    return await authResponse.json();
+    return firstValueFrom(this.authGrpcService.refresh(body));
   }
 
   @Post('register')
@@ -97,29 +84,8 @@ export class AuthController {
   @ApiBody({ schema: { example: { username: 'newuser', password: 'password123' } } })
   @ApiResponse({ status: 201, description: 'User registered successfully', schema: { example: { id: 1, username: 'newuser' } } })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async register(@Body() body: RegisterRequest): Promise<UserInfo> {
-    console.log(`[AuthController] register called with body:`, body);
-    const { username, password } = body;
-    console.log(`[AuthController] Extracted username: ${username}, password length: ${password?.length || 0}`);
-    try {
-      // Route to contacts-svc for registration
-      const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!authResponse.ok) {
-        throw new Error('Registration failed');
-      }
-
-      const user = await authResponse.json();
-      console.log(`[AuthController] Register success:`, user);
-      return user;
-    } catch (error) {
-      console.error(`[AuthController] Register error:`, error);
-      throw error;
-    }
+  async register(@Body() body: RegisterRequest): Promise<LoginResponse['user']> {
+    return firstValueFrom(this.authGrpcService.register(body));
   }
 
   @Post('forgot-password')
@@ -128,34 +94,18 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Temporary password sent successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async forgotPassword(@Body() body: ForgotPasswordRequest): Promise<{ message: string }> {
-    console.log(`[AuthController] forgotPassword called with username:`, body.username);
-    const { username } = body;
-
     try {
-      // Call contacts-svc to generate temporary password (auth merged into contacts-svc)
-      const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/forgot-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username }),
-      });
-
-      if (!authResponse.ok) {
-        throw new Error('User not found');
-      }
-
-      const authData = await authResponse.json();
-      console.log(`[AuthController] Auth service response:`, authData);
+      const authData: any = await firstValueFrom(this.authGrpcService.forgotPassword(body));
 
       // Send email with temporary password
       if (authData.email) {
         await this.emailService.sendPasswordResetEmail({
           to: authData.email,
-          username: username,
+          username: body.username,
           temporaryPassword: authData.temporaryPassword,
         });
       }
 
-      console.log(`[AuthController] Forgot password success for username: ${username}`);
       return { message: 'Mật khẩu tạm thời đã được gửi đến email của bạn' };
     } catch (error) {
       console.error(`[AuthController] Forgot password error:`, error);
@@ -169,25 +119,8 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Password changed successfully' })
   @ApiResponse({ status: 401, description: 'Current password is incorrect' })
   async changePassword(@Body() body: ChangePasswordRequest): Promise<{ message: string }> {
-    console.log(`[AuthController] changePassword called for user ID:`, body.userId);
-    const { userId, currentPassword, newPassword } = body;
-
     try {
-      // Call contacts-svc to change password (auth merged into contacts-svc)
-      const authResponse = await fetch(`${process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004'}/auth/change-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, currentPassword, newPassword }),
-      });
-
-      if (!authResponse.ok) {
-        const errorData = await authResponse.json();
-        throw new Error(errorData.message || 'Failed to change password');
-      }
-
-      const authData = await authResponse.json();
-      console.log(`[AuthController] Password changed successfully for user ID: ${userId}`);
-      return { message: 'Mật khẩu đã được thay đổi thành công' };
+      return firstValueFrom(this.authGrpcService.changePassword(body));
     } catch (error) {
       console.error(`[AuthController] Change password error:`, error);
       throw error;

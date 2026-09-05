@@ -1,91 +1,65 @@
 import { Injectable } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { ProductRepository } from '../../domain/product/product.repository';
 import { Product } from '../../domain/product/product.entity';
-import { HttpService } from '@nestjs/axios';
+import { ClientGrpc } from '@nestjs/microservices';
+import { status } from '@grpc/grpc-js';
+import { firstValueFrom } from 'rxjs';
+import { IGrpcProductService } from '../../../../packages/contracts/grpc/interface/grpc-products.service';
+import { IGetProductsRequest } from '../../../../packages/contracts/model/product/product.model';
 
 @Injectable()
 export class ProductsServiceProductRepository implements ProductRepository {
-  constructor(private readonly httpService: HttpService) {}
+  private grpcProductService!: IGrpcProductService;
+
+  constructor(
+    @Inject('GRPC_PRODUCTS_SERVICE')
+    private readonly client: ClientGrpc,
+  ) {}
+
+  onModuleInit() {
+    this.grpcProductService = this.client.getService<IGrpcProductService>('ProductService');
+  }
+
+  private toProduct(productData: any): Product {
+    return new Product(
+      productData.id,
+      productData.name,
+      Number(productData.price),
+      productData.description || '',
+      productData.image || '',
+      productData.oldPrice !== null && productData.oldPrice !== undefined ? Number(productData.oldPrice) : undefined,
+      productData.badge || undefined,
+      productData.sku || undefined,
+      productData.unit || undefined,
+      productData.moq || undefined,
+    );
+  }
 
   async findAll(): Promise<Product[]> {
-    try {
-      const response = await this.httpService.axiosRef.get(
-        `${process.env.PRODUCTS_SERVICE_URL || 'http://localhost:3003'}/products`,
-      );
-      
-      const productsData = response.data.products || response.data;
-      return productsData.map((productData: any) =>
-        new Product(
-          productData.id,
-          productData.name,
-          Number(productData.price),
-          productData.description || '',
-          productData.image || '',
-          productData.oldPrice !== null && productData.oldPrice !== undefined ? Number(productData.oldPrice) : undefined,
-          productData.badge || undefined,
-          productData.sku || undefined,
-          productData.unit || undefined,
-          productData.moq || undefined,
-        ),
-      );
-    } catch (error) {
-      console.error('[ProductsServiceProductRepository] Error fetching products:', error);
-      throw error;
-    }
+    const response = await firstValueFrom(
+      this.grpcProductService.getProducts({}),
+    );
+    return (response.products || []).map((product) => this.toProduct(product));
   }
 
   async findOne(id: number): Promise<Product | null> {
     try {
-      const response = await this.httpService.axiosRef.get(
-        `${process.env.PRODUCTS_SERVICE_URL || 'http://localhost:3003'}/products/${id}`,
+      const response = await firstValueFrom(
+        this.grpcProductService.getProduct({ id }),
       );
-      
-      const productData = response.data;
-      if (!productData) return null;
-
-      return new Product(
-        productData.id,
-        productData.name,
-        Number(productData.price),
-        productData.description || '',
-        productData.image || '',
-        productData.oldPrice !== null && productData.oldPrice !== undefined ? Number(productData.oldPrice) : undefined,
-        productData.badge || undefined,
-        productData.sku || undefined,
-        productData.unit || undefined,
-        productData.moq || undefined,
-      );
+      return response.product ? this.toProduct(response.product) : null;
     } catch (error: any) {
-      console.error('[ProductsServiceProductRepository] Error fetching product:', error);
-      if (error.response?.status === 404) return null;
+      if (error.code === status.NOT_FOUND) return null;
       throw error;
     }
   }
 
   async findByCategory(categoryId: number): Promise<Product[]> {
-    try {
-      const response = await this.httpService.axiosRef.get(
-        `${process.env.PRODUCTS_SERVICE_URL || 'http://localhost:3003'}/products?category=${categoryId}`,
-      );
-      
-      const productsData = response.data.products || response.data;
-      return productsData.map((productData: any) =>
-        new Product(
-          productData.id,
-          productData.name,
-          Number(productData.price),
-          productData.description || '',
-          productData.image || '',
-          productData.oldPrice !== null && productData.oldPrice !== undefined ? Number(productData.oldPrice) : undefined,
-          productData.badge || undefined,
-          productData.sku || undefined,
-          productData.unit || undefined,
-          productData.moq || undefined,
-        ),
-      );
-    } catch (error) {
-      console.error('[ProductsServiceProductRepository] Error fetching products by category:', error);
-      throw error;
-    }
+    const request: IGetProductsRequest = { category: String(categoryId) };
+    const response = await firstValueFrom(
+      this.grpcProductService.getProducts(request),
+    );
+    return (response.products || []).map((product) => this.toProduct(product));
   }
 }

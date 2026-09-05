@@ -46,6 +46,12 @@ let OrderService = class OrderService {
             order: { createdAt: 'DESC' },
         });
     }
+    async getAllOrders() {
+        return this.orderRepository.find({
+            order: { createdAt: 'DESC' },
+            relations: ['orderLines'],
+        });
+    }
     async getOrderById(orderId) {
         return this.orderRepository.findOne({
             where: { id: orderId },

@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
 import { UserProfileController } from './user-profile.controller';
-import { UserProfileService } from '../../application/user-profile/user-profile.service';
-import { AccountRepository } from '../../infrastructure/database/repositories/account.repository';
-import { DatabaseModule } from '../../infrastructure/database/database.module';
+import { GrpcClientsModule } from '../../infrastructure/grpc/grpc-clients.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [GrpcClientsModule],
   controllers: [UserProfileController],
-  providers: [UserProfileService, AccountRepository],
-  exports: [UserProfileService],
+  providers: [],
 })
 export class UserProfileModule {}

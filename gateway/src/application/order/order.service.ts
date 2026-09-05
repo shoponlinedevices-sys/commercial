@@ -1,16 +1,26 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
+import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import { OrderRepository } from '../../domain/order/order.repository';
 import { Order } from '../../domain/order/order.entity';
-import { HttpService } from '@nestjs/axios';
+
+interface NotificationGrpcService {
+  sendNotification(data: { token: string; title: string; body: string; data: Record<string, string> }): any;
+  createNotification(data: { userId: string; title: string; message: string; type: string; metadata: Record<string, string> }): any;
+}
 
 @Injectable()
-export class OrderService {
+export class OrderService implements OnModuleInit {
+  private notificationService!: NotificationGrpcService;
+
   constructor(
     private readonly orderRepository: OrderRepository,
-    @Inject('NOTIFICATION_SERVICE') private readonly notificationClient: ClientProxy,
-    private readonly httpService: HttpService,
+    @Inject('GRPC_NOTIFICATIONS_SERVICE') private readonly notificationClient: ClientGrpc,
   ) {}
+
+  onModuleInit() {
+    this.notificationService = this.notificationClient.getService<NotificationGrpcService>('NotificationService');
+  }
 
   async createOrder(userId: number, cartLines: any[], fcmToken?: string): Promise<Order> {
     const order = await this.orderRepository.createOrder(userId, cartLines, fcmToken);
@@ -18,20 +28,12 @@ export class OrderService {
     // Send notification if FCM token is provided
     if (fcmToken) {
       try {
-        await this.notificationClient
-          .send(
-            { role: 'notification', cmd: 'sendNotification' },
-            {
-              token: fcmToken,
-              title: 'Đặt hàng thành công',
-              body: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
-              data: {
-                orderId: order.id.toString(),
-                type: 'order_created',
-              },
-            },
-          )
-          .toPromise();
+        await firstValueFrom(this.notificationService.sendNotification({
+          token: fcmToken,
+          title: 'Đặt hàng thành công',
+          body: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
+          data: { orderId: order.id.toString(), type: 'order_created' },
+        }));
       } catch (error) {
         console.error('Failed to send notification:', error);
         // Don't fail the order creation if notification fails
@@ -40,19 +42,13 @@ export class OrderService {
 
     // Save notification to database
     try {
-      await this.httpService.axiosRef.post(
-        `${process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3001'}/notifications`,
-        {
-          userId: userId.toString(),
-          title: 'Đặt hàng thành công',
-          message: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
-          type: 'order',
-          metadata: {
-            orderId: order.id.toString(),
-            totalAmount: order.totalAmount,
-          },
-        },
-      );
+      await firstValueFrom(this.notificationService.createNotification({
+        userId: userId.toString(),
+        title: 'Đặt hàng thành công',
+        message: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
+        type: 'order',
+        metadata: { orderId: order.id.toString(), totalAmount: order.totalAmount.toString() },
+      }));
     } catch (error) {
       console.error('Failed to save notification to database:', error);
       // Don't fail the order creation if notification save fails
@@ -66,5 +62,13 @@ export class OrderService {
     const orders = await this.orderRepository.findByUserId(userId);
     console.log(`[OrderService] Found ${orders.length} orders for userId: ${userId}`);
     return orders;
+  }
+
+  async findAll(): Promise<Order[]> {
+    return this.orderRepository.findAll();
+  }
+
+  async updateStatus(orderId: string, status: string): Promise<Order> {
+    return this.orderRepository.updateStatus(orderId, status);
   }
 }

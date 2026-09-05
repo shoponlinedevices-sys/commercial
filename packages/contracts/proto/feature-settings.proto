@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package feature_settings;
+
+service FeatureSettingsService {
+  rpc GetAllSettings (Empty) returns (FeatureSettingsListResponse);
+  rpc GetEnabledSettings (Empty) returns (FeatureSettingsListResponse);
+  rpc GetSettingByKey (GetSettingByKeyRequest) returns (FeatureSettingResponse);
+  rpc UpdateSetting (UpdateSettingRequest) returns (FeatureSettingResponse);
+}
+
+message Empty {}
+
+message GetSettingByKeyRequest {
+  string featureKey = 1;
+}
+
+message UpdateSettingRequest {
+  string featureKey = 1;
+  optional bool isEnabled = 2;
+  string config = 3;
+  string startTime = 4;
+  string endTime = 5;
+}
+
+message FeatureSettingsListResponse {
+  repeated FeatureSetting settings = 1;
+}
+
+message FeatureSettingResponse {
+  FeatureSetting setting = 1;
+}
+
+message FeatureSetting {
+  string id = 1;
+  string featureKey = 2;
+  string featureName = 3;
+  bool isEnabled = 4;
+  string config = 5;
+  string startTime = 6;
+  string endTime = 7;
+  string createdAt = 8;
+  string updatedAt = 9;
+}

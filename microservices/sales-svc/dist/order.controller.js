@@ -22,6 +22,9 @@ let OrderController = class OrderController {
     async getUserOrders(userId) {
         return this.orderService.getUserOrders(userId);
     }
+    async getAllOrders() {
+        return this.orderService.getAllOrders();
+    }
     async getOrderById(id) {
         return this.orderService.getOrderById(id);
     }
@@ -41,6 +44,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "getUserOrders", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], OrderController.prototype, "getAllOrders", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),

@@ -24,6 +24,12 @@ let NotificationController = class NotificationController {
     sendNotification(data) {
         return this.notificationService.sendPushNotification(data.token, data.title, data.body, data.data);
     }
+    createNotificationGrpc(data) {
+        return this.notificationService.createNotification({
+            ...data,
+            metadata: data.metadata || {},
+        });
+    }
     async getUserNotifications(userId) {
         return this.notificationService.getUserNotifications(userId);
     }
@@ -41,6 +47,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], NotificationController.prototype, "sendNotification", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('NotificationService', 'CreateNotification'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], NotificationController.prototype, "createNotificationGrpc", null);
 __decorate([
     (0, common_1.Get)('user/:userId'),
     __param(0, (0, common_1.Param)('userId')),

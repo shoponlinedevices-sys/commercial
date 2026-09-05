@@ -4,7 +4,6 @@ import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Package, ShoppingCart, Bell, User, Key, LogOut, HelpCircle, MapPin } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { useRouter } from 'next/navigation';
 
@@ -23,8 +22,7 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar />
-      <div className="flex-1 lg:ml-64">
+      <div className="flex-1">
         <Header />
         <div className="container mx-auto px-4 py-8 mt-16 lg:mt-0">
           {/* HEADER */}

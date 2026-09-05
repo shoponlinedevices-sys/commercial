@@ -9,9 +9,9 @@ import { Cart, CartLine } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import Image from 'next/image';
+import { formatVnd } from '@/lib/formatters';
 
 export default function CartPage() {
   const router = useRouter();
@@ -47,7 +47,7 @@ export default function CartPage() {
       await refreshCartCount();
     } catch (error) {
       console.error('Error removing item:', error);
-      alert('Failed to remove item');
+      alert('Không thể xóa sản phẩm');
     }
   };
 
@@ -59,7 +59,7 @@ export default function CartPage() {
       await refreshCartCount();
     } catch (error) {
       console.error('Error clearing cart:', error);
-      alert('Failed to clear cart');
+      alert('Không thể xóa giỏ hàng');
     }
   };
 
@@ -88,7 +88,7 @@ export default function CartPage() {
 
   const checkout = async () => {
     if (!cart?.cartLines || cart.cartLines.length === 0) {
-      alert('Your cart is empty');
+      alert('Giỏ hàng đang trống');
       return;
     }
 
@@ -104,25 +104,24 @@ export default function CartPage() {
         })),
       });
 
-      alert('Order created successfully!');
+      alert('Đã tạo đơn hàng thành công');
       await clearCart();
       router.push('/orders');
     } catch (error) {
       console.error('Error creating order:', error);
-      alert('Failed to create order');
+      alert('Không thể tạo đơn hàng');
     }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex">
-        <Sidebar />
-        <div className="flex-1 lg:ml-64">
+        <div className="flex-1">
           <Header />
           <div className="container mx-auto px-4 py-8 mt-16">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Loading cart...</p>
+              <p className="mt-4 text-muted-foreground">Đang tải giỏ hàng...</p>
             </div>
           </div>
         </div>
@@ -132,23 +131,22 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar />
-      <div className="flex-1 lg:ml-64">
+      <div className="flex-1">
         <Header />
         <div className="container mx-auto px-4 py-8 mt-16">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center text-xl lg:text-2xl">
                 <ShoppingBag className="h-6 w-6 mr-2 flex-shrink-0" />
-                <span className="break-words">Shopping Cart</span>
+                <span className="break-words">Giỏ hàng</span>
               </CardTitle>
             </CardHeader>
           <CardContent>
             {!cart?.cartLines || cart.cartLines.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">Your cart is empty</p>
+                <p className="text-muted-foreground mb-4">Giỏ hàng của bạn đang trống</p>
                 <Button onClick={() => router.push('/products')}>
-                  Continue Shopping
+                  Tiếp tục mua sắm
                 </Button>
               </div>
             ) : (
@@ -175,7 +173,7 @@ export default function CartPage() {
                     <div className="flex-1">
                       <h3 className="font-semibold">{line.name || 'Product'}</h3>
                       <p className="text-sm text-muted-foreground">
-                        ${parseFloat(String(line.unitPrice)).toFixed(2)} each
+                        {formatVnd(line.unitPrice)} / sản phẩm
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -197,7 +195,7 @@ export default function CartPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold">
-                        ${(parseFloat(String(line.unitPrice)) * line.quantity).toFixed(2)}
+                        {formatVnd(parseFloat(String(line.unitPrice)) * line.quantity)}
                       </p>
                     </div>
                     <Button
@@ -215,15 +213,15 @@ export default function CartPage() {
           {cart?.cartLines && cart.cartLines.length > 0 && (
             <CardFooter className="flex flex-col space-y-4">
               <div className="flex justify-between text-xl font-bold">
-                <span>Total:</span>
-                <span>${calculateTotal().toFixed(2)}</span>
+                <span>Tổng cộng:</span>
+                <span>{formatVnd(calculateTotal())}</span>
               </div>
               <div className="flex space-x-2 w-full">
                 <Button variant="outline" onClick={clearCart} className="flex-1">
-                  Clear Cart
+                  Xóa giỏ hàng
                 </Button>
                 <Button onClick={checkout} className="flex-1">
-                  Checkout
+                  Đặt hàng
                 </Button>
               </div>
             </CardFooter>

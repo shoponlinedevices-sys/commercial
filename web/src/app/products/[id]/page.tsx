@@ -9,7 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
-import Navigation from '@/components/Navigation';
+import Header from '@/components/Header';
+import { formatVnd } from '@/lib/formatters';
 import Image from 'next/image';
 
 export default function ProductDetailPage() {
@@ -55,11 +56,11 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <Navigation />
+        <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading product...</p>
+            <p className="mt-4 text-muted-foreground">Đang tải sản phẩm...</p>
           </div>
         </div>
       </div>
@@ -69,13 +70,13 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen">
-        <Navigation />
+        <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <p className="text-muted-foreground">Product not found</p>
             <Button onClick={() => router.push('/products')} className="mt-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Products
+              Quay lại sản phẩm
             </Button>
           </div>
         </div>
@@ -85,15 +86,15 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      <div className="container mx-auto px-4 py-8">
+      <Header />
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <Button
           variant="ghost"
           onClick={() => router.push('/products')}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Products
+          Quay lại sản phẩm
         </Button>
 
         <Card>
@@ -124,11 +125,11 @@ export default function ProductDetailPage() {
               <CardContent className="p-0 space-y-4">
                 <div className="flex items-center space-x-3">
                   <span className="text-4xl font-bold text-primary">
-                    ${product.price}
+                    {formatVnd(product.price)}
                   </span>
                   {product.oldPrice && (
                     <span className="text-xl text-muted-foreground line-through">
-                      ${product.oldPrice}
+                      {formatVnd(product.oldPrice)}
                     </span>
                   )}
                 </div>
@@ -138,13 +139,13 @@ export default function ProductDetailPage() {
                 )}
 
                 <div>
-                  <h3 className="font-semibold mb-2">Description</h3>
+                  <h3 className="font-semibold mb-2">Mô tả sản phẩm</h3>
                   <p className="text-muted-foreground">{product.description}</p>
                 </div>
 
                 {product.sku && (
                   <div>
-                    <span className="text-sm text-muted-foreground">SKU: {product.sku}</span>
+                    <span className="text-sm text-muted-foreground">Mã sản phẩm: {product.sku}</span>
                   </div>
                 )}
 
@@ -162,7 +163,7 @@ export default function ProductDetailPage() {
 
                 <Button size="lg" className="w-full" onClick={addToCart}>
                   <ShoppingCart className="h-5 w-5 mr-2" />
-                  Add to Cart
+                  Thêm vào giỏ hàng
                 </Button>
               </CardContent>
             </div>

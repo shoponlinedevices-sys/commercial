@@ -82,6 +82,33 @@ export class DatabaseOrderRepository implements OrderRepository {
     );
   }
 
+  async findAll(): Promise<Order[]> {
+    const orders = await this.orderRepo.find({ order: { createdAt: 'DESC' } });
+    return orders.map((order) => new Order(
+      order.id!,
+      order.userId!,
+      parseFloat(order.totalPrice || '0'),
+      this.mapStatusToString(order.status || 1),
+      order.createdAt!,
+      order.updatedAt!,
+    ));
+  }
+
+  async updateStatus(orderId: string, status: string): Promise<Order> {
+    const order = await this.orderRepo.findOne({ where: { id: Number(orderId) } });
+    if (!order) throw new Error('Order not found');
+    order.status = this.mapStringToStatus(status);
+    const savedOrder = await this.orderRepo.save(order);
+    return new Order(
+      savedOrder.id!,
+      savedOrder.userId!,
+      parseFloat(savedOrder.totalPrice || '0'),
+      this.mapStatusToString(savedOrder.status || 1),
+      savedOrder.createdAt!,
+      savedOrder.updatedAt!,
+    );
+  }
+
   private mapStatusToString(status: number): string {
     switch (status) {
       case 1:
@@ -96,6 +123,23 @@ export class DatabaseOrderRepository implements OrderRepository {
         return 'cancelled';
       default:
         return 'pending';
+    }
+  }
+
+  private mapStringToStatus(status: string): number {
+    switch (status) {
+      case 'confirmed':
+      case 'processing':
+        return 2;
+      case 'shipped':
+        return 3;
+      case 'delivered':
+      case 'completed':
+        return 4;
+      case 'cancelled':
+        return 5;
+      default:
+        return 1;
     }
   }
 }

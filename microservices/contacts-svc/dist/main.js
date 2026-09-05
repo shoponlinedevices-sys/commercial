@@ -12,14 +12,20 @@ async function bootstrap() {
     const microservice = app.connectMicroservice({
         transport: microservices_1.Transport.GRPC,
         options: {
-            package: 'contacts',
-            protoPath: (0, path_1.join)(__dirname, '../../../packages/contracts/proto/contacts.proto'),
+            package: ['contacts', 'auth'],
+            protoPath: [
+                (0, path_1.join)(__dirname, '../../../packages/contracts/proto/contacts.proto'),
+                (0, path_1.join)(__dirname, '../../../packages/contracts/proto/auth.proto'),
+            ],
+            loader: {
+                keepCase: true,
+            },
             url: `0.0.0.0:${process.env.GRPC_PORT || 50054}`,
         },
     });
     await app.startAllMicroservices();
     await app.listen(process.env.PORT || 3004);
-    console.log(`Contacts-svc Service gRPC running on port ${process.env.GRPC_PORT || 3004}`);
+    console.log(`Contacts-svc Service gRPC running on port ${process.env.GRPC_PORT || 50054}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

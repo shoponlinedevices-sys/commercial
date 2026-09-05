@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { CartProvider } from "@/context/CartContext";
 import { NotificationProvider } from "@/context/NotificationContext";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Commercial Web App",
-  description: "Modern e-commerce web application",
+  title: "Commercial | Thiết bị và dụng cụ chất lượng",
+  description: "Mua sắm thiết bị, dụng cụ và sản phẩm công nghiệp tại Commercial.",
 };
 
 export const viewport = {
@@ -25,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="vi" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <meta name="format-detection" content="telephone=no" />
       </head>
@@ -33,7 +35,12 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <CartProvider>
-              <NotificationProvider>{children}</NotificationProvider>
+              <NotificationProvider>
+                <Suspense fallback={null}>
+                  {children}
+                  <Footer />
+                </Suspense>
+              </NotificationProvider>
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

@@ -3,7 +3,7 @@
 
 export const API_CONFIG = {
   // Gateway URL (port 3000) - primary endpoint for cart, orders, notifications
-  GATEWAY_URL: process.env.PUBLIC_GATEWAY || 'http://localhost:4000',
+  GATEWAY_URL: process.env.NEXT_PUBLIC_GATEWAY || 'http://localhost:4000',
   
   // Direct microservice URLs (fallback)
   AUTH_SERVICE_URL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || 'http://localhost:3006',
@@ -15,6 +15,7 @@ export const API_CONFIG = {
 
 // Use gateway as primary API endpoint for auth, cart, orders, notifications
 export const API_BASE_URL = API_CONFIG.GATEWAY_URL;
+export const GATEWAY_URL = API_CONFIG.GATEWAY_URL;
 
 // Use products service directly for products (matching mobile app behavior)
 export const PRODUCTS_BASE_URL = API_CONFIG.PRODUCTS_SERVICE_URL;
@@ -22,8 +23,8 @@ export const PRODUCTS_BASE_URL = API_CONFIG.PRODUCTS_SERVICE_URL;
 // Use gateway for cart (matching mobile app behavior - cart endpoints are on gateway)
 export const CART_BASE_URL = API_CONFIG.GATEWAY_URL;
 
-// Use orders service directly for orders (matching mobile app behavior - order endpoints are on orders service)
-export const ORDERS_BASE_URL = API_CONFIG.ORDERS_SERVICE_URL;
+// Use the gateway for orders so browser requests do not target a user's localhost.
+export const ORDERS_BASE_URL = API_CONFIG.GATEWAY_URL;
 
 // Use gateway for notifications (gateway has notification endpoints and database access)
 export const NOTIFICATION_BASE_URL = API_CONFIG.GATEWAY_URL;

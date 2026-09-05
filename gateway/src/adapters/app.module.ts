@@ -11,6 +11,7 @@ import { DeliveryAddressModule } from './delivery-address/delivery-address.modul
 import { PaymentMethodModule } from './payment-method/payment-method.module';
 import { EmailModule } from './email/email.module';
 import { FeatureSettingsModule } from './feature-settings/feature-settings.module';
+import { GrpcClientsModule } from '../infrastructure/grpc/grpc-clients.module';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { FeatureSettingsModule } from './feature-settings/feature-settings.modul
       isGlobal: true,
       envFilePath: '.env',
     }),
-    CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule, FeatureSettingsModule
+    GrpcClientsModule, CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule, FeatureSettingsModule
   ],
 })
 export class AppModule {}

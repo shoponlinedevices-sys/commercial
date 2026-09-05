@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CreditCard, Plus, Edit, Trash2, ArrowLeft, Check, Settings } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import { useRouter } from 'next/navigation';
 import {
@@ -153,8 +152,7 @@ export default function PaymentMethodPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex">
-        <Sidebar />
-        <div className="flex-1 lg:ml-64">
+        <div className="flex-1">
           <Header />
           <div className="container mx-auto px-4 py-8 mt-16">
             <div className="text-center">
@@ -169,8 +167,7 @@ export default function PaymentMethodPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar />
-      <div className="flex-1 lg:ml-64">
+      <div className="flex-1">
         <Header />
         <div className="container mx-auto px-4 py-8 mt-16">
         <Button

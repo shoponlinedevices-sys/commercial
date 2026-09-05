@@ -20,8 +20,8 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
 
   const navItems = [
     { href: '/', icon: Home, label: 'Trang chủ' },
-    { href: '/orders', icon: Package, label: 'Đơn hàng' },
     { href: '/products', icon: ShoppingCart, label: 'Sản phẩm' },
+    { href: '/orders', icon: Package, label: 'Đơn hàng' },
     { href: '/account', icon: User, label: 'Tài khoản' },
   ];
 
@@ -78,7 +78,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
           </nav>
 
           {/* User Info & Logout */}
-          <div className={`pt-6 border-t ${colors.darkMode ? 'border-white/20' : 'border-gray-200'}`}>
+          {user ? <div className={`pt-6 border-t ${colors.darkMode ? 'border-white/20' : 'border-gray-200'}`}>
             <div className={`flex items-center space-x-3 mb-3 p-3 rounded-xl ${colors.darkMode ? 'bg-white/10' : 'bg-gray-100'}`}>
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
                 {user?.username?.charAt(0).toUpperCase() || 'U'}
@@ -100,7 +100,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
               <LogOut className="h-4 w-4 mr-2" />
               Đăng xuất
             </Button>
-          </div>
+          </div> : <Link href="/login" onClick={onClose} className="border-t pt-6 text-sm font-semibold text-primary">Đăng nhập để mua hàng</Link>}
         </div>
       </aside>
     </>

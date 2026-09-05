@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FeatureSettingsController = void 0;
 const common_1 = require("@nestjs/common");
+const microservices_1 = require("@nestjs/microservices");
 const feature_settings_service_1 = require("./feature-settings.service");
 let FeatureSettingsController = class FeatureSettingsController {
     constructor(featureSettingsService) {
@@ -39,6 +40,25 @@ let FeatureSettingsController = class FeatureSettingsController {
             updateData.endTime = new Date(body.endTime);
         }
         return this.featureSettingsService.updateSetting(featureKey, updateData);
+    }
+    async getAllSettingsGrpc() {
+        return { settings: await this.featureSettingsService.getAllSettings() };
+    }
+    async getEnabledSettingsGrpc() {
+        return { settings: await this.featureSettingsService.getEnabledSettings() };
+    }
+    async getSettingByKeyGrpc(data) {
+        return { setting: await this.featureSettingsService.getSettingByKey(data.featureKey) };
+    }
+    async updateSettingGrpc(data) {
+        return {
+            setting: await this.featureSettingsService.updateSetting(data.featureKey, {
+                isEnabled: data.isEnabled,
+                config: data.config ? JSON.parse(data.config) : undefined,
+                startTime: data.startTime ? new Date(data.startTime) : undefined,
+                endTime: data.endTime ? new Date(data.endTime) : undefined,
+            }),
+        };
     }
 };
 exports.FeatureSettingsController = FeatureSettingsController;
@@ -69,6 +89,30 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], FeatureSettingsController.prototype, "updateSetting", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('FeatureSettingsService', 'GetAllSettings'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FeatureSettingsController.prototype, "getAllSettingsGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('FeatureSettingsService', 'GetEnabledSettings'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FeatureSettingsController.prototype, "getEnabledSettingsGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('FeatureSettingsService', 'GetSettingByKey'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FeatureSettingsController.prototype, "getSettingByKeyGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('FeatureSettingsService', 'UpdateSetting'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FeatureSettingsController.prototype, "updateSettingGrpc", null);
 exports.FeatureSettingsController = FeatureSettingsController = __decorate([
     (0, common_1.Controller)('feature-settings'),
     __metadata("design:paramtypes", [feature_settings_service_1.FeatureSettingsService])

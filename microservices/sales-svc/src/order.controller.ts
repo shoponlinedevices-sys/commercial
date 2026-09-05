@@ -14,6 +14,11 @@ export class OrderController {
     return this.orderService.getUserOrders(userId);
   }
 
+  @Get()
+  async getAllOrders() {
+    return this.orderService.getAllOrders();
+  }
+
   @Get(':id')
   async getOrderById(@Param('id') id: string) {
     return this.orderService.getOrderById(id);

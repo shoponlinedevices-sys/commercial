@@ -11,6 +11,7 @@ export declare class NotificationController {
         error: string;
         messageId?: undefined;
     }>;
+    createNotificationGrpc(data: any): Promise<import("./notification.entity").NotificationEntity>;
     getUserNotifications(userId: string): Promise<import("./notification.entity").NotificationEntity[]>;
     createNotification(body: {
         userId: string;

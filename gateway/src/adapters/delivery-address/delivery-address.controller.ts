@@ -1,23 +1,27 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { DeliveryAddressService, DeliveryAddress } from '../../application/delivery-address/delivery-address.service';
+import { ContactsGrpcClient } from '../../infrastructure/grpc/contacts-grpc.client';
 
 @Controller('delivery-address')
 export class DeliveryAddressController {
-  constructor(private readonly deliveryAddressService: DeliveryAddressService) {}
+  constructor(private readonly contactsClient: ContactsGrpcClient) {}
 
   @Get('user/:userId')
   async getAddresses(@Param('userId') userId: string): Promise<DeliveryAddress[]> {
-    return await this.deliveryAddressService.getAddresses(parseInt(userId));
+    const response: any = await this.contactsClient.getDeliveryAddresses({ userId: parseInt(userId) });
+    return response.addresses || [];
   }
 
   @Get(':id')
   async getAddress(@Param('id') id: string): Promise<DeliveryAddress | null> {
-    return await this.deliveryAddressService.getAddress(parseInt(id));
+    const response: any = await this.contactsClient.getDeliveryAddress({ id: parseInt(id) });
+    return response.address || null;
   }
 
   @Get('default/:userId')
   async getDefaultAddress(@Param('userId') userId: string): Promise<DeliveryAddress | null> {
-    return await this.deliveryAddressService.getDefaultAddress(parseInt(userId));
+    const response: any = await this.contactsClient.getDefaultDeliveryAddress({ userId: parseInt(userId) });
+    return response.address || null;
   }
 
   @Post('user/:userId')
@@ -25,7 +29,8 @@ export class DeliveryAddressController {
     @Param('userId') userId: string,
     @Body() data: Omit<DeliveryAddress, 'id' | 'user_id'>,
   ): Promise<DeliveryAddress> {
-    return await this.deliveryAddressService.createAddress(parseInt(userId), data);
+    const response: any = await this.contactsClient.createDeliveryAddress({ userId: parseInt(userId), ...data });
+    return response.address;
   }
 
   @Put(':id')
@@ -33,12 +38,13 @@ export class DeliveryAddressController {
     @Param('id') id: string,
     @Body() data: Partial<DeliveryAddress>,
   ): Promise<DeliveryAddress> {
-    return await this.deliveryAddressService.updateAddress(parseInt(id), data);
+    const response: any = await this.contactsClient.updateDeliveryAddress({ id: parseInt(id), ...data });
+    return response.address;
   }
 
   @Delete(':id')
   async deleteAddress(@Param('id') id: string): Promise<void> {
-    await this.deliveryAddressService.deleteAddress(parseInt(id));
+    await this.contactsClient.deleteDeliveryAddress({ id: parseInt(id) });
   }
 
   @Put('default/:userId/:addressId')
@@ -46,6 +52,6 @@ export class DeliveryAddressController {
     @Param('userId') userId: string,
     @Param('addressId') addressId: string,
   ): Promise<void> {
-    await this.deliveryAddressService.setDefaultAddress(parseInt(userId), parseInt(addressId));
+    await this.contactsClient.setDefaultDeliveryAddress({ userId: parseInt(userId), addressId: parseInt(addressId) });
   }
 }
