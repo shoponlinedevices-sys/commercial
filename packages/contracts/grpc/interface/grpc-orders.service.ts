@@ -5,7 +5,7 @@ import * as OrdersModel from "../../model/orders/orders.model";
 export interface IGrpcOrdersService {
   // Orders
   getUserOrders(input?: OrdersModel.IGetUserOrdersRequest, metadata?: Metadata): Observable<OrdersModel.IGetUserOrdersResponse>;
-  getAllOrders(input?: {}, metadata?: Metadata): Observable<{ orders: OrdersModel.IOrder[] }>;
+  getAllOrders(input?: OrdersModel.IGetAllOrdersRequest, metadata?: Metadata): Observable<{ orders: OrdersModel.IOrder[] }>;
   getOrder(input?: OrdersModel.IGetOrderRequest, metadata?: Metadata): Observable<OrdersModel.IGetOrderResponse>;
   createOrder(input?: OrdersModel.ICreateOrderRequest, metadata?: Metadata): Observable<OrdersModel.ICreateOrderResponse>;
   updateOrderStatus(input?: OrdersModel.IUpdateOrderStatusRequest, metadata?: Metadata): Observable<OrdersModel.IUpdateOrderStatusResponse>;

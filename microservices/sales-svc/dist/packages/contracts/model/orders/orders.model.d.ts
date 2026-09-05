@@ -25,6 +25,11 @@ export interface IGetUserOrdersRequest {
 export interface IGetUserOrdersResponse {
     orders: IOrder[];
 }
+export interface IGetAllOrdersRequest {
+    from?: string;
+    to?: string;
+    statuses?: string[];
+}
 export interface IGetOrderRequest {
     id: string;
 }
@@ -37,6 +42,8 @@ export interface ICreateOrderRequest {
     orderLines: IOrderLine[];
     shippingAddress?: string;
     fcmToken?: string;
+    customerEmail?: string;
+    customerName?: string;
 }
 export interface ICreateOrderResponse {
     order: IOrder;

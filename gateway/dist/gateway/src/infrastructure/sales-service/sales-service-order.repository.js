@@ -29,9 +29,9 @@ let SalesServiceOrderRepository = class SalesServiceOrderRepository {
             productId: parseInt(line.productId, 10), quantity: line.quantity, unitPrice: line.unitPrice,
         })));
     }
-    async createOrder(userId, cartLines, fcmToken) {
+    async createOrder(userId, cartLines, fcmToken, customerEmail, customerName) {
         const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.createOrder({
-            userId: userId.toString(), totalAmount: 0, orderLines: cartLines, fcmToken,
+            userId: userId.toString(), totalAmount: 0, orderLines: cartLines, fcmToken, customerEmail, customerName,
         }));
         return this.toOrder(response.order);
     }
@@ -39,8 +39,8 @@ let SalesServiceOrderRepository = class SalesServiceOrderRepository {
         const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.getUserOrders({ userId: userId.toString() }));
         return (response.orders || []).map((order) => this.toOrder(order));
     }
-    async findAll() {
-        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.getAllOrders({}));
+    async findAll(filters) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.getAllOrders(filters || {}));
         return (response.orders || []).map((order) => this.toOrder(order));
     }
     async updateStatus(orderId, status) {

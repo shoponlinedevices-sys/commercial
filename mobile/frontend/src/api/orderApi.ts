@@ -13,6 +13,8 @@ export interface ICreateOrder {
   totalAmount: number;
   orderLines: IOrderLine[];
   fcmToken?: string;
+  customerEmail?: string;
+  customerName?: string;
 }
 
 export interface IOrder {

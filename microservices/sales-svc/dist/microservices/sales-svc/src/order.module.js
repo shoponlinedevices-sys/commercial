@@ -16,6 +16,9 @@ const order_entity_1 = require("./order.entity");
 const order_line_entity_1 = require("./order-line.entity");
 const cart_entity_1 = require("./cart.entity");
 const cart_line_entity_1 = require("./cart-line.entity");
+const microservices_1 = require("@nestjs/microservices");
+const path_1 = require("path");
+const orders_email_provider_1 = require("./orders-email.provider");
 let OrderModule = class OrderModule {
 };
 exports.OrderModule = OrderModule;
@@ -23,10 +26,22 @@ exports.OrderModule = OrderModule = __decorate([
     (0, common_1.Module)({
         imports: [
             typeorm_1.TypeOrmModule.forFeature([order_entity_1.OrderEntity, order_line_entity_1.OrderLineEntity, cart_entity_1.CartEntity, cart_line_entity_1.CartLineEntity]),
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'GRPC_EMAILS_SERVICE',
+                    transport: microservices_1.Transport.GRPC,
+                    options: {
+                        package: 'email',
+                        protoPath: (0, path_1.join)(__dirname, '../../../packages/contracts/proto/email.proto'),
+                        url: process.env.EMAIL_GRPC_URL || 'localhost:50056',
+                    },
+                },
+            ]),
         ],
         controllers: [order_controller_1.OrderController],
         providers: [
             order_service_1.OrderService,
+            orders_email_provider_1.OrdersEmailProvider,
             {
                 provide: 'DATA_SOURCE',
                 useFactory: (dataSource) => dataSource,

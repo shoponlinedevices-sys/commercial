@@ -23,9 +23,9 @@ export class SalesServiceOrderRepository implements OrderRepository, OnModuleIni
       })));
   }
 
-  async createOrder(userId: number, cartLines: any[], fcmToken?: string): Promise<Order> {
+  async createOrder(userId: number, cartLines: any[], fcmToken?: string, customerEmail?: string, customerName?: string): Promise<Order> {
     const response = await firstValueFrom(this.ordersService.createOrder({
-      userId: userId.toString(), totalAmount: 0, orderLines: cartLines, fcmToken,
+      userId: userId.toString(), totalAmount: 0, orderLines: cartLines, fcmToken, customerEmail, customerName,
     }));
     return this.toOrder(response.order);
   }
@@ -35,8 +35,8 @@ export class SalesServiceOrderRepository implements OrderRepository, OnModuleIni
     return (response.orders || []).map((order) => this.toOrder(order));
   }
 
-  async findAll(): Promise<Order[]> {
-    const response = await firstValueFrom(this.ordersService.getAllOrders({}));
+  async findAll(filters?: { from?: string; to?: string; statuses?: string[] }): Promise<Order[]> {
+    const response = await firstValueFrom(this.ordersService.getAllOrders(filters || {}));
     return (response.orders || []).map((order) => this.toOrder(order));
   }
 

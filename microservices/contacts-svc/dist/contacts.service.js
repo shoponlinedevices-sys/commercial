@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const common_2 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const user_profile_entity_1 = require("./user-profile.entity");
+const user_entity_1 = require("./user.entity");
 const delivery_address_entity_1 = require("./delivery-address.entity");
 const payment_method_entity_1 = require("./payment-method.entity");
 let ContactsService = class ContactsService {
@@ -25,6 +26,9 @@ let ContactsService = class ContactsService {
     }
     get userProfileRepository() {
         return this.dataSource.getRepository(user_profile_entity_1.UserProfileEntity);
+    }
+    get userRepository() {
+        return this.dataSource.getRepository(user_entity_1.User);
     }
     get deliveryAddressRepository() {
         return this.dataSource.getRepository(delivery_address_entity_1.DeliveryAddressEntity);
@@ -36,10 +40,20 @@ let ContactsService = class ContactsService {
         const userProfile = await this.userProfileRepository.findOne({
             where: { id: userId },
         });
-        if (!userProfile) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
             throw new Error('User profile not found');
         }
-        return { userProfile };
+        return {
+            userProfile: {
+                id: user.id,
+                username: userProfile?.username || user.username,
+                fullName: userProfile?.fullName || user.fullName,
+                phone: userProfile?.phone || null,
+                email: userProfile?.email || user.email,
+                avatar: userProfile?.avatar || null,
+            },
+        };
     }
     async updateUserProfile(data) {
         const userProfile = await this.userProfileRepository.findOne({

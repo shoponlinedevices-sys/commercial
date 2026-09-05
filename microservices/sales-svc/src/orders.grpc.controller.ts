@@ -12,8 +12,8 @@ export class OrdersGrpcController {
   }
 
   @GrpcMethod('OrdersService', 'GetAllOrders')
-  async getAllOrders() {
-    return { orders: await this.orderService.getAllOrders() };
+  async getAllOrders(data: { from?: string; to?: string; statuses?: string[] }) {
+    return { orders: await this.orderService.getAllOrders(data) };
   }
 
   @GrpcMethod('OrdersService', 'GetOrder')

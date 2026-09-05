@@ -11,6 +11,8 @@ export const orderService = {
       orderLines: order.orderLines,
       shippingAddress: order.shippingAddress,
       fcmToken: order.fcmToken,
+      customerEmail: order.customerEmail,
+      customerName: order.customerName,
     }, ORDERS_BASE_URL);
   },
 

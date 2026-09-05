@@ -15,13 +15,14 @@ const formatVnd = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'cu
 const statusToLabel: Record<string, Status> = { pending: 'Mới', processing: 'Đang xử lý', completed: 'Đã giao', delivered: 'Đã giao', cancelled: 'Đã hủy' };
 const labelToStatus: Record<Status, string> = { 'Mới': 'pending', 'Đang xử lý': 'processing', 'Đã giao': 'completed', 'Đã hủy': 'cancelled' };
 const mapOrder = (order: GatewayOrder, customerProfile?: UserProfile): Order => {
-  const customer = customerProfile?.full_name || customerProfile?.username || `Khách hàng #${order.userId}`;
+  const customer = customerProfile?.full_name || customerProfile?.username || 'Khách hàng chưa cập nhật tên';
   return { id: `#DH-${order.id}`, userId: order.userId, customer, email: customerProfile?.email || 'Chưa có email', items: order.orderLines?.reduce((sum, line) => sum + line.quantity, 0) || 0, total: Number(order.totalAmount), status: statusToLabel[order.status] || 'Mới', date: new Date(order.createdAt).toLocaleString('vi-VN'), initials: customer.split(' ').map((part) => part[0]).slice(-2).join('').toUpperCase(), tone: 'blue' };
 };
 
 export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
   const [orders, setOrders] = useState<Order[]>([]);
+  const [todayRevenueOrders, setTodayRevenueOrders] = useState<Order[]>([]);
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'Tất cả' | Status>('Tất cả');
   const [showForm, setShowForm] = useState(false);
@@ -53,7 +54,14 @@ export default function Dashboard() {
     if (!token) return;
     setLoading(true);
     setError('');
-    crmApi.getOrders(token).then((data) => {
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date());
+    const startOfDay = new Date(`${today}T00:00:00+07:00`).toISOString();
+    const startOfNextDay = new Date(new Date(`${today}T00:00:00+07:00`).getTime() + 24 * 60 * 60 * 1000).toISOString();
+    Promise.all([
+      crmApi.getOrders(token),
+      crmApi.getOrders(token, { from: startOfDay, to: startOfNextDay, statuses: ['completed', 'delivered'] }),
+    ]).then(([data, revenueData]) => {
+      setTodayRevenueOrders(revenueData.map((order) => mapOrder(order, customerProfiles[String(order.userId)])));
       setOrders(data.map((order) => mapOrder(order, customerProfiles[String(order.userId)])));
       const userIds = Array.from(new Set(data.map((order) => String(order.userId))));
       return Promise.all(userIds.map(async (userId) => {
@@ -90,12 +98,11 @@ export default function Dashboard() {
   }, [query, status, currentPage]);
 
   const stats = useMemo(() => {
-    const todayOrders = orders; // In production, filter by today's date
-    const revenue = todayOrders.reduce((sum, order) => sum + order.total, 0);
-    const pending = todayOrders.filter(o => o.status === 'Mới').length;
+    const revenue = todayRevenueOrders.reduce((sum, order) => sum + order.total, 0);
+    const pending = orders.filter(o => o.status === 'Mới').length;
     const totalOrders = orders.length;
-    return { revenue, pending, todayOrders: todayOrders.length, totalOrders };
-  }, [orders]);
+    return { revenue, pending, todayOrders: todayRevenueOrders.length, totalOrders };
+  }, [orders, todayRevenueOrders]);
 
   const customers = useMemo(() => Array.from(new Map(orders.map((order) => [order.customer, order])).values()), [orders]);
   const navigate = (page: PageType) => {

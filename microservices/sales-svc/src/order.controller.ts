@@ -31,6 +31,8 @@ export class OrderController {
     orderLines: any[];
     shippingAddress?: string;
     fcmToken?: string;
+    customerEmail?: string;
+    customerName?: string;
   }) {
     const result = await this.orderService.createOrder(body);
     return result;

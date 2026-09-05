@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
 import { OrderService } from '../../application/order/order.service';
@@ -16,16 +16,21 @@ export class OrderController {
   @ApiResponse({ status: 201, description: 'Order created successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async createOrder(@Body() body: { userId: number; cartLines: any[]; fcmToken?: string }) {
-    const order = await this.orderService.createOrder(body.userId, body.cartLines, body.fcmToken);
+  async createOrder(@Body() body: { userId: number; cartLines: any[]; fcmToken?: string; customerEmail?: string; customerName?: string }) {
+    const order = await this.orderService.createOrder(body.userId, body.cartLines, body.fcmToken, body.customerEmail, body.customerName);
     return order;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get all orders for CRM' })
-  async getAllOrders() {
-    return this.orderService.findAll();
+  async getAllOrders(
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+    @Query('status') status?: string | string[],
+  ) {
+    const statuses = status ? (Array.isArray(status) ? status : [status]) : undefined;
+    return this.orderService.findAll({ from, to, statuses });
   }
 
   // @UseGuards(JwtAuthGuard)

@@ -57,7 +57,14 @@ export const crmApi = {
       method: 'POST', body: JSON.stringify({ username, password }),
     });
   },
-  getOrders(token: string) { return request<GatewayOrder[]>('/orders', {}, token); },
+  getOrders(token: string, filters?: { from?: string; to?: string; statuses?: string[] }) {
+    const params = new URLSearchParams();
+    if (filters?.from) params.set('from', filters.from);
+    if (filters?.to) params.set('to', filters.to);
+    filters?.statuses?.forEach((status) => params.append('status', status));
+    const query = params.toString();
+    return request<GatewayOrder[]>(`/orders${query ? `?${query}` : ''}`, {}, token);
+  },
   getProducts(token: string) { return request<{ products: GatewayProduct[]; total: number }>('/products', {}, token); },
   getProfile(userId: number, token: string) { return request<UserProfile>(`/user-profile/${userId}`, {}, token); },
   updateProfile(userId: number, data: Partial<UserProfile>, token: string) {

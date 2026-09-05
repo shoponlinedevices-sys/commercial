@@ -22,11 +22,12 @@ let OrderController = class OrderController {
         this.orderService = orderService;
     }
     async createOrder(body) {
-        const order = await this.orderService.createOrder(body.userId, body.cartLines, body.fcmToken);
+        const order = await this.orderService.createOrder(body.userId, body.cartLines, body.fcmToken, body.customerEmail, body.customerName);
         return order;
     }
-    async getAllOrders() {
-        return this.orderService.findAll();
+    async getAllOrders(from, to, status) {
+        const statuses = status ? (Array.isArray(status) ? status : [status]) : undefined;
+        return this.orderService.findAll({ from, to, statuses });
     }
     async getOrdersByUserId(userId) {
         console.log(`[OrderController] getOrdersByUserId called with userId: ${userId}`);
@@ -56,8 +57,11 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all orders for CRM' }),
+    __param(0, (0, common_1.Query)('from')),
+    __param(1, (0, common_1.Query)('to')),
+    __param(2, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "getAllOrders", null);
 __decorate([

@@ -2,16 +2,22 @@ import { DataSource } from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { CartEntity } from './cart.entity';
 import { CartLineEntity } from './cart-line.entity';
+import { OrdersEmailProvider } from './orders-email.provider';
 export declare class OrderService {
     private readonly dataSource;
-    constructor(dataSource: DataSource);
+    private readonly ordersEmailProvider;
+    constructor(dataSource: DataSource, ordersEmailProvider: OrdersEmailProvider);
     private get productRepository();
     private get orderRepository();
     private get orderLineRepository();
     private get cartRepository();
     private get cartLineRepository();
     getUserOrders(userId: string): Promise<OrderEntity[]>;
-    getAllOrders(): Promise<OrderEntity[]>;
+    getAllOrders(filters?: {
+        from?: string;
+        to?: string;
+        statuses?: string[];
+    }): Promise<OrderEntity[]>;
     getOrderById(orderId: string): Promise<OrderEntity>;
     createOrder(data: {
         userId: string;
@@ -19,6 +25,8 @@ export declare class OrderService {
         orderLines: any[];
         shippingAddress?: string;
         fcmToken?: string;
+        customerEmail?: string;
+        customerName?: string;
     }): Promise<OrderEntity>;
     updateOrderStatus(orderId: string, status: string): Promise<OrderEntity>;
     findAllCarts(): Promise<{

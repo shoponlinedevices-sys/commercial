@@ -1,0 +1,61 @@
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [33m   WARN[39m [38;5;3m[ModuleTokenFactory] [39m[33mThe module "ClientsModule" is taking 46.84ms to serialize, this may be caused by larger objects statically assigned to the module. More details: https://github.com/nestjs/nest/issues/12738[39m[38;5;3m +60ms[39m
+[33m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [33m   WARN[39m [38;5;3m[ModuleTokenFactory] [39m[33mThe module "ClientsModule" is taking 55.59ms to serialize, this may be caused by larger objects statically assigned to the module. More details: https://github.com/nestjs/nest/issues/12738[39m[38;5;3m +67ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTypeOrmModule dependencies initialized[39m[38;5;3m +12ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mClientsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mClientsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mClientsModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mProductModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mContactsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:03 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[90m[4mquery:[24m[39m [94mSELECT[0m [95mversion[0m[37m([0m[37m)[0m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTypeOrmCoreModule dependencies initialized[39m[38;5;3m +237ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTypeOrmModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTypeOrmModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOrderModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFeatureSettingsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[NestMicroservice] [39m[32mNest microservice successfully started[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCartController {/cart}:[39m[38;5;3m +270ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/cart, GET} route[39m[38;5;3m +5ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/cart/:id, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/cart/by-user-id/:userId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/cart, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/cart/lines/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/cart/lines/user/:userId, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/cart/user/:userId, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOrdersGrpcController {/}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOrderController {/orders}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/orders/user/:userId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/orders, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/orders/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/orders, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/orders/:id/status, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFeatureSettingsController {/feature-settings}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/feature-settings, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/feature-settings/enabled, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/feature-settings/:featureKey, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/feature-settings/:featureKey, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mProductController {/products}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/products, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/products/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mContactsController {/}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/user-profile/:userId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/user-profile/:userId, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/delivery-address/user/:userId, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/delivery-address/:id, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/delivery-address/default/:userId, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/delivery-address/user/:userId, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/delivery-address/:id, PUT} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/delivery-address/:id, DELETE} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/delivery-address/default/:userId/:addressId, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/payment-method/user/:userId, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/payment-method/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/payment-method/default/:userId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/payment-method/user/:userId, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/payment-method/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/payment-method/:id, DELETE} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/payment-method/default/:userId/:paymentMethodId, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 80968  - [39m09/05/2026, 8:20:04 PM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +16ms[39m
+Sales-svc Service gRPC running on port 50055

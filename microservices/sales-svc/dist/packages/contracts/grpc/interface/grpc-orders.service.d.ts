@@ -3,7 +3,7 @@ import { Observable } from "rxjs";
 import * as OrdersModel from "../../model/orders/orders.model";
 export interface IGrpcOrdersService {
     getUserOrders(input?: OrdersModel.IGetUserOrdersRequest, metadata?: Metadata): Observable<OrdersModel.IGetUserOrdersResponse>;
-    getAllOrders(input?: {}, metadata?: Metadata): Observable<{
+    getAllOrders(input?: OrdersModel.IGetAllOrdersRequest, metadata?: Metadata): Observable<{
         orders: OrdersModel.IOrder[];
     }>;
     getOrder(input?: OrdersModel.IGetOrderRequest, metadata?: Metadata): Observable<OrdersModel.IGetOrderResponse>;

@@ -20,7 +20,6 @@ import {
 } from '../../api/cartApi';
 import { createOrder } from '../../api/orderApi';
 import { createNotification } from '../../api/notificationApi';
-import { sendOrderConfirmationEmail } from '../../api/emailApi';
 import { getFcmToken } from '../../api/tokenStorage';
 import { useAuth } from '../../context/AuthContext';
 
@@ -227,6 +226,8 @@ const CartScreen: React.FC<Props> = ({
         totalAmount,
         orderLines,
         fcmToken: fcmToken || undefined,
+        customerEmail: userInfo?.email,
+        customerName: userInfo?.username,
       });
 
       // Create notification (non-blocking)
@@ -261,33 +262,6 @@ const CartScreen: React.FC<Props> = ({
           orderResponse: orderResponse,
         });
         // Don't block order placement if notification fails
-      }
-
-      // Send email notification if user has email (non-blocking)
-      if (userInfo?.email && userInfo.email.trim() !== '' && orderResponse?.id) {
-        try {
-          console.log('[Email] Sending order confirmation email to:', userInfo.email);
-          const emailResponse = await sendOrderConfirmationEmail(
-            userInfo.email,
-            {
-              orderId: orderResponse?.id,
-              totalAmount,
-              orderLines: cartItems.map(item => ({
-                productId: String(item.productId),
-                productName: item.name || 'Sản phẩm',
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                totalPrice: item.unitPrice * item.quantity,
-                productImage: item.image,
-              })),
-              customerName: userInfo?.username,
-            },
-          );
-          console.log('[Email] Email sent successfully:', emailResponse);
-        } catch (emailError: any) {
-          console.error('[Email] Failed to send email:', emailError);
-          // Don't block order placement if email sending fails
-        }
       }
 
       await clearCartByUserId(userInfo?.id || 0);

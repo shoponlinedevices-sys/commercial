@@ -86,6 +86,8 @@ export interface CreateOrder {
   orderLines: OrderLine[];
   fcmToken?: string;
   shippingAddress?: string;
+  customerEmail?: string;
+  customerName?: string;
 }
 
 export interface Order {

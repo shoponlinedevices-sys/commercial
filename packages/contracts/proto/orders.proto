@@ -29,7 +29,11 @@ message GetUserOrdersResponse {
   repeated Order orders = 1;
 }
 
-message GetAllOrdersRequest {}
+message GetAllOrdersRequest {
+  string from = 1;
+  string to = 2;
+  repeated string statuses = 3;
+}
 
 message GetAllOrdersResponse {
   repeated Order orders = 1;
@@ -49,6 +53,8 @@ message CreateOrderRequest {
   repeated OrderLine orderLines = 3;
   string shippingAddress = 4;
   string fcmToken = 5;
+  string customerEmail = 6;
+  string customerName = 7;
 }
 
 message CreateOrderResponse {

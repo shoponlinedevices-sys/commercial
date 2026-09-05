@@ -21,9 +21,15 @@ const order_line_entity_1 = require("./order-line.entity");
 const cart_entity_1 = require("./cart.entity");
 const cart_line_entity_1 = require("./cart-line.entity");
 const product_entity_1 = require("./product.entity");
+const orders_email_provider_1 = require("./orders-email.provider");
+const ORDER_EMAIL_RECIPIENTS = [
+    'shoponlinedevices@gmail.com',
+    'hieuquan90@gmail.com',
+];
 let OrderService = class OrderService {
-    constructor(dataSource) {
+    constructor(dataSource, ordersEmailProvider) {
         this.dataSource = dataSource;
+        this.ordersEmailProvider = ordersEmailProvider;
     }
     get productRepository() {
         return this.dataSource.getRepository(product_entity_1.ProductEntity);
@@ -46,8 +52,22 @@ let OrderService = class OrderService {
             order: { createdAt: 'DESC' },
         });
     }
-    async getAllOrders() {
+    async getAllOrders(filters = {}) {
+        const where = {};
+        if (filters.from && filters.to) {
+            where.createdAt = (0, typeorm_1.And)((0, typeorm_1.MoreThanOrEqual)(new Date(filters.from)), (0, typeorm_1.LessThan)(new Date(filters.to)));
+        }
+        else if (filters.from) {
+            where.createdAt = (0, typeorm_1.MoreThanOrEqual)(new Date(filters.from));
+        }
+        else if (filters.to) {
+            where.createdAt = (0, typeorm_1.LessThan)(new Date(filters.to));
+        }
+        if (filters.statuses?.length) {
+            where.status = (0, typeorm_1.In)(filters.statuses);
+        }
         return this.orderRepository.find({
+            where,
             order: { createdAt: 'DESC' },
             relations: ['orderLines'],
         });
@@ -58,7 +78,7 @@ let OrderService = class OrderService {
         });
     }
     async createOrder(data) {
-        return this.dataSource.transaction(async (manager) => {
+        const order = await this.dataSource.transaction(async (manager) => {
             const order = manager.create(order_entity_1.OrderEntity, {
                 userId: data.userId,
                 totalAmount: data.totalAmount,
@@ -86,6 +106,38 @@ let OrderService = class OrderService {
                 relations: ['orderLines'],
             });
         });
+        const recipients = [
+            ...ORDER_EMAIL_RECIPIENTS,
+            ...(data.customerEmail && !ORDER_EMAIL_RECIPIENTS.includes(data.customerEmail)
+                ? [data.customerEmail]
+                : []),
+        ];
+        const orderLines = (order?.orderLines || []).map((line) => ({
+            productId: String(line.productId),
+            productName: 'Sản phẩm',
+            quantity: line.quantity,
+            unitPrice: Number(line.unitPrice),
+            totalPrice: Number(line.totalPrice),
+        }));
+        await Promise.all(recipients.map(async (to) => {
+            try {
+                const response = await this.ordersEmailProvider.sendOrderConfirmationEmail({
+                    to,
+                    orderId: String(order.id),
+                    totalAmount: Number(order.totalAmount),
+                    orderLines,
+                    shippingAddress: order.shippingAddress,
+                    customerName: data.customerName,
+                });
+                if (!response.success) {
+                    console.error(`[OrderEmail] Failed to send order ${order.id} email to ${to}: ${response.error || 'unknown error'}`);
+                }
+            }
+            catch (error) {
+                console.error(`[OrderEmail] Error sending order ${order.id} email to ${to}:`, error);
+            }
+        }));
+        return order;
     }
     async updateOrderStatus(orderId, status) {
         const order = await this.orderRepository.findOne({ where: { id: orderId } });
@@ -241,6 +293,7 @@ exports.OrderService = OrderService;
 exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_2.Inject)('DATA_SOURCE')),
-    __metadata("design:paramtypes", [typeorm_1.DataSource])
+    __metadata("design:paramtypes", [typeorm_1.DataSource,
+        orders_email_provider_1.OrdersEmailProvider])
 ], OrderService);
 //# sourceMappingURL=order.service.js.map

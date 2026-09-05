@@ -7,7 +7,11 @@ export declare class OrdersGrpcController {
     }): Promise<{
         orders: import("./order.entity").OrderEntity[];
     }>;
-    getAllOrders(): Promise<{
+    getAllOrders(data: {
+        from?: string;
+        to?: string;
+        statuses?: string[];
+    }): Promise<{
         orders: import("./order.entity").OrderEntity[];
     }>;
     getOrder(data: {

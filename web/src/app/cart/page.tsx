@@ -102,6 +102,8 @@ export default function CartPage() {
           quantity: line.quantity,
           unitPrice: line.unitPrice.toString(),
         })),
+        customerEmail: user!.email,
+        customerName: user!.username,
       });
 
       alert('Đã tạo đơn hàng thành công');

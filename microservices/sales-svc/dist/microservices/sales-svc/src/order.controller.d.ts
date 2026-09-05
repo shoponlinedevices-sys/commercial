@@ -11,6 +11,8 @@ export declare class OrderController {
         orderLines: any[];
         shippingAddress?: string;
         fcmToken?: string;
+        customerEmail?: string;
+        customerName?: string;
     }): Promise<import("./order.entity").OrderEntity>;
     updateOrderStatus(id: string, body: {
         status: string;

@@ -6,10 +6,18 @@ export declare class ContactsService {
     private readonly dataSource;
     constructor(dataSource: DataSource);
     private get userProfileRepository();
+    private get userRepository();
     private get deliveryAddressRepository();
     private get paymentMethodRepository();
     getUserProfile(userId: number): Promise<{
-        userProfile: UserProfileEntity;
+        userProfile: {
+            id: number;
+            username: string;
+            fullName: string;
+            phone: string;
+            email: string;
+            avatar: string;
+        };
     }>;
     updateUserProfile(data: {
         userId: number;

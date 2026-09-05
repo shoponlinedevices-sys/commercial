@@ -3,7 +3,14 @@ export declare class ContactsController {
     private readonly contactsService;
     constructor(contactsService: ContactsService);
     getUserProfile(userId: string): Promise<{
-        userProfile: import("./user-profile.entity").UserProfileEntity;
+        userProfile: {
+            id: number;
+            username: string;
+            fullName: string;
+            phone: string;
+            email: string;
+            avatar: string;
+        };
     }>;
     updateUserProfile(userId: string, body: any): Promise<{
         userProfile: import("./user-profile.entity").UserProfileEntity;
@@ -53,7 +60,14 @@ export declare class ContactsController {
     getUserProfileGrpc(data: {
         userId: number;
     }): Promise<{
-        userProfile: import("./user-profile.entity").UserProfileEntity;
+        userProfile: {
+            id: number;
+            username: string;
+            fullName: string;
+            phone: string;
+            email: string;
+            avatar: string;
+        };
     }>;
     updateUserProfileGrpc(data: any): Promise<{
         userProfile: import("./user-profile.entity").UserProfileEntity;

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { UserProfileEntity } from './user-profile.entity';
+import { User } from './user.entity';
 import { DeliveryAddressEntity } from './delivery-address.entity';
 import { PaymentMethodEntity } from './payment-method.entity';
 
@@ -14,6 +15,10 @@ export class ContactsService {
 
   private get userProfileRepository() {
     return this.dataSource.getRepository(UserProfileEntity);
+  }
+
+  private get userRepository() {
+    return this.dataSource.getRepository(User);
   }
 
   private get deliveryAddressRepository() {
@@ -30,11 +35,21 @@ export class ContactsService {
       where: { id: userId },
     });
 
-    if (!userProfile) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
       throw new Error('User profile not found');
     }
 
-    return { userProfile };
+    return {
+      userProfile: {
+        id: user.id,
+        username: userProfile?.username || user.username,
+        fullName: userProfile?.fullName || user.fullName,
+        phone: userProfile?.phone || null,
+        email: userProfile?.email || user.email,
+        avatar: userProfile?.avatar || null,
+      },
+    };
   }
 
   async updateUserProfile(data: {

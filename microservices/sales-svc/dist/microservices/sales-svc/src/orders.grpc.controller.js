@@ -20,8 +20,8 @@ let OrdersGrpcController = class OrdersGrpcController {
     async getUserOrders(data) {
         return { orders: await this.orderService.getUserOrders(data.userId) };
     }
-    async getAllOrders() {
-        return { orders: await this.orderService.getAllOrders() };
+    async getAllOrders(data) {
+        return { orders: await this.orderService.getAllOrders(data) };
     }
     async getOrder(data) {
         return { order: await this.orderService.getOrderById(data.id) };
@@ -64,7 +64,7 @@ __decorate([
 __decorate([
     (0, microservices_1.GrpcMethod)('OrdersService', 'GetAllOrders'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersGrpcController.prototype, "getAllOrders", null);
 __decorate([
