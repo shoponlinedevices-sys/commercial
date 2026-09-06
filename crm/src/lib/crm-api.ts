@@ -46,6 +46,26 @@ async function request<T>(endpoint: string, options: RequestInit = {}, token?: s
       ...options.headers,
     },
   });
+
+  if (response.status === 401 && token && endpoint !== '/auth/refresh') {
+    const refreshToken = localStorage.getItem('crm_refresh_token');
+    if (refreshToken) {
+      const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+      if (refreshResponse.ok) {
+        const refreshed = await refreshResponse.json() as { access_token: string };
+        localStorage.setItem('crm_access_token', refreshed.access_token);
+        return request<T>(endpoint, options, refreshed.access_token);
+      }
+    }
+    localStorage.removeItem('crm_access_token');
+    localStorage.removeItem('crm_refresh_token');
+    localStorage.removeItem('crm_user');
+  }
+
   const data = await response.json().catch(() => null);
   if (!response.ok) throw new Error(data?.message || 'Không thể kết nối đến gateway');
   return data as T;

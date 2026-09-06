@@ -82,7 +82,17 @@ export default function Dashboard() {
         setCustomerProfiles((current) => ({ ...current, ...resolvedProfiles }));
         setOrders(data.map((order) => mapOrder(order, resolvedProfiles[String(order.userId)] || customerProfiles[String(order.userId)])));
       });
-    }).catch((requestError: Error) => setError(requestError.message)).finally(() => setLoading(false));
+    }).catch((requestError: Error) => {
+      setError(requestError.message);
+      if (requestError.message.toLowerCase().includes('unauthorized')) {
+        localStorage.removeItem('crm_access_token');
+        localStorage.removeItem('crm_refresh_token');
+        localStorage.removeItem('crm_user');
+        setToken(null);
+        setUser(null);
+        setOrders([]);
+      }
+    }).finally(() => setLoading(false));
   }, [token]);
 
   useEffect(() => {
@@ -185,6 +195,7 @@ export default function Dashboard() {
     try {
       const result = await crmApi.login(String(data.get('username')), String(data.get('password')));
       localStorage.setItem('crm_access_token', result.access_token);
+      localStorage.setItem('crm_refresh_token', result.refresh_token);
       localStorage.setItem('crm_user', JSON.stringify(result.user));
       setToken(result.access_token);
       setUser(result.user);
@@ -197,6 +208,7 @@ export default function Dashboard() {
 
   const logout = () => {
     localStorage.removeItem('crm_access_token');
+    localStorage.removeItem('crm_refresh_token');
     localStorage.removeItem('crm_user');
     setToken(null);
     setUser(null);
