@@ -14,11 +14,14 @@ export type GatewayProduct = {
   id: number;
   name: string;
   price: number | string;
+  oldPrice?: number | string;
   description?: string;
   image?: string;
   sku?: string;
   unit?: string;
+  moq?: string;
   badge?: string;
+  category?: number | string;
 };
 
 export type UserProfile = {
@@ -86,6 +89,9 @@ export const crmApi = {
     return request<GatewayOrder[]>(`/orders${query ? `?${query}` : ''}`, {}, token);
   },
   getProducts(token: string) { return request<{ products: GatewayProduct[]; total: number }>('/products', {}, token); },
+  createProduct(data: Omit<GatewayProduct, 'id'>, token: string) {
+    return request<{ product: GatewayProduct }>('/products', { method: 'POST', body: JSON.stringify(data) }, token);
+  },
   getProfile(userId: number, token: string) { return request<UserProfile>(`/user-profile/${userId}`, {}, token); },
   updateProfile(userId: number, data: Partial<UserProfile>, token: string) {
     return request<UserProfile>(`/user-profile/${userId}`, { method: 'PUT', body: JSON.stringify(data) }, token);

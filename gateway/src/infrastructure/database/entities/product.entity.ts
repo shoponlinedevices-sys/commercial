@@ -31,7 +31,7 @@ export class ProductEntity {
   @Column({ type: 'varchar', length: 50, nullable: true })
   moq?: string;
 
-  @Column({ type: 'varchar', length: 1024, nullable: true, name: 'image' })
+  @Column({ type: 'text', nullable: true, name: 'image' })
   image?: string;
 
   @Column({ type: 'int', nullable: true, name: 'category' })

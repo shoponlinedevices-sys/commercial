@@ -76,4 +76,31 @@ export class ProductService {
 
     return { product };
   }
+
+  async createProduct(input: {
+    name: string;
+    price: number;
+    description?: string;
+    image?: string;
+    oldPrice?: number;
+    badge?: string;
+    sku?: string;
+    unit?: string;
+    moq?: string;
+    category?: string;
+  }) {
+    const product = this.productRepository.create({
+      name: input.name,
+      price: input.price,
+      description: input.description || '',
+      image: input.image || '',
+      oldPrice: input.oldPrice,
+      badge: input.badge,
+      sku: input.sku,
+      unit: input.unit,
+      moq: input.moq,
+      category: input.category,
+    });
+    return { product: await this.productRepository.save(product) };
+  }
 }

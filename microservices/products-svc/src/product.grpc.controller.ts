@@ -23,4 +23,9 @@ export class ProductGrpcController {
 
     return result;
   }
+
+  @GrpcMethod('ProductService', 'CreateProduct')
+  async createProduct(request: any) {
+    return this.productService.createProduct(request);
+  }
 }

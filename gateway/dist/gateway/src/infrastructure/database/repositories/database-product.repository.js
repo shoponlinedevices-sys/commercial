@@ -43,6 +43,24 @@ let DatabaseProductRepository = class DatabaseProductRepository {
             return new product_entity_2.Product(row.id, row.name, Number(row.price), (_a = row.description) !== null && _a !== void 0 ? _a : '', (_b = row.image) !== null && _b !== void 0 ? _b : '', row.oldPrice !== null && row.oldPrice !== undefined ? Number(row.oldPrice) : undefined, (_c = row.badge) !== null && _c !== void 0 ? _c : undefined, (_d = row.sku) !== null && _d !== void 0 ? _d : undefined, (_e = row.unit) !== null && _e !== void 0 ? _e : undefined, (_f = row.moq) !== null && _f !== void 0 ? _f : undefined);
         });
     }
+    async create(data) {
+        var _a, _b, _c, _d, _e, _f;
+        const row = this.productRepo.create({
+            name: data.name,
+            price: data.price,
+            description: data.description,
+            image: data.image,
+            oldPrice: data.oldPrice,
+            badge: data.badge,
+            sku: data.sku,
+            unit: data.unit,
+            moq: data.moq,
+            category: data.category,
+            status: 1,
+        });
+        const saved = await this.productRepo.save(row);
+        return new product_entity_2.Product(saved.id, saved.name, Number(saved.price), (_a = saved.description) !== null && _a !== void 0 ? _a : '', (_b = saved.image) !== null && _b !== void 0 ? _b : '', saved.oldPrice !== null && saved.oldPrice !== undefined ? Number(saved.oldPrice) : undefined, (_c = saved.badge) !== null && _c !== void 0 ? _c : undefined, (_d = saved.sku) !== null && _d !== void 0 ? _d : undefined, (_e = saved.unit) !== null && _e !== void 0 ? _e : undefined, (_f = saved.moq) !== null && _f !== void 0 ? _f : undefined, saved.category);
+    }
 };
 exports.DatabaseProductRepository = DatabaseProductRepository;
 exports.DatabaseProductRepository = DatabaseProductRepository = __decorate([

@@ -30,6 +30,9 @@ let ProductController = class ProductController {
     async getProduct(id) {
         return this.productService.getProduct(parseInt(id));
     }
+    createProduct(body) {
+        return this.productService.createProduct(body);
+    }
 };
 exports.ProductController = ProductController;
 __decorate([
@@ -46,6 +49,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "getProduct", null);
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductController.prototype, "createProduct", null);
 exports.ProductController = ProductController = __decorate([
     (0, common_1.Controller)('products'),
     __metadata("design:paramtypes", [product_service_1.ProductService])

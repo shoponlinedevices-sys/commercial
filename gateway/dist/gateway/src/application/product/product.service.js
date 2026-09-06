@@ -25,6 +25,9 @@ let ProductService = class ProductService {
     findByCategory(categoryId) {
         return this.productRepository.findByCategory(categoryId);
     }
+    create(data) {
+        return this.productRepository.create(data);
+    }
 };
 exports.ProductService = ProductService;
 exports.ProductService = ProductService = __decorate([

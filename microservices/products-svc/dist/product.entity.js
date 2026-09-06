@@ -35,7 +35,7 @@ __decorate([
     __metadata("design:type", String)
 ], ProductEntity.prototype, "description", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)('text', { nullable: true }),
     __metadata("design:type", String)
 ], ProductEntity.prototype, "image", void 0);
 __decorate([

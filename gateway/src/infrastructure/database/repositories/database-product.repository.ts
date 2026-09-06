@@ -67,4 +67,34 @@ export class DatabaseProductRepository implements ProductRepository {
         ),
     );
   }
+
+    async create(data: Omit<Product, 'id'>): Promise<Product> {
+      const row = this.productRepo.create({
+        name: data.name,
+        price: data.price,
+        description: data.description,
+        image: data.image,
+        oldPrice: data.oldPrice,
+        badge: data.badge,
+        sku: data.sku,
+        unit: data.unit,
+        moq: data.moq,
+        category: data.category,
+        status: 1,
+      });
+      const saved = await this.productRepo.save(row);
+      return new Product(
+        saved.id!,
+        saved.name!,
+        Number(saved.price),
+        saved.description ?? '',
+        saved.image ?? '',
+        saved.oldPrice !== null && saved.oldPrice !== undefined ? Number(saved.oldPrice) : undefined,
+        saved.badge ?? undefined,
+        saved.sku ?? undefined,
+        saved.unit ?? undefined,
+        saved.moq ?? undefined,
+        saved.category,
+      );
+    }
 }

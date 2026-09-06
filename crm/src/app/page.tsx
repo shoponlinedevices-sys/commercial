@@ -34,6 +34,8 @@ export default function Dashboard() {
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [savingProduct, setSavingProduct] = useState(false);
   const [notice, setNotice] = useState('');
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<{ id: number; username: string } | null>(null);
@@ -189,6 +191,41 @@ export default function Dashboard() {
     }).catch((requestError: Error) => setError(requestError.message));
   };
 
+  const addProduct = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!token) return;
+    const data = new FormData(event.currentTarget);
+    setSavingProduct(true);
+    setError('');
+    try {
+      const image = String(data.get('image') || '').trim();
+      if (image.length > 0 && image.length > 65535) {
+        setError('Ảnh sản phẩm quá lớn. Vui lòng dùng URL ảnh hoặc ảnh nhỏ hơn 64 KB.');
+        return;
+      }
+      const result = await crmApi.createProduct({
+        name: String(data.get('name') || '').trim(),
+        price: Number(data.get('price')),
+        description: String(data.get('description') || '').trim(),
+        image,
+        oldPrice: data.get('oldPrice') ? Number(data.get('oldPrice')) : undefined,
+        badge: String(data.get('badge') || '').trim(),
+        sku: String(data.get('sku') || '').trim(),
+        unit: String(data.get('unit') || '').trim(),
+        moq: String(data.get('moq') || '').trim(),
+        category: String(data.get('category') || '').trim() || undefined,
+      }, token);
+      setProducts((current) => [...current, result.product]);
+      setShowProductForm(false);
+      setNotice('Đã thêm sản phẩm mới');
+      window.setTimeout(() => setNotice(''), 2500);
+    } catch (requestError) {
+      setError((requestError as Error).message);
+    } finally {
+      setSavingProduct(false);
+    }
+  };
+
   const login = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -261,7 +298,7 @@ export default function Dashboard() {
 
           {currentPage === 'products' && (
             <section className="orders-section">
-              <div className="section-heading"><div><h2>Quản lý sản phẩm</h2><p>{products.length} sản phẩm từ Product Service</p></div><button className="text-button" onClick={() => navigate('orders')}>Tạo đơn hàng <span>→</span></button></div>
+              <div className="section-heading"><div><h2>Quản lý sản phẩm</h2><p>{products.length} sản phẩm từ Product Service</p></div><div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}><button className="text-button" onClick={() => navigate('orders')}>Tạo đơn hàng <span>→</span></button><button className="primary-button" onClick={() => setShowProductForm(true)}><Plus size={18} /> Thêm sản phẩm</button></div></div>
               <div className="table-wrap"><table><thead><tr><th>SẢN PHẨM</th><th>SKU</th><th>ĐƠN VỊ</th><th>GIÁ</th><th>NHÃN</th></tr></thead><tbody>{products.length === 0 ? <tr><td colSpan={5} style={{ textAlign: 'center', padding: '32px' }}>Chưa tải được sản phẩm hoặc kho đang trống.</td></tr> : products.map((product) => <tr key={product.id}><td><strong>{product.name}</strong><small style={{ display: 'block', color: '#9aa4a1', marginTop: '4px' }}>{product.description || 'Không có mô tả'}</small></td><td>{product.sku || `SP-${product.id}`}</td><td>{product.unit || '—'}</td><td><strong>{formatVnd(Number(product.price))}</strong></td><td>{product.badge || '—'}</td></tr>)}</tbody></table></div>
             </section>
           )}
@@ -287,6 +324,7 @@ export default function Dashboard() {
       {notice && <div className="toast"><span>✓</span>{notice}</div>}
       {error && <div className="toast" style={{ background: '#ff6b6b' }}><span>✗</span>{error}</div>}
       {showForm && <div className="modal-backdrop" onMouseDown={() => setShowForm(false)}><div className="modal" onMouseDown={(event) => event.stopPropagation()}><div className="modal-header"><div><p className="eyebrow">ĐƠN HÀNG MỚI</p><h2>Tạo đơn hàng</h2></div><button className="close-button" onClick={() => setShowForm(false)} aria-label="Đóng"><X size={20} /></button></div><form onSubmit={addOrder}><label>Khách hàng<input name="customer" required placeholder="Nguyễn Văn An" /></label><label>Email<input name="email" type="email" required placeholder="email@example.com" /></label><label>Mã sản phẩm<input name="productId" type="number" min="1" defaultValue="1" required /></label><div className="form-row"><label>Số sản phẩm<input name="items" type="number" min="1" defaultValue="1" required /></label><label>Tổng tiền<input name="total" type="number" min="0" step="1000" required placeholder="0" /></label></div><button className="primary-button submit-button" type="submit"><Plus size={18} /> Tạo đơn hàng</button></form></div></div>}
+      {showProductForm && <div className="modal-backdrop" onMouseDown={() => setShowProductForm(false)}><div className="modal" onMouseDown={(event) => event.stopPropagation()}><div className="modal-header"><div><p className="eyebrow">SẢN PHẨM MỚI</p><h2>Thêm sản phẩm</h2></div><button className="close-button" onClick={() => setShowProductForm(false)} aria-label="Đóng"><X size={20} /></button></div><form onSubmit={addProduct}><label>Tên sản phẩm<input name="name" required placeholder="Ví dụ: Máy cắt cầm tay" /></label><div className="form-row"><label>Giá bán<input name="price" type="number" min="0" step="1000" required placeholder="0" /></label><label>Giá cũ<input name="oldPrice" type="number" min="0" step="1000" placeholder="Không bắt buộc" /></label></div><div className="form-row"><label>SKU<input name="sku" placeholder="SP-001" /></label><label>Đơn vị<input name="unit" placeholder="Cái" /></label></div><div className="form-row"><label>Nhãn<input name="badge" placeholder="Bán chạy" /></label><label>MOQ<input name="moq" placeholder="1" /></label></div><label>Mô tả<textarea name="description" rows={3} placeholder="Mô tả ngắn về sản phẩm" /></label><label>Ảnh sản phẩm<input name="image" type="url" placeholder="https://..." /></label><label>Mã danh mục<input name="category" placeholder="Không bắt buộc" /></label><button className="primary-button submit-button" type="submit" disabled={savingProduct}><Plus size={18} /> {savingProduct ? 'Đang lưu...' : 'Thêm sản phẩm'}</button></form></div></div>}
     </main>
   );
 }

@@ -52,7 +52,7 @@ __decorate([
     __metadata("design:type", String)
 ], ProductEntity.prototype, "moq", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 1024, nullable: true, name: 'image' }),
+    (0, typeorm_1.Column)({ type: 'text', nullable: true, name: 'image' }),
     __metadata("design:type", String)
 ], ProductEntity.prototype, "image", void 0);
 __decorate([

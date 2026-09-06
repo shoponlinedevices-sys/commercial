@@ -23,6 +23,11 @@ class InMemoryProductRepository extends product_repository_1.ProductRepository {
     async findByCategory(categoryId) {
         return this.products.filter(product => product.category === categoryId);
     }
+    async create(data) {
+        const product = new product_entity_1.Product(this.products.length + 1, data.name, data.price, data.description, data.image, data.oldPrice, data.badge, data.sku, data.unit, data.moq, data.category);
+        this.products.push(product);
+        return product;
+    }
 }
 exports.InMemoryProductRepository = InMemoryProductRepository;
 //# sourceMappingURL=in-memory-product.repository.js.map

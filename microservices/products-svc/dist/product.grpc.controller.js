@@ -25,6 +25,9 @@ let ProductGrpcController = class ProductGrpcController {
         const result = await this.productService.getProduct(request.id);
         return result;
     }
+    async createProduct(request) {
+        return this.productService.createProduct(request);
+    }
 };
 exports.ProductGrpcController = ProductGrpcController;
 __decorate([
@@ -39,6 +42,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductGrpcController.prototype, "getProduct", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('ProductService', 'CreateProduct'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProductGrpcController.prototype, "createProduct", null);
 exports.ProductGrpcController = ProductGrpcController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [product_service_1.ProductService])

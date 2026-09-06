@@ -16,4 +16,18 @@ export declare class ProductService {
     getProduct(id: number): Promise<{
         product: ProductEntity;
     }>;
+    createProduct(input: {
+        name: string;
+        price: number;
+        description?: string;
+        image?: string;
+        oldPrice?: number;
+        badge?: string;
+        sku?: string;
+        unit?: string;
+        moq?: string;
+        category?: string;
+    }): Promise<{
+        product: ProductEntity;
+    }>;
 }

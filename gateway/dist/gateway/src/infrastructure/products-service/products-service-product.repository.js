@@ -48,6 +48,22 @@ let ProductsServiceProductRepository = class ProductsServiceProductRepository {
         const response = await (0, rxjs_1.firstValueFrom)(this.grpcProductService.getProducts(request));
         return (response.products || []).map((product) => this.toProduct(product));
     }
+    async create(data) {
+        const request = {
+            name: data.name,
+            price: data.price,
+            description: data.description,
+            image: data.image,
+            oldPrice: data.oldPrice,
+            badge: data.badge,
+            sku: data.sku,
+            unit: data.unit,
+            moq: data.moq,
+            category: data.category === undefined ? undefined : String(data.category),
+        };
+        const response = await (0, rxjs_1.firstValueFrom)(this.grpcProductService.createProduct(request));
+        return this.toProduct(response.product);
+    }
 };
 exports.ProductsServiceProductRepository = ProductsServiceProductRepository;
 exports.ProductsServiceProductRepository = ProductsServiceProductRepository = __decorate([

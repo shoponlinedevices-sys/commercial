@@ -1,0 +1,1 @@
+ALTER TABLE tbl_product MODIFY COLUMN image TEXT NULL;

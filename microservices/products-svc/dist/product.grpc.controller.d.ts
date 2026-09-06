@@ -11,4 +11,7 @@ export declare class ProductGrpcController {
     }): Promise<{
         product: import("./product.entity").ProductEntity;
     }>;
+    createProduct(request: any): Promise<{
+        product: import("./product.entity").ProductEntity;
+    }>;
 }

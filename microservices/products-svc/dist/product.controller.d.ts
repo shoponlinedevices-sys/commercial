@@ -9,4 +9,18 @@ export declare class ProductController {
     getProduct(id: string): Promise<{
         product: import("./product.entity").ProductEntity;
     }>;
+    createProduct(body: {
+        name: string;
+        price: number;
+        description?: string;
+        image?: string;
+        oldPrice?: number;
+        badge?: string;
+        sku?: string;
+        unit?: string;
+        moq?: string;
+        category?: string;
+    }): Promise<{
+        product: import("./product.entity").ProductEntity;
+    }>;
 }

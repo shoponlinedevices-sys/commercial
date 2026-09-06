@@ -76,4 +76,10 @@ export class InMemoryProductRepository extends ProductRepository {
   async findByCategory(categoryId: number): Promise<Product[]> {
     return this.products.filter(product => product.category === categoryId);
   }
+
+  async create(data: Omit<Product, 'id'>): Promise<Product> {
+    const product = new Product(this.products.length + 1, data.name, data.price, data.description, data.image, data.oldPrice, data.badge, data.sku, data.unit, data.moq, data.category);
+    this.products.push(product);
+    return product;
+  }
 }

@@ -17,4 +17,8 @@ export class ProductService {
   findByCategory(categoryId: number): Promise<Product[]> {
     return this.productRepository.findByCategory(categoryId);
   }
+
+  create(data: Omit<Product, 'id'>): Promise<Product> {
+    return this.productRepository.create(data);
+  }
 }

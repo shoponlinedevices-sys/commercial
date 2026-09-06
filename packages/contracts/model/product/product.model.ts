@@ -31,3 +31,20 @@ export interface IGetProductRequest {
 export interface IGetProductResponse {
   product: IProduct;
 }
+
+export interface ICreateProductRequest {
+  name: string;
+  price: number;
+  description?: string;
+  image?: string;
+  oldPrice?: number;
+  badge?: string;
+  sku?: string;
+  unit?: string;
+  moq?: string;
+  category?: string;
+}
+
+export interface ICreateProductResponse {
+  product: IProduct;
+}

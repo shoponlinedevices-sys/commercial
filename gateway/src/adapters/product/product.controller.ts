@@ -1,8 +1,9 @@
-import { Controller, Get, UseGuards, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, UseGuards, Param, Post, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductService } from '../../application/product/product.service';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
 import { Public } from '../../domain/identity/public.decorator';
+import { Product } from '../../domain/product/product.entity';
 
 @ApiTags('Products')
 @ApiBearerAuth()
@@ -35,6 +36,16 @@ export class ProductController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   findOne(@Param('id') id: string) {
     return this.productService.findOne(parseInt(id, 10));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  @ApiOperation({ summary: 'Create a product' })
+  create(@Body() body: Omit<Product, 'id'>) {
+    if (!body.name?.trim() || Number(body.price) < 0) {
+      throw new Error('Tên sản phẩm và giá hợp lệ là bắt buộc');
+    }
+    return this.productService.create({ ...body, name: body.name.trim(), price: Number(body.price) });
   }
 
   @Public()
