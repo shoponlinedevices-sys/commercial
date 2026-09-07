@@ -20,6 +20,9 @@ let ContactsController = class ContactsController {
     constructor(contactsService) {
         this.contactsService = contactsService;
     }
+    async getHistoryLogs(limit) {
+        return this.contactsService.getHistoryLogs(Number(limit) || 200);
+    }
     async getUserProfile(userId) {
         return this.contactsService.getUserProfile(parseInt(userId));
     }
@@ -133,6 +136,13 @@ let ContactsController = class ContactsController {
     }
 };
 exports.ContactsController = ContactsController;
+__decorate([
+    (0, common_1.Get)('history-logs'),
+    __param(0, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ContactsController.prototype, "getHistoryLogs", null);
 __decorate([
     (0, common_1.Get)('user-profile/:userId'),
     __param(0, (0, common_1.Param)('userId')),

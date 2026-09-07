@@ -5,6 +5,9 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { User } from './user.entity';
+import { HistoryLogEntity } from './history-log.entity';
+import { Inject } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +15,7 @@ export class AuthService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService,
+    @Inject('DATA_SOURCE') private readonly dataSource: DataSource,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
@@ -63,7 +67,7 @@ export class AuthService {
     };
   }
 
-  async register(username: string, password: string) {
+  async register(username: string, password: string, createdBy?: string) {
     const existingUser = await this.usersRepository.findOne({ where: { username } });
     if (existingUser) {
       throw new UnauthorizedException('Username already exists');
@@ -74,6 +78,14 @@ export class AuthService {
       password: hashedPassword,
     });
     await this.usersRepository.save(user);
+    await this.dataSource.getRepository(HistoryLogEntity).save({
+      action: 'CREATE',
+      entityType: 'USER',
+      entityId: String(user.id),
+      source: 'contacts-svc',
+      createdBy: createdBy || username,
+      metadata: { username: user.username },
+    });
     const { password: _, ...result } = user;
     return result;
   }

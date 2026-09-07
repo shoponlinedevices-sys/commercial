@@ -40,6 +40,17 @@ export type FeatureSetting = {
   isEnabled: boolean;
 };
 
+export type HistoryLog = {
+  id: string | number;
+  action: string;
+  entityType: string;
+  entityId: string;
+  source: string;
+  createdBy: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+};
+
 async function request<T>(endpoint: string, options: RequestInit = {}, token?: string): Promise<T> {
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
@@ -100,6 +111,7 @@ export const crmApi = {
   updateFeatureSetting(featureKey: string, isEnabled: boolean, token: string) {
     return request<FeatureSetting>(`/feature-settings/${featureKey}`, { method: 'PUT', body: JSON.stringify({ isEnabled }) }, token);
   },
+  getHistoryLogs(token: string) { return request<HistoryLog[]>('/history-logs?limit=500', {}, token); },
   createOrder(userId: number, productId: number, totalAmount: number, quantity: number, unitPrice: number, token: string) {
     return request<GatewayOrder>('/orders', {
       method: 'POST',

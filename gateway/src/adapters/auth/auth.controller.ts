@@ -21,6 +21,7 @@ type LoginRequest = {
 type RegisterRequest = {
   username: string;
   password: string;
+  createdBy?: string;
 };
 
 type RefreshRequest = {
@@ -85,7 +86,7 @@ export class AuthController implements OnModuleInit {
   @ApiResponse({ status: 201, description: 'User registered successfully', schema: { example: { id: 1, username: 'newuser' } } })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async register(@Body() body: RegisterRequest): Promise<LoginResponse['user']> {
-    return firstValueFrom(this.authGrpcService.register(body));
+    return firstValueFrom(this.authGrpcService.register({ ...body, createdBy: body.createdBy || body.username }));
   }
 
   @Post('forgot-password')

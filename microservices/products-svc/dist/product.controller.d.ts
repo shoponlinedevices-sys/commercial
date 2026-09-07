@@ -2,6 +2,7 @@ import { ProductService } from './product.service';
 export declare class ProductController {
     private readonly productService;
     constructor(productService: ProductService);
+    getHistoryLogs(limit?: string): Promise<import("./history-log.entity").HistoryLogEntity[]>;
     getProducts(query: any): Promise<{
         products: import("./product.entity").ProductEntity[];
         total: number;

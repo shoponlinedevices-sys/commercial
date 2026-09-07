@@ -7,10 +7,10 @@ import { CartEntity } from './cart.entity';
 import { CartLineEntity } from './cart-line.entity';
 import { ProductEntity } from './product.entity';
 import { OrdersEmailProvider } from './orders-email.provider';
+import { HistoryLogEntity } from './history-log.entity';
 
 const ORDER_EMAIL_RECIPIENTS = [
   'shoponlinedevices@gmail.com',
-  'hieuquan90@gmail.com',
 ];
 
 @Injectable()
@@ -39,6 +39,13 @@ export class OrderService {
 
   private get cartLineRepository() {
     return this.dataSource.getRepository(CartLineEntity);
+  }
+
+  async getHistoryLogs(limit = 200) {
+    return this.dataSource.getRepository(HistoryLogEntity).find({
+      order: { createdAt: 'DESC' },
+      take: Math.min(limit, 500),
+    });
   }
 
   // Orders
@@ -83,6 +90,7 @@ export class OrderService {
     fcmToken?: string;
     customerEmail?: string;
     customerName?: string;
+    createdBy?: string;
   }) {
     const calculatedTotal = data.orderLines.reduce((total, line) => {
       const unitPrice = Number(line.unitPrice);
@@ -122,6 +130,15 @@ export class OrderService {
       if (orderLineEntities.length > 0) {
         await manager.save(OrderLineEntity, orderLineEntities);
       }
+
+      await manager.save(HistoryLogEntity, manager.create(HistoryLogEntity, {
+        action: 'CREATE',
+        entityType: 'ORDER',
+        entityId: String(savedOrder.id),
+        source: 'sales-svc',
+        createdBy: data.createdBy || `user:${data.userId}`,
+        metadata: { userId: data.userId, totalAmount, lineCount: orderLineEntities.length },
+      }));
 
       // Return order with lines
       return manager.findOne(OrderEntity, {
@@ -167,13 +184,26 @@ export class OrderService {
     return order;
   }
 
-  async updateOrderStatus(orderId: string, status: string) {
+  async updateOrderStatus(orderId: string, status: string, createdBy?: string) {
     const order = await this.orderRepository.findOne({ where: { id: orderId } });
     if (!order) {
       throw new Error('Order not found');
     }
+    const previousStatus = order.status;
     order.status = status;
-    return this.orderRepository.save(order);
+    const updated = await this.dataSource.transaction(async (manager) => {
+      const saved = await manager.save(OrderEntity, order);
+      await manager.save(HistoryLogEntity, manager.create(HistoryLogEntity, {
+        action: 'UPDATE',
+        entityType: 'ORDER',
+        entityId: String(orderId),
+        source: 'sales-svc',
+        createdBy: createdBy || `user:${order.userId}`,
+        metadata: { field: 'status', previousStatus, status },
+      }));
+      return saved;
+    });
+    return updated;
   }
 
   // Cart

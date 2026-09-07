@@ -20,10 +20,14 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const user_entity_1 = require("./user.entity");
+const history_log_entity_1 = require("./history-log.entity");
+const common_2 = require("@nestjs/common");
+const typeorm_3 = require("typeorm");
 let AuthService = class AuthService {
-    constructor(usersRepository, jwtService) {
+    constructor(usersRepository, jwtService, dataSource) {
         this.usersRepository = usersRepository;
         this.jwtService = jwtService;
+        this.dataSource = dataSource;
     }
     async validateUser(username, password) {
         console.log(`[AuthService] Validating user: ${username}`);
@@ -66,7 +70,7 @@ let AuthService = class AuthService {
             },
         };
     }
-    async register(username, password) {
+    async register(username, password, createdBy) {
         const existingUser = await this.usersRepository.findOne({ where: { username } });
         if (existingUser) {
             throw new common_1.UnauthorizedException('Username already exists');
@@ -77,6 +81,14 @@ let AuthService = class AuthService {
             password: hashedPassword,
         });
         await this.usersRepository.save(user);
+        await this.dataSource.getRepository(history_log_entity_1.HistoryLogEntity).save({
+            action: 'CREATE',
+            entityType: 'USER',
+            entityId: String(user.id),
+            source: 'contacts-svc',
+            createdBy: createdBy || username,
+            metadata: { username: user.username },
+        });
         const { password: _, ...result } = user;
         return result;
     }
@@ -147,7 +159,9 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(2, (0, common_2.Inject)('DATA_SOURCE')),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        typeorm_3.DataSource])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

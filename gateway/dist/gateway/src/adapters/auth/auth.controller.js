@@ -33,7 +33,7 @@ let AuthController = class AuthController {
         return (0, rxjs_1.firstValueFrom)(this.authGrpcService.refresh(body));
     }
     async register(body) {
-        return (0, rxjs_1.firstValueFrom)(this.authGrpcService.register(body));
+        return (0, rxjs_1.firstValueFrom)(this.authGrpcService.register(Object.assign(Object.assign({}, body), { createdBy: body.createdBy || body.username })));
     }
     async forgotPassword(body) {
         try {

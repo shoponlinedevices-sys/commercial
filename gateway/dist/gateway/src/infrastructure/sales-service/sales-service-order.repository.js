@@ -29,11 +29,11 @@ let SalesServiceOrderRepository = class SalesServiceOrderRepository {
             productId: parseInt(line.productId, 10), quantity: line.quantity, unitPrice: line.unitPrice,
         })));
     }
-    async createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName) {
+    async createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName, createdBy) {
         const calculatedTotal = cartLines.reduce((total, line) => total + Number(line.unitPrice || 0) * Number(line.quantity || 0), 0);
         const orderTotal = Number.isFinite(totalAmount) && totalAmount > 0 ? totalAmount : calculatedTotal;
         const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.createOrder({
-            userId: userId.toString(), totalAmount: orderTotal, orderLines: cartLines, fcmToken, customerEmail, customerName,
+            userId: userId.toString(), totalAmount: orderTotal, orderLines: cartLines, fcmToken, customerEmail, customerName, createdBy: createdBy === undefined ? undefined : String(createdBy),
         }));
         return this.toOrder(response.order);
     }
@@ -45,8 +45,8 @@ let SalesServiceOrderRepository = class SalesServiceOrderRepository {
         const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.getAllOrders(filters || {}));
         return (response.orders || []).map((order) => this.toOrder(order));
     }
-    async updateStatus(orderId, status) {
-        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.updateOrderStatus({ id: orderId, status }));
+    async updateStatus(orderId, status, createdBy) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.updateOrderStatus({ id: orderId, status, createdBy: createdBy === undefined ? undefined : String(createdBy) }));
         return this.toOrder(response.order);
     }
 };

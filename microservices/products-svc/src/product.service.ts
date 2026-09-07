@@ -3,6 +3,7 @@ import { Inject } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ProductEntity } from './product.entity';
 import { CategoryEntity } from './category.entity';
+import { HistoryLogEntity } from './history-log.entity';
 
 @Injectable()
 export class ProductService {
@@ -13,6 +14,13 @@ export class ProductService {
 
   private get productRepository() {
     return this.dataSource.getRepository(ProductEntity);
+  }
+
+  async getHistoryLogs(limit = 200) {
+    return this.dataSource.getRepository(HistoryLogEntity).find({
+      order: { createdAt: 'DESC' },
+      take: Math.min(limit, 500),
+    });
   }
 
   async getProducts(filters?: {
@@ -88,6 +96,7 @@ export class ProductService {
     unit?: string;
     moq?: string;
     category?: string;
+    createdBy?: string;
   }) {
     const product = this.productRepository.create({
       name: input.name,
@@ -101,6 +110,15 @@ export class ProductService {
       moq: input.moq,
       category: input.category,
     });
-    return { product: await this.productRepository.save(product) };
+    const savedProduct = await this.productRepository.save(product);
+    await this.dataSource.getRepository(HistoryLogEntity).save({
+      action: 'CREATE',
+      entityType: 'PRODUCT',
+      entityId: String(savedProduct.id),
+      source: 'products-svc',
+      createdBy: input.createdBy || 'system',
+      metadata: { name: savedProduct.name, price: savedProduct.price, sku: savedProduct.sku },
+    });
+    return { product: savedProduct };
   }
 }

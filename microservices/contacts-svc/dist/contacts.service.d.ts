@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 import { UserProfileEntity } from './user-profile.entity';
 import { DeliveryAddressEntity } from './delivery-address.entity';
 import { PaymentMethodEntity } from './payment-method.entity';
+import { HistoryLogEntity } from './history-log.entity';
 export declare class ContactsService {
     private readonly dataSource;
     constructor(dataSource: DataSource);
@@ -9,6 +10,7 @@ export declare class ContactsService {
     private get userRepository();
     private get deliveryAddressRepository();
     private get paymentMethodRepository();
+    getHistoryLogs(limit?: number): Promise<HistoryLogEntity[]>;
     getUserProfile(userId: number): Promise<{
         userProfile: {
             id: number;

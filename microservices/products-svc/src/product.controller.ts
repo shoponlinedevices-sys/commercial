@@ -5,6 +5,11 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Get('history-logs')
+  async getHistoryLogs(@Query('limit') limit?: string) {
+    return this.productService.getHistoryLogs(Number(limit) || 200);
+  }
+
   @Get()
   async getProducts(@Query() query: any) {
     return this.productService.getProducts({

@@ -2,6 +2,7 @@ import { ContactsService } from './contacts.service';
 export declare class ContactsController {
     private readonly contactsService;
     constructor(contactsService: ContactsService);
+    getHistoryLogs(limit?: string): Promise<import("./history-log.entity").HistoryLogEntity[]>;
     getUserProfile(userId: string): Promise<{
         userProfile: {
             id: number;

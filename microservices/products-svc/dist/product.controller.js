@@ -19,6 +19,9 @@ let ProductController = class ProductController {
     constructor(productService) {
         this.productService = productService;
     }
+    async getHistoryLogs(limit) {
+        return this.productService.getHistoryLogs(Number(limit) || 200);
+    }
     async getProducts(query) {
         return this.productService.getProducts({
             category: query.category,
@@ -35,6 +38,13 @@ let ProductController = class ProductController {
     }
 };
 exports.ProductController = ProductController;
+__decorate([
+    (0, common_1.Get)('history-logs'),
+    __param(0, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "getHistoryLogs", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)()),

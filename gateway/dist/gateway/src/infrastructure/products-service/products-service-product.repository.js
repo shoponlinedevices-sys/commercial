@@ -60,6 +60,7 @@ let ProductsServiceProductRepository = class ProductsServiceProductRepository {
             unit: data.unit,
             moq: data.moq,
             category: data.category === undefined ? undefined : String(data.category),
+            createdBy: data.createdBy === undefined ? undefined : String(data.createdBy),
         };
         const response = await (0, rxjs_1.firstValueFrom)(this.grpcProductService.createProduct(request));
         return this.toProduct(response.product);

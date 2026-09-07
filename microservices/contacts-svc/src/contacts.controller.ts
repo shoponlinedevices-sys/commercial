@@ -6,6 +6,11 @@ import { ContactsService } from './contacts.service';
 export class ContactsController {
   constructor(private readonly contactsService: ContactsService) {}
 
+  @Get('history-logs')
+  async getHistoryLogs(@Query('limit') limit?: string) {
+    return this.contactsService.getHistoryLogs(Number(limit) || 200);
+  }
+
   // User Profile
   @Get('user-profile/:userId')
   async getUserProfile(@Param('userId') userId: string) {

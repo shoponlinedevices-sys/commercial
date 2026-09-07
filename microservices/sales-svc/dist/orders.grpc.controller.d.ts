@@ -25,6 +25,7 @@ export declare class OrdersGrpcController {
     updateOrderStatus(data: {
         id: string;
         status: string;
+        createdBy?: string;
     }): Promise<{
         order: import("./order.entity").OrderEntity;
     }>;

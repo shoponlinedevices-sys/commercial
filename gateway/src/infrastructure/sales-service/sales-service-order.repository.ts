@@ -23,7 +23,7 @@ export class SalesServiceOrderRepository implements OrderRepository, OnModuleIni
       })));
   }
 
-  async createOrder(userId: number, totalAmount: number, cartLines: any[], fcmToken?: string, customerEmail?: string, customerName?: string): Promise<Order> {
+  async createOrder(userId: number, totalAmount: number, cartLines: any[], fcmToken?: string, customerEmail?: string, customerName?: string, createdBy?: string | number): Promise<Order> {
     const calculatedTotal = cartLines.reduce(
       (total, line) => total + Number(line.unitPrice || 0) * Number(line.quantity || 0),
       0,
@@ -31,7 +31,7 @@ export class SalesServiceOrderRepository implements OrderRepository, OnModuleIni
     const orderTotal = Number.isFinite(totalAmount) && totalAmount > 0 ? totalAmount : calculatedTotal;
 
     const response = await firstValueFrom(this.ordersService.createOrder({
-      userId: userId.toString(), totalAmount: orderTotal, orderLines: cartLines, fcmToken, customerEmail, customerName,
+      userId: userId.toString(), totalAmount: orderTotal, orderLines: cartLines, fcmToken, customerEmail, customerName, createdBy: createdBy === undefined ? undefined : String(createdBy),
     }));
     return this.toOrder(response.order);
   }
@@ -46,8 +46,8 @@ export class SalesServiceOrderRepository implements OrderRepository, OnModuleIni
     return (response.orders || []).map((order) => this.toOrder(order));
   }
 
-  async updateStatus(orderId: string, status: string): Promise<Order> {
-    const response = await firstValueFrom(this.ordersService.updateOrderStatus({ id: orderId, status }));
+  async updateStatus(orderId: string, status: string, createdBy?: string | number): Promise<Order> {
+    const response = await firstValueFrom(this.ordersService.updateOrderStatus({ id: orderId, status, createdBy: createdBy === undefined ? undefined : String(createdBy) }));
     return this.toOrder(response.order);
   }
 }

@@ -55,6 +55,7 @@ message CreateOrderRequest {
   string fcmToken = 5;
   string customerEmail = 6;
   string customerName = 7;
+  string createdBy = 8;
 }
 
 message CreateOrderResponse {
@@ -64,6 +65,7 @@ message CreateOrderResponse {
 message UpdateOrderStatusRequest {
   string id = 1;
   string status = 2;
+  string createdBy = 3;
 }
 
 message UpdateOrderStatusResponse {

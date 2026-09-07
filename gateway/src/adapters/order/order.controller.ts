@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Param, Query } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param, Query, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
 import { OrderService } from '../../application/order/order.service';
@@ -16,8 +16,8 @@ export class OrderController {
   @ApiResponse({ status: 201, description: 'Order created successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async createOrder(@Body() body: { userId: number; totalAmount: number; cartLines: any[]; fcmToken?: string; customerEmail?: string; customerName?: string }) {
-    const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName);
+  async createOrder(@Body() body: { userId: number; totalAmount: number; cartLines: any[]; fcmToken?: string; customerEmail?: string; customerName?: string }, @Req() request: any) {
+    const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName, request.user?.username || request.user?.id || 'gateway');
     return order;
   }
 
@@ -48,7 +48,7 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @Post(':id/status')
   @ApiOperation({ summary: 'Update order status' })
-  async updateOrderStatus(@Param('id') id: string, @Body() body: { status: string }) {
-    return this.orderService.updateStatus(id, body.status);
+  async updateOrderStatus(@Param('id') id: string, @Body() body: { status: string }, @Req() request: any) {
+    return this.orderService.updateStatus(id, body.status, request.user?.username || request.user?.id || 'gateway');
   }
 }

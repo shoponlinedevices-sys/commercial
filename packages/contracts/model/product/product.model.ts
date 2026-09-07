@@ -43,6 +43,7 @@ export interface ICreateProductRequest {
   unit?: string;
   moq?: string;
   category?: string;
+  createdBy?: string;
 }
 
 export interface ICreateProductResponse {

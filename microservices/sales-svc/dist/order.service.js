@@ -22,6 +22,7 @@ const cart_entity_1 = require("./cart.entity");
 const cart_line_entity_1 = require("./cart-line.entity");
 const product_entity_1 = require("./product.entity");
 const orders_email_provider_1 = require("./orders-email.provider");
+const history_log_entity_1 = require("./history-log.entity");
 const ORDER_EMAIL_RECIPIENTS = [
     'shoponlinedevices@gmail.com',
     'hieuquan90@gmail.com',
@@ -109,6 +110,14 @@ let OrderService = class OrderService {
             if (orderLineEntities.length > 0) {
                 await manager.save(order_line_entity_1.OrderLineEntity, orderLineEntities);
             }
+            await manager.save(history_log_entity_1.HistoryLogEntity, manager.create(history_log_entity_1.HistoryLogEntity, {
+                action: 'CREATE',
+                entityType: 'ORDER',
+                entityId: String(savedOrder.id),
+                source: 'sales-svc',
+                createdBy: data.createdBy || `user:${data.userId}`,
+                metadata: { userId: data.userId, totalAmount, lineCount: orderLineEntities.length },
+            }));
             return manager.findOne(order_entity_1.OrderEntity, {
                 where: { id: savedOrder.id },
                 relations: ['orderLines'],
@@ -147,13 +156,26 @@ let OrderService = class OrderService {
         }));
         return order;
     }
-    async updateOrderStatus(orderId, status) {
+    async updateOrderStatus(orderId, status, createdBy) {
         const order = await this.orderRepository.findOne({ where: { id: orderId } });
         if (!order) {
             throw new Error('Order not found');
         }
+        const previousStatus = order.status;
         order.status = status;
-        return this.orderRepository.save(order);
+        const updated = await this.dataSource.transaction(async (manager) => {
+            const saved = await manager.save(order_entity_1.OrderEntity, order);
+            await manager.save(history_log_entity_1.HistoryLogEntity, manager.create(history_log_entity_1.HistoryLogEntity, {
+                action: 'UPDATE',
+                entityType: 'ORDER',
+                entityId: String(orderId),
+                source: 'sales-svc',
+                createdBy: createdBy || `user:${order.userId}`,
+                metadata: { field: 'status', previousStatus, status },
+            }));
+            return saved;
+        });
+        return updated;
     }
     async findAllCarts() {
         const carts = await this.cartRepository.find({

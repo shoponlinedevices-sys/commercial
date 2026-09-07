@@ -21,8 +21,9 @@ let OrderController = class OrderController {
     constructor(orderService) {
         this.orderService = orderService;
     }
-    async createOrder(body) {
-        const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName);
+    async createOrder(body, request) {
+        var _a, _b;
+        const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName, ((_a = request.user) === null || _a === void 0 ? void 0 : _a.username) || ((_b = request.user) === null || _b === void 0 ? void 0 : _b.id) || 'gateway');
         return order;
     }
     async getAllOrders(from, to, status) {
@@ -35,8 +36,9 @@ let OrderController = class OrderController {
         console.log(`[OrderController] Parsed userId: ${parsedUserId}`);
         return this.orderService.findByUserId(parsedUserId);
     }
-    async updateOrderStatus(id, body) {
-        return this.orderService.updateStatus(id, body.status);
+    async updateOrderStatus(id, body, request) {
+        var _a, _b;
+        return this.orderService.updateStatus(id, body.status, ((_a = request.user) === null || _a === void 0 ? void 0 : _a.username) || ((_b = request.user) === null || _b === void 0 ? void 0 : _b.id) || 'gateway');
     }
 };
 exports.OrderController = OrderController;
@@ -49,8 +51,9 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad request' }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "createOrder", null);
 __decorate([
@@ -80,8 +83,9 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update order status' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "updateOrderStatus", null);
 exports.OrderController = OrderController = __decorate([

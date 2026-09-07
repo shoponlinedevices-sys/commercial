@@ -12,8 +12,8 @@ export class AuthController {
   }
 
   @Post('auth/register')
-  async register(@Body() body: { username: string; password: string }) {
-    return this.authService.register(body.username, body.password);
+  async register(@Body() body: { username: string; password: string; createdBy?: string }) {
+    return this.authService.register(body.username, body.password, body.createdBy);
   }
 
   @Post('auth/refresh')
@@ -37,8 +37,8 @@ export class AuthController {
   }
 
   @GrpcMethod('AuthService', 'Register')
-  registerGrpc(data: { username: string; password: string }) {
-    return this.authService.register(data.username, data.password);
+  registerGrpc(data: { username: string; password: string; createdBy?: string }) {
+    return this.authService.register(data.username, data.password, data.createdBy);
   }
 
   @GrpcMethod('AuthService', 'Refresh')

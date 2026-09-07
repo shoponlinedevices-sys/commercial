@@ -3,13 +3,13 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
   Bell, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardList, Clock3, LayoutDashboard,
-  Menu, PackageCheck, Plus, Search, Settings, ShoppingBag, TrendingUp, Users, X,
+  History, Menu, PackageCheck, Plus, Search, Settings, ShoppingBag, TrendingUp, Users, X,
 } from 'lucide-react';
-import { crmApi, FeatureSetting, GatewayOrder, GatewayProduct, UserProfile } from '@/lib/crm-api';
+import { crmApi, FeatureSetting, GatewayOrder, GatewayProduct, HistoryLog, UserProfile } from '@/lib/crm-api';
 
 type Status = 'Mới' | 'Đang xử lý' | 'Đã giao' | 'Đã hủy';
 type Order = { id: string; userId: string | number; customer: string; email: string; items: number; total: number; status: Status; createdAt: string; date: string; initials: string; tone: string };
-type PageType = 'dashboard' | 'orders' | 'customers' | 'products' | 'settings' | 'help';
+type PageType = 'dashboard' | 'orders' | 'customers' | 'products' | 'logs' | 'settings' | 'help';
 
 const formatVnd = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
 const statusToLabel: Record<string, Status> = { pending: 'Mới', processing: 'Đang xử lý', completed: 'Đã giao', delivered: 'Đã giao', cancelled: 'Đã hủy' };
@@ -45,6 +45,11 @@ export default function Dashboard() {
   const [products, setProducts] = useState<GatewayProduct[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [featureSettings, setFeatureSettings] = useState<FeatureSetting[]>([]);
+  const [historyLogs, setHistoryLogs] = useState<HistoryLog[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyQuery, setHistoryQuery] = useState('');
+  const [historyAction, setHistoryAction] = useState('Tất cả');
+  const [historySource, setHistorySource] = useState('Tất cả');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMessage, setProfileMessage] = useState('');
   const [customerProfiles, setCustomerProfiles] = useState<Record<string, UserProfile>>({});
@@ -106,6 +111,12 @@ export default function Dashboard() {
     });
   }, [token, user]);
 
+  useEffect(() => {
+    if (!token || currentPage !== 'logs') return;
+    setHistoryLoading(true);
+    crmApi.getHistoryLogs(token).then(setHistoryLogs).catch((requestError: Error) => setError(requestError.message)).finally(() => setHistoryLoading(false));
+  }, [token, currentPage]);
+
   const filteredOrders = useMemo(() => orders.filter((order) => {
     const matchesQuery = `${order.id} ${order.customer} ${order.email}`.toLowerCase().includes(query.toLowerCase());
     const orderDate = getOrderDateParts(order.createdAt);
@@ -133,6 +144,10 @@ export default function Dashboard() {
   }, [orders, monthlyRevenueOrders]);
 
   const customers = useMemo(() => Array.from(new Map(orders.map((order) => [order.customer, order])).values()), [orders]);
+  const filteredHistoryLogs = useMemo(() => historyLogs.filter((log) => {
+    const searchable = `${log.action} ${log.entityType} ${log.entityId} ${log.source} ${log.createdBy}`.toLowerCase();
+    return searchable.includes(historyQuery.toLowerCase()) && (historyAction === 'Tất cả' || log.action === historyAction) && (historySource === 'Tất cả' || log.source === historySource);
+  }), [historyLogs, historyQuery, historyAction, historySource]);
   const navigate = (page: PageType) => {
     setCurrentPage(page);
     setMobileMenuOpen(false);
@@ -265,13 +280,14 @@ export default function Dashboard() {
           <button onClick={() => navigate('orders')} className={`nav-item ${currentPage === 'orders' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><ClipboardList size={18} /> Đơn hàng <span className="nav-count">{orders.length}</span></button>
           <button onClick={() => navigate('customers')} className={`nav-item ${currentPage === 'customers' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Users size={18} /> Khách hàng</button>
           <button onClick={() => navigate('products')} className={`nav-item ${currentPage === 'products' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><PackageCheck size={18} /> Sản phẩm</button>
+          <button onClick={() => navigate('logs')} className={`nav-item ${currentPage === 'logs' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><History size={18} /> Nhật ký <span className="nav-count">{historyLogs.length}</span></button>
         </nav>
         <div className="sidebar-bottom"><button onClick={() => navigate('settings')} className={`nav-item ${currentPage === 'settings' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Settings size={18} /> Cài đặt</button><button onClick={() => navigate('help')} className={`nav-item ${currentPage === 'help' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><CircleHelp size={18} /> Trợ giúp</button></div>
         <div className="user-card" onClick={logout} style={{ cursor: 'pointer' }} title="Nhấp để đăng xuất"><div className="avatar avatar-dark">{user?.username?.slice(0, 2).toUpperCase() || 'TH'}</div><div><strong>{user?.username || 'Thảo Hà'}</strong><small>Nhấp để đăng xuất</small></div><ChevronDown size={15} /></div>
       </aside>
 
       <section className="content">
-        <header className="topbar"><button className="mobile-menu" aria-label="Mở menu" onClick={() => setMobileMenuOpen((open) => !open)}><Menu size={20} /></button><div className="breadcrumbs"><span>Tổng quan</span><b>/</b><strong>{currentPage === 'dashboard' && 'Đơn hàng'}{currentPage === 'orders' && 'Đơn hàng'}{currentPage === 'customers' && 'Khách hàng'}{currentPage === 'products' && 'Sản phẩm'}{currentPage === 'settings' && 'Cài đặt'}{currentPage === 'help' && 'Trợ giúp'}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Thông báo" onClick={() => setNotice('Bạn không có thông báo mới')}><Bell size={19} /><i /></button><div className="avatar avatar-dark top-avatar">{user?.username?.slice(0, 2).toUpperCase() || 'TH'}</div></div></header>
+        <header className="topbar"><button className="mobile-menu" aria-label="Mở menu" onClick={() => setMobileMenuOpen((open) => !open)}><Menu size={20} /></button><div className="breadcrumbs"><span>Tổng quan</span><b>/</b><strong>{currentPage === 'dashboard' && 'Đơn hàng'}{currentPage === 'orders' && 'Đơn hàng'}{currentPage === 'customers' && 'Khách hàng'}{currentPage === 'products' && 'Sản phẩm'}{currentPage === 'logs' && 'Nhật ký hoạt động'}{currentPage === 'settings' && 'Cài đặt'}{currentPage === 'help' && 'Trợ giúp'}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Thông báo" onClick={() => setNotice('Bạn không có thông báo mới')}><Bell size={19} /><i /></button><div className="avatar avatar-dark top-avatar">{user?.username?.slice(0, 2).toUpperCase() || 'TH'}</div></div></header>
         <div className="main-content">
 
           {currentPage === 'dashboard' && (
@@ -300,6 +316,14 @@ export default function Dashboard() {
             <section className="orders-section">
               <div className="section-heading"><div><h2>Quản lý sản phẩm</h2><p>{products.length} sản phẩm từ Product Service</p></div><div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}><button className="text-button" onClick={() => navigate('orders')}>Tạo đơn hàng <span>→</span></button><button className="primary-button" onClick={() => setShowProductForm(true)}><Plus size={18} /> Thêm sản phẩm</button></div></div>
               <div className="table-wrap"><table><thead><tr><th>SẢN PHẨM</th><th>SKU</th><th>ĐƠN VỊ</th><th>GIÁ</th><th>NHÃN</th></tr></thead><tbody>{products.length === 0 ? <tr><td colSpan={5} style={{ textAlign: 'center', padding: '32px' }}>Chưa tải được sản phẩm hoặc kho đang trống.</td></tr> : products.map((product) => <tr key={product.id}><td><strong>{product.name}</strong><small style={{ display: 'block', color: '#9aa4a1', marginTop: '4px' }}>{product.description || 'Không có mô tả'}</small></td><td>{product.sku || `SP-${product.id}`}</td><td>{product.unit || '—'}</td><td><strong>{formatVnd(Number(product.price))}</strong></td><td>{product.badge || '—'}</td></tr>)}</tbody></table></div>
+            </section>
+          )}
+
+          {currentPage === 'logs' && (
+            <section className="orders-section">
+              <div className="section-heading"><div><h2>Nhật ký hoạt động</h2><p>Theo dõi các thay đổi tạo từ gateway và microservices</p></div><button className="text-button" onClick={() => navigate('logs')}>↻ Tải lại</button></div>
+              <div className="toolbar"><div className="search-field"><Search size={17} /><input value={historyQuery} onChange={(event) => setHistoryQuery(event.target.value)} placeholder="Tìm theo đối tượng, service, người tạo..." /></div><select value={historyAction} onChange={(event) => setHistoryAction(event.target.value)} aria-label="Lọc thao tác"><option>Tất cả</option><option>CREATE</option><option>UPDATE</option></select><select value={historySource} onChange={(event) => setHistorySource(event.target.value)} aria-label="Lọc service"><option>Tất cả</option>{Array.from(new Set(historyLogs.map((log) => log.source))).map((source) => <option key={source}>{source}</option>)}</select></div>
+              <div className="table-wrap"><table><thead><tr><th>THỜI GIAN</th><th>THAO TÁC</th><th>ĐỐI TƯỢNG</th><th>SERVICE</th><th>NGƯỜI TẠO</th><th>CHI TIẾT</th></tr></thead><tbody>{historyLoading ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '32px' }}>Đang tải nhật ký...</td></tr> : filteredHistoryLogs.length === 0 ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '32px' }}>Chưa có nhật ký phù hợp.</td></tr> : filteredHistoryLogs.map((log) => <tr key={`${log.source}-${log.id}`}><td className="date-cell">{new Date(log.createdAt).toLocaleString('vi-VN')}</td><td><span className={`log-action log-${log.action.toLowerCase()}`}>{log.action}</span></td><td><strong>{log.entityType}</strong><small style={{ display: 'block', color: '#9aa4a1', marginTop: '4px' }}>#{log.entityId}</small></td><td>{log.source}</td><td>{log.createdBy}</td><td><small>{log.metadata ? JSON.stringify(log.metadata) : '—'}</small></td></tr>)}</tbody></table></div>
             </section>
           )}
 

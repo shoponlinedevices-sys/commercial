@@ -18,12 +18,19 @@ const common_2 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const product_entity_1 = require("./product.entity");
 const category_entity_1 = require("./category.entity");
+const history_log_entity_1 = require("./history-log.entity");
 let ProductService = class ProductService {
     constructor(dataSource) {
         this.dataSource = dataSource;
     }
     get productRepository() {
         return this.dataSource.getRepository(product_entity_1.ProductEntity);
+    }
+    async getHistoryLogs(limit = 200) {
+        return this.dataSource.getRepository(history_log_entity_1.HistoryLogEntity).find({
+            order: { createdAt: 'DESC' },
+            take: Math.min(limit, 500),
+        });
     }
     async getProducts(filters) {
         const queryBuilder = this.productRepository.createQueryBuilder('product');
@@ -83,7 +90,16 @@ let ProductService = class ProductService {
             moq: input.moq,
             category: input.category,
         });
-        return { product: await this.productRepository.save(product) };
+        const savedProduct = await this.productRepository.save(product);
+        await this.dataSource.getRepository(history_log_entity_1.HistoryLogEntity).save({
+            action: 'CREATE',
+            entityType: 'PRODUCT',
+            entityId: String(savedProduct.id),
+            source: 'products-svc',
+            createdBy: input.createdBy || 'system',
+            metadata: { name: savedProduct.name, price: savedProduct.price, sku: savedProduct.sku },
+        });
+        return { product: savedProduct };
     }
 };
 exports.ProductService = ProductService;

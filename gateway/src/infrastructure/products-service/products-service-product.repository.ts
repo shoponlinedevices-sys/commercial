@@ -63,7 +63,7 @@ export class ProductsServiceProductRepository implements ProductRepository {
     return (response.products || []).map((product) => this.toProduct(product));
   }
 
-  async create(data: Omit<Product, 'id'>): Promise<Product> {
+  async create(data: Omit<Product, 'id'> & { createdBy?: string | number }): Promise<Product> {
     const request: ICreateProductRequest = {
       name: data.name,
       price: data.price,
@@ -75,6 +75,7 @@ export class ProductsServiceProductRepository implements ProductRepository {
       unit: data.unit,
       moq: data.moq,
       category: data.category === undefined ? undefined : String(data.category),
+      createdBy: data.createdBy === undefined ? undefined : String(data.createdBy),
     };
     const response = await firstValueFrom(this.grpcProductService.createProduct(request));
     return this.toProduct(response.product);

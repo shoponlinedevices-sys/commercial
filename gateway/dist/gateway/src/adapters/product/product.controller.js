@@ -34,12 +34,12 @@ let ProductController = class ProductController {
     findOne(id) {
         return this.productService.findOne(parseInt(id, 10));
     }
-    create(body) {
-        var _a;
+    create(body, request) {
+        var _a, _b, _c;
         if (!((_a = body.name) === null || _a === void 0 ? void 0 : _a.trim()) || Number(body.price) < 0) {
             throw new Error('Tên sản phẩm và giá hợp lệ là bắt buộc');
         }
-        return this.productService.create(Object.assign(Object.assign({}, body), { name: body.name.trim(), price: Number(body.price) }));
+        return this.productService.create(Object.assign(Object.assign({}, body), { name: body.name.trim(), price: Number(body.price), createdBy: ((_b = request.user) === null || _b === void 0 ? void 0 : _b.username) || ((_c = request.user) === null || _c === void 0 ? void 0 : _c.id) || 'gateway' }));
     }
     findByCategory(categoryId) {
         return this.productService.findByCategory(categoryId);
@@ -76,8 +76,9 @@ __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a product' }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], ProductController.prototype, "create", null);
 __decorate([

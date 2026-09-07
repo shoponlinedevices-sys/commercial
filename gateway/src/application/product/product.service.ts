@@ -18,7 +18,7 @@ export class ProductService {
     return this.productRepository.findByCategory(categoryId);
   }
 
-  create(data: Omit<Product, 'id'>): Promise<Product> {
+  create(data: Omit<Product, 'id'> & { createdBy?: string | number }): Promise<Product> {
     return this.productRepository.create(data);
   }
 }

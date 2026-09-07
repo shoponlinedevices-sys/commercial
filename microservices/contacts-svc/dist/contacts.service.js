@@ -20,6 +20,7 @@ const user_profile_entity_1 = require("./user-profile.entity");
 const user_entity_1 = require("./user.entity");
 const delivery_address_entity_1 = require("./delivery-address.entity");
 const payment_method_entity_1 = require("./payment-method.entity");
+const history_log_entity_1 = require("./history-log.entity");
 let ContactsService = class ContactsService {
     constructor(dataSource) {
         this.dataSource = dataSource;
@@ -35,6 +36,12 @@ let ContactsService = class ContactsService {
     }
     get paymentMethodRepository() {
         return this.dataSource.getRepository(payment_method_entity_1.PaymentMethodEntity);
+    }
+    async getHistoryLogs(limit = 200) {
+        return this.dataSource.getRepository(history_log_entity_1.HistoryLogEntity).find({
+            order: { createdAt: 'DESC' },
+            take: Math.min(limit, 500),
+        });
     }
     async getUserProfile(userId) {
         const userProfile = await this.userProfileRepository.findOne({

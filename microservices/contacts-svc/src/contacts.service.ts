@@ -5,6 +5,7 @@ import { UserProfileEntity } from './user-profile.entity';
 import { User } from './user.entity';
 import { DeliveryAddressEntity } from './delivery-address.entity';
 import { PaymentMethodEntity } from './payment-method.entity';
+import { HistoryLogEntity } from './history-log.entity';
 
 @Injectable()
 export class ContactsService {
@@ -27,6 +28,13 @@ export class ContactsService {
 
   private get paymentMethodRepository() {
     return this.dataSource.getRepository(PaymentMethodEntity);
+  }
+
+  async getHistoryLogs(limit = 200) {
+    return this.dataSource.getRepository(HistoryLogEntity).find({
+      order: { createdAt: 'DESC' },
+      take: Math.min(limit, 500),
+    });
   }
 
   // User Profile

@@ -30,7 +30,7 @@ let OrdersGrpcController = class OrdersGrpcController {
         return { order: await this.orderService.createOrder(data) };
     }
     async updateOrderStatus(data) {
-        return { order: await this.orderService.updateOrderStatus(data.id, data.status) };
+        return { order: await this.orderService.updateOrderStatus(data.id, data.status, data.createdBy) };
     }
     async getAllCarts() {
         return this.orderService.findAllCarts();

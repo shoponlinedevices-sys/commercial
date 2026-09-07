@@ -24,7 +24,7 @@ let AuthController = class AuthController {
         return this.authService.login(body.username, body.password);
     }
     async register(body) {
-        return this.authService.register(body.username, body.password);
+        return this.authService.register(body.username, body.password, body.createdBy);
     }
     async refresh(body) {
         return this.authService.refresh(body.refresh_token);
@@ -39,7 +39,7 @@ let AuthController = class AuthController {
         return this.authService.login(data.username, data.password);
     }
     registerGrpc(data) {
-        return this.authService.register(data.username, data.password);
+        return this.authService.register(data.username, data.password, data.createdBy);
     }
     refreshGrpc(data) {
         return this.authService.refresh(data.refresh_token);

@@ -1,10 +1,15 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { OrderService } from './order.service';
 
 @Controller()
 export class OrdersGrpcController {
   constructor(private readonly orderService: OrderService) {}
+
+  @Get('history-logs')
+  async getHistoryLogs(@Query('limit') limit?: string) {
+    return this.orderService.getHistoryLogs(Number(limit) || 200);
+  }
 
   @GrpcMethod('OrdersService', 'GetUserOrders')
   async getUserOrders(data: { userId: string }) {
@@ -27,8 +32,8 @@ export class OrdersGrpcController {
   }
 
   @GrpcMethod('OrdersService', 'UpdateOrderStatus')
-  async updateOrderStatus(data: { id: string; status: string }) {
-    return { order: await this.orderService.updateOrderStatus(data.id, data.status) };
+  async updateOrderStatus(data: { id: string; status: string; createdBy?: string }) {
+    return { order: await this.orderService.updateOrderStatus(data.id, data.status, data.createdBy) };
   }
 
   @GrpcMethod('OrdersService', 'GetAllCarts')

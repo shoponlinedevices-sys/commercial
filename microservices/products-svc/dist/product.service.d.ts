@@ -1,9 +1,11 @@
 import { DataSource } from 'typeorm';
 import { ProductEntity } from './product.entity';
+import { HistoryLogEntity } from './history-log.entity';
 export declare class ProductService {
     private readonly dataSource;
     constructor(dataSource: DataSource);
     private get productRepository();
+    getHistoryLogs(limit?: number): Promise<HistoryLogEntity[]>;
     getProducts(filters?: {
         category?: string;
         search?: string;
@@ -27,6 +29,7 @@ export declare class ProductService {
         unit?: string;
         moq?: string;
         category?: string;
+        createdBy?: string;
     }): Promise<{
         product: ProductEntity;
     }>;

@@ -44,6 +44,7 @@ export interface ICreateOrderRequest {
     fcmToken?: string;
     customerEmail?: string;
     customerName?: string;
+    createdBy?: string;
 }
 export interface ICreateOrderResponse {
     order: IOrder;
@@ -51,6 +52,7 @@ export interface ICreateOrderResponse {
 export interface IUpdateOrderStatusRequest {
     id: string;
     status: string;
+    createdBy?: string;
 }
 export interface IUpdateOrderStatusResponse {
     order: IOrder;

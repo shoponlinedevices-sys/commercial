@@ -40,6 +40,7 @@ message CreateProductRequest {
   string unit = 8;
   string moq = 9;
   string category = 10;
+  string createdBy = 11;
 }
 
 message CreateProductResponse {

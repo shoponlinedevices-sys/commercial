@@ -17,6 +17,7 @@ export declare class AuthController {
     register(body: {
         username: string;
         password: string;
+        createdBy?: string;
     }): Promise<{
         id: number;
         username: string;
@@ -60,6 +61,7 @@ export declare class AuthController {
     registerGrpc(data: {
         username: string;
         password: string;
+        createdBy?: string;
     }): Promise<{
         id: number;
         username: string;

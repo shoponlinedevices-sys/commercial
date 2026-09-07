@@ -1,4 +1,4 @@
-import { Body, Controller, Get, UseGuards, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, UseGuards, Param, Post, Query, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ProductService } from '../../application/product/product.service';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
@@ -41,11 +41,11 @@ export class ProductController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({ summary: 'Create a product' })
-  create(@Body() body: Omit<Product, 'id'>) {
+  create(@Body() body: Omit<Product, 'id'>, @Req() request: any) {
     if (!body.name?.trim() || Number(body.price) < 0) {
       throw new Error('Tên sản phẩm và giá hợp lệ là bắt buộc');
     }
-    return this.productService.create({ ...body, name: body.name.trim(), price: Number(body.price) });
+    return this.productService.create({ ...body, name: body.name.trim(), price: Number(body.price), createdBy: request.user?.username || request.user?.id || 'gateway' });
   }
 
   @Public()

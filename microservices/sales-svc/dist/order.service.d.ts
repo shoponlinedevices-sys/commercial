@@ -27,8 +27,9 @@ export declare class OrderService {
         fcmToken?: string;
         customerEmail?: string;
         customerName?: string;
+        createdBy?: string;
     }): Promise<OrderEntity>;
-    updateOrderStatus(orderId: string, status: string): Promise<OrderEntity>;
+    updateOrderStatus(orderId: string, status: string, createdBy?: string): Promise<OrderEntity>;
     findAllCarts(): Promise<{
         carts: CartEntity[];
     }>;
