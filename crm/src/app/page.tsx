@@ -112,10 +112,10 @@ export default function Dashboard() {
   }, [token, user]);
 
   useEffect(() => {
-    if (!token || currentPage !== 'logs') return;
+    if (!token) return;
     setHistoryLoading(true);
     crmApi.getHistoryLogs(token).then(setHistoryLogs).catch((requestError: Error) => setError(requestError.message)).finally(() => setHistoryLoading(false));
-  }, [token, currentPage]);
+  }, [token]);
 
   const filteredOrders = useMemo(() => orders.filter((order) => {
     const matchesQuery = `${order.id} ${order.customer} ${order.email}`.toLowerCase().includes(query.toLowerCase());
