@@ -2,6 +2,7 @@ import { OrderService } from './order.service';
 export declare class OrdersGrpcController {
     private readonly orderService;
     constructor(orderService: OrderService);
+    getHistoryLogs(limit?: string): Promise<import("./history-log.entity").HistoryLogEntity[]>;
     getUserOrders(data: {
         userId: string;
     }): Promise<{

@@ -25,7 +25,6 @@ const orders_email_provider_1 = require("./orders-email.provider");
 const history_log_entity_1 = require("./history-log.entity");
 const ORDER_EMAIL_RECIPIENTS = [
     'shoponlinedevices@gmail.com',
-    'hieuquan90@gmail.com',
 ];
 let OrderService = class OrderService {
     constructor(dataSource, ordersEmailProvider) {
@@ -46,6 +45,12 @@ let OrderService = class OrderService {
     }
     get cartLineRepository() {
         return this.dataSource.getRepository(cart_line_entity_1.CartLineEntity);
+    }
+    async getHistoryLogs(limit = 200) {
+        return this.dataSource.getRepository(history_log_entity_1.HistoryLogEntity).find({
+            order: { createdAt: 'DESC' },
+            take: Math.min(limit, 500),
+        });
     }
     async getUserOrders(userId) {
         return this.orderRepository.find({

@@ -43,7 +43,12 @@ export class FeatureSettingsService {
       throw new Error(`Feature setting with key ${featureKey} not found`);
     }
 
-    Object.assign(setting, updateData);
+    Object.assign(
+      setting,
+      Object.fromEntries(
+        Object.entries(updateData).filter(([, value]) => value !== undefined),
+      ),
+    );
     return this.featureSettingsRepository.save(setting);
   }
 

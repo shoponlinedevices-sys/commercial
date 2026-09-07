@@ -20,6 +20,19 @@ let FeatureSettingsController = class FeatureSettingsController {
     constructor(featureSettingsService) {
         this.featureSettingsService = featureSettingsService;
     }
+    toGrpcFeatureSetting(setting) {
+        return {
+            id: String(setting.id),
+            featureKey: setting.featureKey,
+            featureName: setting.featureName,
+            isEnabled: Boolean(setting.isEnabled),
+            config: setting.config ? JSON.stringify(setting.config) : '',
+            startTime: setting.startTime ? new Date(setting.startTime).toISOString() : '',
+            endTime: setting.endTime ? new Date(setting.endTime).toISOString() : '',
+            createdAt: setting.createdAt ? new Date(setting.createdAt).toISOString() : '',
+            updatedAt: setting.updatedAt ? new Date(setting.updatedAt).toISOString() : '',
+        };
+    }
     async getAllSettings() {
         return this.featureSettingsService.getAllSettings();
     }
@@ -42,22 +55,26 @@ let FeatureSettingsController = class FeatureSettingsController {
         return this.featureSettingsService.updateSetting(featureKey, updateData);
     }
     async getAllSettingsGrpc() {
-        return { settings: await this.featureSettingsService.getAllSettings() };
+        const settings = await this.featureSettingsService.getAllSettings();
+        return { settings: settings.map((setting) => this.toGrpcFeatureSetting(setting)) };
     }
     async getEnabledSettingsGrpc() {
-        return { settings: await this.featureSettingsService.getEnabledSettings() };
+        const settings = await this.featureSettingsService.getEnabledSettings();
+        return { settings: settings.map((setting) => this.toGrpcFeatureSetting(setting)) };
     }
     async getSettingByKeyGrpc(data) {
-        return { setting: await this.featureSettingsService.getSettingByKey(data.featureKey) };
+        const setting = await this.featureSettingsService.getSettingByKey(data.featureKey);
+        return { setting: setting ? this.toGrpcFeatureSetting(setting) : undefined };
     }
     async updateSettingGrpc(data) {
+        const setting = await this.featureSettingsService.updateSetting(data.featureKey, {
+            isEnabled: data.isEnabled,
+            config: data.config ? JSON.parse(data.config) : undefined,
+            startTime: data.startTime ? new Date(data.startTime) : undefined,
+            endTime: data.endTime ? new Date(data.endTime) : undefined,
+        });
         return {
-            setting: await this.featureSettingsService.updateSetting(data.featureKey, {
-                isEnabled: data.isEnabled,
-                config: data.config ? JSON.parse(data.config) : undefined,
-                startTime: data.startTime ? new Date(data.startTime) : undefined,
-                endTime: data.endTime ? new Date(data.endTime) : undefined,
-            }),
+            setting: this.toGrpcFeatureSetting(setting),
         };
     }
 };

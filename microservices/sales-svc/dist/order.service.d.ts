@@ -3,6 +3,7 @@ import { OrderEntity } from './order.entity';
 import { CartEntity } from './cart.entity';
 import { CartLineEntity } from './cart-line.entity';
 import { OrdersEmailProvider } from './orders-email.provider';
+import { HistoryLogEntity } from './history-log.entity';
 export declare class OrderService {
     private readonly dataSource;
     private readonly ordersEmailProvider;
@@ -12,6 +13,7 @@ export declare class OrderService {
     private get orderLineRepository();
     private get cartRepository();
     private get cartLineRepository();
+    getHistoryLogs(limit?: number): Promise<HistoryLogEntity[]>;
     getUserOrders(userId: string): Promise<OrderEntity[]>;
     getAllOrders(filters?: {
         from?: string;

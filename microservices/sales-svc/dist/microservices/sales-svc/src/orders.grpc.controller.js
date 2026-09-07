@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersGrpcController = void 0;
 const common_1 = require("@nestjs/common");
@@ -16,6 +19,9 @@ const order_service_1 = require("./order.service");
 let OrdersGrpcController = class OrdersGrpcController {
     constructor(orderService) {
         this.orderService = orderService;
+    }
+    async getHistoryLogs(limit) {
+        return this.orderService.getHistoryLogs(Number(limit) || 200);
     }
     async getUserOrders(data) {
         return { orders: await this.orderService.getUserOrders(data.userId) };
@@ -55,6 +61,13 @@ let OrdersGrpcController = class OrdersGrpcController {
     }
 };
 exports.OrdersGrpcController = OrdersGrpcController;
+__decorate([
+    (0, common_1.Get)('history-logs'),
+    __param(0, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], OrdersGrpcController.prototype, "getHistoryLogs", null);
 __decorate([
     (0, microservices_1.GrpcMethod)('OrdersService', 'GetUserOrders'),
     __metadata("design:type", Function),

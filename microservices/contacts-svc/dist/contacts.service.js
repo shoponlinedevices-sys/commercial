@@ -63,11 +63,22 @@ let ContactsService = class ContactsService {
         };
     }
     async updateUserProfile(data) {
-        const userProfile = await this.userProfileRepository.findOne({
+        let userProfile = await this.userProfileRepository.findOne({
             where: { id: data.userId },
         });
         if (!userProfile) {
-            throw new Error('User profile not found');
+            const user = await this.userRepository.findOne({ where: { id: data.userId } });
+            if (!user) {
+                throw new Error('User profile not found');
+            }
+            userProfile = this.userProfileRepository.create({
+                id: user.id,
+                username: user.username,
+                fullName: user.fullName,
+                phone: null,
+                email: user.email,
+                avatar: null,
+            });
         }
         if (data.fullName)
             userProfile.fullName = data.fullName;

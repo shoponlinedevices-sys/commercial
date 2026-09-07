@@ -2,6 +2,7 @@ import { FeatureSettingsService } from './feature-settings.service';
 export declare class FeatureSettingsController {
     private readonly featureSettingsService;
     constructor(featureSettingsService: FeatureSettingsService);
+    private toGrpcFeatureSetting;
     getAllSettings(): Promise<import("./feature-settings.entity").FeatureSettingsEntity[]>;
     getEnabledSettings(): Promise<import("./feature-settings.entity").FeatureSettingsEntity[]>;
     getSettingByKey(featureKey: string): Promise<import("./feature-settings.entity").FeatureSettingsEntity>;
@@ -12,15 +13,45 @@ export declare class FeatureSettingsController {
         endTime?: string;
     }): Promise<import("./feature-settings.entity").FeatureSettingsEntity>;
     getAllSettingsGrpc(): Promise<{
-        settings: import("./feature-settings.entity").FeatureSettingsEntity[];
+        settings: {
+            id: string;
+            featureKey: any;
+            featureName: any;
+            isEnabled: boolean;
+            config: string;
+            startTime: string;
+            endTime: string;
+            createdAt: string;
+            updatedAt: string;
+        }[];
     }>;
     getEnabledSettingsGrpc(): Promise<{
-        settings: import("./feature-settings.entity").FeatureSettingsEntity[];
+        settings: {
+            id: string;
+            featureKey: any;
+            featureName: any;
+            isEnabled: boolean;
+            config: string;
+            startTime: string;
+            endTime: string;
+            createdAt: string;
+            updatedAt: string;
+        }[];
     }>;
     getSettingByKeyGrpc(data: {
         featureKey: string;
     }): Promise<{
-        setting: import("./feature-settings.entity").FeatureSettingsEntity;
+        setting: {
+            id: string;
+            featureKey: any;
+            featureName: any;
+            isEnabled: boolean;
+            config: string;
+            startTime: string;
+            endTime: string;
+            createdAt: string;
+            updatedAt: string;
+        };
     }>;
     updateSettingGrpc(data: {
         featureKey: string;
@@ -29,6 +60,16 @@ export declare class FeatureSettingsController {
         startTime?: string;
         endTime?: string;
     }): Promise<{
-        setting: import("./feature-settings.entity").FeatureSettingsEntity;
+        setting: {
+            id: string;
+            featureKey: any;
+            featureName: any;
+            isEnabled: boolean;
+            config: string;
+            startTime: string;
+            endTime: string;
+            createdAt: string;
+            updatedAt: string;
+        };
     }>;
 }
