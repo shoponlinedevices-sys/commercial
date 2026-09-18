@@ -268,12 +268,12 @@ export default function Dashboard() {
     setProfile(null);
   };
 
-  if (!token) return <div className="login-screen"><div className="login-panel"><div className="brand"><div className="brand-mark"><ShoppingBag size={19} /></div><span>mộc <b>CRM</b></span></div><p className="eyebrow">KẾT NỐI GATEWAY</p><h1>Đăng nhập CRM</h1><p className="subtitle">Dùng tài khoản đã có trên hệ thống để xem dữ liệu đơn hàng.</p><form onSubmit={login}><label>Tên đăng nhập<input name="username" required autoComplete="username" /></label><label>Mật khẩu<input name="password" type="password" required autoComplete="current-password" /></label>{loginError && <p className="form-error">{loginError}</p>}<button className="primary-button submit-button" type="submit">Đăng nhập</button></form></div></div>;
+  if (!token) return <div className="login-screen"><div className="login-panel"><div className="brand"><div className="brand-mark"><ShoppingBag size={19} /></div><span><b>CRM</b></span></div><p className="eyebrow">KẾT NỐI GATEWAY</p><h1>Đăng nhập CRM</h1><p className="subtitle">Dùng tài khoản đã có trên hệ thống để xem dữ liệu đơn hàng.</p><form onSubmit={login}><label>Tên đăng nhập<input name="username" required autoComplete="username" /></label><label>Mật khẩu<input name="password" type="password" required autoComplete="current-password" /></label>{loginError && <p className="form-error">{loginError}</p>}<button className="primary-button submit-button" type="submit">Đăng nhập</button></form></div></div>;
 
   return (
     <main className="app-shell">
       <aside className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-        <div className="brand"><div className="brand-mark"><ShoppingBag size={19} /></div><span>mộc <b>CRM</b></span></div>
+        <div className="brand"><div className="brand-mark"><ShoppingBag size={19} /></div><span><b>CRM</b></span></div>
         <div className="workspace-label">KHÔNG GIAN LÀM VIỆC</div>
         <nav className="nav-list">
           <button onClick={() => navigate('dashboard')} className={`nav-item ${currentPage === 'dashboard' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><LayoutDashboard size={18} /> Tổng quan</button>
@@ -342,7 +342,7 @@ export default function Dashboard() {
             </section>
           )}
 
-          <footer><span>© 2026 mộc CRM</span><span>Đã đồng bộ vừa xong <b className="sync-dot" /></span></footer>
+          <footer><span>© 2026 CRM</span><span>Đã đồng bộ vừa xong <b className="sync-dot" /></span></footer>
         </div>
       </section>
       {notice && <div className="toast"><span>✓</span>{notice}</div>}
