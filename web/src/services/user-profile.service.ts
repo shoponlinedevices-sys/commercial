@@ -3,7 +3,7 @@ import { GATEWAY_URL } from '../lib/api-config';
 
 export interface UserProfile {
   id?: number;
-  full_name?: string;
+  username?: string;
   email?: string;
   phone?: string;
 }

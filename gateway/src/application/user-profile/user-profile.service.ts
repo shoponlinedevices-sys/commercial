@@ -38,7 +38,19 @@ export class UserProfileService {
 
     const updateData: Partial<AccountEntity> = {};
     if (data.full_name !== undefined) updateData.full_name = data.full_name;
-    if (data.email !== undefined) updateData.email = data.email;
+    if (data.email !== undefined) {
+      const findExistingEmail = await this.accountRepository.findByEmail(data.email);
+      if (findExistingEmail && findExistingEmail.id) {
+        throw new BadRequestException('Email already exists');
+      }
+      updateData.email = data.email;
+    }
+    if(data.phone !== undefined){
+      const findExistingPhone = await this.accountRepository.findByPhone(data.phone);
+      if(findExistingPhone && findExistingPhone.id){
+        throw new BadRequestException('Phone already exist');
+      }
+    }
     if (data.phone !== undefined) updateData.phone = data.phone;
 
     const updatedAccount = await this.accountRepository.update(userId, updateData);

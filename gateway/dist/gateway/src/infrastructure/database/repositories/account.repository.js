@@ -69,6 +69,14 @@ let AccountRepository = class AccountRepository {
     async findById(id) {
         return await this.accountRepo.findOne({ where: { id } });
     }
+    async findByEmail(email) {
+        return await this.accountRepo.findOne({ where: { email } });
+    }
+    async findByPhone(phone) {
+        return await this.accountRepo.findOne({
+            where: { phone }
+        });
+    }
     async update(id, data) {
         await this.accountRepo.update(id, data);
         const account = await this.findById(id);

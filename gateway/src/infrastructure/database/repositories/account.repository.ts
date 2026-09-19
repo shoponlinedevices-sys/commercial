@@ -29,6 +29,16 @@ export class AccountRepository {
     return await this.accountRepo.findOne({ where: { id } });
   }
 
+  async findByEmail(email: string): Promise<AccountEntity | null> {
+    return await this.accountRepo.findOne({ where: { email } });
+  }
+
+  async findByPhone(phone: string): Promise<AccountEntity | null>{
+    return await this.accountRepo.findOne({
+      where: {phone}
+    })
+  }
+
   async update(id: number, data: Partial<AccountEntity>): Promise<AccountEntity> {
     await this.accountRepo.update(id, data);
     const account = await this.findById(id);

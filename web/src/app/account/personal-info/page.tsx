@@ -95,8 +95,8 @@ export default function PersonalInfoPage() {
                 <User className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input
                   id="fullName"
-                  value={profile.full_name || ''}
-                  onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+                  value={profile.username || ''}
+                  onChange={(e) => setProfile({ ...profile, username: e.target.value })}
                   placeholder="Nhập họ và tên"
                   className="pl-10"
                 />

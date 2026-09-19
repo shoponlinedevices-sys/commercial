@@ -29,11 +29,11 @@ const serviceFeatures = [
     title: 'Hỗ trợ 24/7',
     description: 'Luôn sẵn sàng'
   },
-  {
-    icon: RotateCcw,
-    title: 'Đổi trả dễ dàng',
-    description: 'Trong 30 ngày'
-  }
+  // {
+  //   icon: RotateCcw,
+  //   title: 'Đổi trả dễ dàng',
+  //   description: 'Trong 30 ngày'
+  // }
 ];
 
 export default function HomePage() {
@@ -112,11 +112,35 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {serviceFeatures.map((feature) => {
+       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {serviceFeatures.map((feature, index) => {
               const Icon = feature.icon;
-              return <div key={feature.title} className="flex items-center gap-3 border-b pb-4 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-5 last:border-0"><div className="rounded-lg bg-primary/10 p-2 text-primary"><Icon className="h-5 w-5" /></div><div><h3 className="text-sm font-semibold">{feature.title}</h3><p className="mt-0.5 text-xs text-muted-foreground">{feature.description}</p></div></div>;
+
+              return (
+                <div
+                  key={feature.title}
+                  className={`
+                    flex items-center justify-center gap-3
+                    border-b pb-4
+                    lg:border-b-0 lg:py-0
+                    ${index < serviceFeatures.length - 1 ? 'lg:border-r' : ''}
+                  `}
+                >
+                  <div className="shrink-0 rounded-lg bg-primary/10 p-2 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold">
+                      {feature.title}
+                    </h3>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              );
             })}
           </div>
         </section>
