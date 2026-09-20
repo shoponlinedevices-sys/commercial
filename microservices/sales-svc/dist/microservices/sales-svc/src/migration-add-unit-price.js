@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
-const dotenv_1 = require("dotenv");
-(0, dotenv_1.config)();
 const dataSource = new typeorm_1.DataSource({
     type: 'mysql',
     host: process.env.DB_HOST || 'localhost',

@@ -88,7 +88,7 @@ let ProductService = class ProductService {
             sku: input.sku,
             unit: input.unit,
             moq: input.moq,
-            category: input.category,
+            categoryId: input.categoryId,
         });
         const savedProduct = await this.productRepository.save(product);
         await this.dataSource.getRepository(history_log_entity_1.HistoryLogEntity).save({

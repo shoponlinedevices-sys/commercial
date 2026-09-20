@@ -9,5 +9,5 @@ export declare class ProductEntity {
     sku: string;
     unit: string;
     moq: string;
-    category: string;
+    categoryId: number;
 }

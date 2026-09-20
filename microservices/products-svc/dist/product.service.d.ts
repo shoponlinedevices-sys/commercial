@@ -28,7 +28,7 @@ export declare class ProductService {
         sku?: string;
         unit?: string;
         moq?: string;
-        category?: string;
+        categoryId?: number;
         createdBy?: string;
     }): Promise<{
         product: ProductEntity;

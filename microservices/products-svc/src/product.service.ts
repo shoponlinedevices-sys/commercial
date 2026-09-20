@@ -95,7 +95,7 @@ export class ProductService {
     sku?: string;
     unit?: string;
     moq?: string;
-    category?: string;
+    categoryId?: number;
     createdBy?: string;
   }) {
     const product = this.productRepository.create({
@@ -108,7 +108,7 @@ export class ProductService {
       sku: input.sku,
       unit: input.unit,
       moq: input.moq,
-      category: input.category,
+      categoryId: input.categoryId,
     });
     const savedProduct = await this.productRepository.save(product);
     await this.dataSource.getRepository(HistoryLogEntity).save({

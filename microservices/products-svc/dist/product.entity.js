@@ -56,8 +56,8 @@ __decorate([
 ], ProductEntity.prototype, "moq", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], ProductEntity.prototype, "category", void 0);
+    __metadata("design:type", Number)
+], ProductEntity.prototype, "categoryId", void 0);
 exports.ProductEntity = ProductEntity = __decorate([
     (0, typeorm_1.Entity)('tbl_product')
 ], ProductEntity);
