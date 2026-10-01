@@ -10,7 +10,17 @@ export const productService = {
   },
 
   async getProductsGroupedByCategory(): Promise<ProductCategory[]> {
-    return await apiClient.get<ProductCategory[]>('/products/grouped-by-category', GATEWAY_URL);
+    const response = await apiClient.get<ProductCategory[] | { categories: ProductCategory[] }>('/products/grouped-by-category', GATEWAY_URL);
+    const categories = Array.isArray(response) ? response : response?.categories;
+
+    if (!Array.isArray(categories)) {
+      throw new Error('Invalid response while loading products grouped by category');
+    }
+
+    return categories.map((category) => ({
+      ...category,
+      products: Array.isArray(category.products) ? category.products : [],
+    }));
   },
 
   async getProduct(id: number): Promise<Product> {

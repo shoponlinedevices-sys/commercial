@@ -12,6 +12,7 @@ import { productService } from '@/services/product.service';
 import { featureSettingsService, FeatureSetting } from '@/services/feature-settings.service';
 import ProductCard from '@/components/ProductCard';
 import PromotionSections from '@/components/PromotionSections';
+import { getCategoryDisplayName } from '@/lib/category-labels';
 
 const serviceFeatures = [
   {
@@ -52,20 +53,6 @@ function groupProductsByCategory(products: Product[]): ProductCategory[] {
     icon: '',
     products: categoryProducts,
   }));
-}
-
-function getCategoryDisplayName(category: ProductCategory): string {
-  const name = category.name.trim();
-
-  if (/^D.{1,2}ng c.{1,2} c.{1,2}m tay$/iu.test(name)) {
-    return 'Dụng cụ cầm tay';
-  }
-
-  if (/^.{1,2} gia d.{1,2}ng$/iu.test(name)) {
-    return 'Đồ gia dụng';
-  }
-
-  return category.name;
 }
 
 export default function HomePage() {
@@ -211,7 +198,7 @@ export default function HomePage() {
 
         <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6" id="featured-products">
           <div className="mb-6 flex items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Danh mục sản phẩm</p><h2 className="mt-1 text-2xl font-bold">Mua sắm theo nhu cầu</h2></div><Button variant="ghost" onClick={() => router.push('/products')}>Tất cả sản phẩm <ArrowRight className="ml-2 h-4 w-4" /></Button></div>
-          {categoriesLoading ? <p className="py-12 text-center text-muted-foreground">Đang tải sản phẩm...</p> : categoriesLoadError ? <div className="rounded-xl border border-dashed p-10 text-center"><p className="font-semibold">Không thể tải sản phẩm lúc này</p><p className="mt-1 text-sm text-muted-foreground">Vui lòng thử lại sau ít phút.</p><Button variant="outline" className="mt-4" onClick={loadProductCategories}>Thử lại</Button></div> : categoriesWithProducts.length === 0 ? <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">Chưa có sản phẩm để hiển thị.</div> : <div className="space-y-10">{categoriesWithProducts.map((category) => <section key={category.id} aria-labelledby={`category-${category.id}`}><div className="mb-4"><h3 id={`category-${category.id}`} className="text-xl font-semibold">{getCategoryDisplayName(category)}</h3></div><div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">{category.products.slice(0, 4).map((product) => <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />)}</div></section>)}</div>}
+          {categoriesLoading ? <p className="py-12 text-center text-muted-foreground">Đang tải sản phẩm...</p> : categoriesLoadError ? <div className="rounded-xl border border-dashed p-10 text-center"><p className="font-semibold">Không thể tải sản phẩm lúc này</p><p className="mt-1 text-sm text-muted-foreground">Vui lòng thử lại sau ít phút.</p><Button variant="outline" className="mt-4" onClick={loadProductCategories}>Thử lại</Button></div> : categoriesWithProducts.length === 0 ? <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">Chưa có sản phẩm để hiển thị.</div> : <div className="space-y-8">{categoriesWithProducts.slice(0, 5).map((category) => <section key={category.id} aria-labelledby={`category-${category.id}`}><div className="mb-3"><h3 id={`category-${category.id}`} className="text-xl font-semibold">{getCategoryDisplayName(category.name)}</h3></div><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">{category.products.slice(0, 5).map((product) => <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />)}</div></section>)}</div>}
         </section>
       </main>
     </div>
