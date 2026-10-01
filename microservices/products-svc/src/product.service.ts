@@ -132,15 +132,12 @@ export class ProductService {
 
     const queryBuilder = categoryRepository
       .createQueryBuilder('category')
-      .leftJoinAndSelect(
+      .leftJoinAndMapMany(
         'category.products',
+        ProductEntity,
         'product',
-        'product.status = :status',
-        { status: 1 },
+        'product.categoryId = category.id',
       )
-      .where('category.is_active = :isActive', {
-        isActive: 1,
-      });
 
     // Tìm kiếm sản phẩm
     if (filters?.search) {
@@ -159,7 +156,7 @@ export class ProductService {
     // Sắp xếp danh mục
     queryBuilder
       .orderBy('category.sort_order', 'ASC')
-      .addOrderBy('product.createdAt', 'DESC');
+      .addOrderBy('product.id', 'DESC');
 
     // Phân trang category nếu cần
     if (filters?.limit !== undefined) {

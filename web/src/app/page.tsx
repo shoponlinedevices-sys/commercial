@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Truck, Shield, Headphones, RotateCcw, ArrowRight, Search } from 'lucide-react';
-import { Product } from '@/types';
+import { Product, ProductCategory } from '@/types';
 import { productService } from '@/services/product.service';
 import { featureSettingsService, FeatureSetting } from '@/services/feature-settings.service';
 import ProductCard from '@/components/ProductCard';
@@ -36,19 +36,41 @@ const serviceFeatures = [
   // }
 ];
 
+function groupProductsByCategory(products: Product[]): ProductCategory[] {
+  const groups = new Map<string, Product[]>();
+
+  products.forEach((product) => {
+    const category = product.category?.trim() || 'Sản phẩm';
+    groups.set(category, [...(groups.get(category) || []), product]);
+  });
+
+  return Array.from(groups, ([name, categoryProducts], index) => ({
+    id: -(index + 1),
+    name,
+    slug: name.toLowerCase().replace(/\s+/g, '-'),
+    isActive: 1,
+    icon: '',
+    products: categoryProducts,
+  }));
+}
+
 export default function HomePage() {
   const { isAuthenticated } = useAuth();
   const { addToCart } = useCart();
   const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [productCategories, setProductCategories] = useState<ProductCategory[]>([]);
   const [flashSale, setFlashSale] = useState<FeatureSetting | null>(null);
   const [promotion, setPromotion] = useState<FeatureSetting | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesLoadError, setCategoriesLoadError] = useState(false);
 
   useEffect(() => {
     loadProducts();
+    loadProductCategories();
     loadPromotions();
   }, []);
 
@@ -74,6 +96,32 @@ export default function HomePage() {
     }
   };
 
+  const loadProductCategories = async () => {
+    try {
+      setCategoriesLoading(true);
+      setCategoriesLoadError(false);
+      const data = await productService.getProductsGroupedByCategory();
+      if (data.length > 0) {
+        setProductCategories(data);
+        return;
+      }
+      const fallbackProducts = await productService.getProducts();
+      setProductCategories(groupProductsByCategory(fallbackProducts));
+    } catch (error) {
+      console.error('Error loading products grouped by category:', error);
+      try {
+        const fallbackProducts = await productService.getProducts();
+        setProductCategories(groupProductsByCategory(fallbackProducts));
+        setCategoriesLoadError(false);
+      } catch (fallbackError) {
+        console.error('Error loading fallback products:', fallbackError);
+        setCategoriesLoadError(true);
+      }
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
+
   const loadPromotions = async () => {
     const [flashSaleSetting, promotionSetting] = await Promise.all([
       featureSettingsService.getSetting('flash_sale'),
@@ -83,7 +131,7 @@ export default function HomePage() {
     setPromotion(promotionSetting);
   };
 
-  const categories = Array.from(new Set(products.map((product) => product.category).filter(Boolean)));
+  const categoriesWithProducts = productCategories.filter((category) => category.products?.length);
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,8 +197,7 @@ export default function HomePage() {
 
         <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6" id="featured-products">
           <div className="mb-6 flex items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Danh mục sản phẩm</p><h2 className="mt-1 text-2xl font-bold">Mua sắm theo nhu cầu</h2></div><Button variant="ghost" onClick={() => router.push('/products')}>Tất cả sản phẩm <ArrowRight className="ml-2 h-4 w-4" /></Button></div>
-          {categories.length > 0 && <div className="mb-8 flex flex-wrap gap-2">{categories.slice(0, 8).map((category) => <Button key={category} variant="outline" size="sm" onClick={() => router.push(`/products?category=${encodeURIComponent(category as string)}`)}>{category}</Button>)}</div>}
-          {loading ? <p className="py-12 text-center text-muted-foreground">Đang tải sản phẩm...</p> : loadError ? <div className="rounded-xl border border-dashed p-10 text-center"><p className="font-semibold">Không thể tải sản phẩm lúc này</p><p className="mt-1 text-sm text-muted-foreground">Vui lòng thử lại sau ít phút.</p><Button variant="outline" className="mt-4" onClick={loadProducts}>Thử lại</Button></div> : products.length === 0 ? <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">Chưa có sản phẩm để hiển thị.</div> : <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">{products.slice(0, 8).map((product) => <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />)}</div>}
+          {categoriesLoading ? <p className="py-12 text-center text-muted-foreground">Đang tải sản phẩm...</p> : categoriesLoadError ? <div className="rounded-xl border border-dashed p-10 text-center"><p className="font-semibold">Không thể tải sản phẩm lúc này</p><p className="mt-1 text-sm text-muted-foreground">Vui lòng thử lại sau ít phút.</p><Button variant="outline" className="mt-4" onClick={loadProductCategories}>Thử lại</Button></div> : categoriesWithProducts.length === 0 ? <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">Chưa có sản phẩm để hiển thị.</div> : <div className="space-y-10">{categoriesWithProducts.map((category) => <section key={category.id} aria-labelledby={`category-${category.id}`}><div className="mb-4"><h3 id={`category-${category.id}`} className="text-xl font-semibold">{category.name}</h3></div><div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">{category.products.slice(0, 4).map((product) => <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />)}</div></section>)}</div>}
         </section>
       </main>
     </div>

@@ -51,6 +51,7 @@ export interface ICreateProductResponse {
 }
 
 export interface IProductsGroupedByCategoryResponse {
+  id: number,
   name: string,
   slug: string,
   isActive: number,

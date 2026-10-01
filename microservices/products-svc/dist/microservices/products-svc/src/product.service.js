@@ -105,10 +105,7 @@ let ProductService = class ProductService {
         const categoryRepository = this.dataSource.getRepository(category_entity_1.CategoryEntity);
         const queryBuilder = categoryRepository
             .createQueryBuilder('category')
-            .leftJoinAndSelect('category.products', 'product', 'product.status = :status', { status: 1 })
-            .where('category.is_active = :isActive', {
-            isActive: 1,
-        });
+            .leftJoinAndMapMany('category.products', product_entity_1.ProductEntity, 'product', 'product.categoryId = category.id');
         if (filters?.search) {
             queryBuilder.andWhere('product.name LIKE :search', {
                 search: `%${filters.search}%`,
@@ -121,7 +118,7 @@ let ProductService = class ProductService {
         }
         queryBuilder
             .orderBy('category.sort_order', 'ASC')
-            .addOrderBy('product.createdAt', 'DESC');
+            .addOrderBy('product.id', 'DESC');
         if (filters?.limit !== undefined) {
             queryBuilder.take(filters.limit);
         }

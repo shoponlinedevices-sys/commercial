@@ -18,6 +18,10 @@ const nextConfig = {
         hostname: "pos.nvncdn.com",
       },
       {
+        protocol: "https",
+        hostname: "bizweb.dktcdn.net",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         pathname: "/**",

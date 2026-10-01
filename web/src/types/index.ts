@@ -14,6 +14,15 @@ export interface Product {
   category?: string;
 }
 
+export interface ProductCategory {
+  id: number;
+  name: string;
+  slug: string;
+  isActive: number;
+  icon: string;
+  products: Product[];
+}
+
 export interface AdBanner {
   id: number;
   title: string;

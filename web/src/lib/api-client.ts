@@ -28,10 +28,12 @@ class ApiClient {
     }
   }
 
-  private getHeaders(): HeadersInit {
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
+  private getHeaders(includeContentType = true): HeadersInit {
+    const headers: HeadersInit = {};
+
+    if (includeContentType) {
+      headers['Content-Type'] = 'application/json';
+    }
 
     const token = this.getAccessToken();
     if (token) {
@@ -69,11 +71,10 @@ class ApiClient {
     const url = `${baseUrl}${endpoint}`;
     const config: RequestInit = {
       ...options,
+      cache: options.cache || 'no-store',
       headers: {
-        ...this.getHeaders(),
+        ...this.getHeaders(options.body !== undefined),
         ...options.headers,
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
       },
     };
 
@@ -94,7 +95,7 @@ class ApiClient {
       if (newToken) {
         this.setAccessToken(newToken);
         config.headers = {
-          ...this.getHeaders(),
+          ...this.getHeaders(options.body !== undefined),
           ...options.headers,
         };
         const retryResponse = await fetch(url, config);

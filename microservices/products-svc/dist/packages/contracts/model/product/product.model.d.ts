@@ -43,6 +43,7 @@ export interface ICreateProductResponse {
     product: IProduct;
 }
 export interface IProductsGroupedByCategoryResponse {
+    id: number;
     name: string;
     slug: string;
     isActive: number;

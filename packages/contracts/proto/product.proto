@@ -35,6 +35,7 @@ message ProductsGroupedByCategory {
   int32 isActive = 3;
   string icon = 4;
   repeated Product products = 5;
+  int32 id = 6;
 }
 
 message GetProductsGroupedByCategoryResponse {
