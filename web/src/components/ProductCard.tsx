@@ -17,7 +17,7 @@ interface ProductCardProps {
 export default function ProductCard({ product, onAddToCart, compact = false }: ProductCardProps) {
   return (
     <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-border/70 bg-card transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-      <Link href={`/products/${product.id}`} className="relative block aspect-[4/3] overflow-hidden bg-muted" aria-label={`Xem ${product.name}`}>
+      <Link href={`/products/${product.id}`} className={`relative block ${compact ? 'aspect-video' : 'aspect-[4/3]'} overflow-hidden bg-muted`} aria-label={`Xem ${product.name}`}>
         {product.image ? (
           <Image
             src={product.image}
@@ -35,13 +35,13 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
       </Link>
       <div className={`flex flex-1 flex-col ${compact ? 'p-3' : 'p-4'}`}>
         {product.category && <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary">{product.category}</p>}
-        <Link href={`/products/${product.id}`} className="line-clamp-2 text-sm font-semibold leading-5 hover:text-primary sm:text-base">
+        <Link href={`/products/${product.id}`} className={`line-clamp-2 text-sm font-semibold leading-5 hover:text-primary ${compact ? '' : 'sm:text-base'}`}>
           {product.name}
         </Link>
         {!compact && <p className="mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground">{product.description}</p>}
-        <div className="mt-auto pt-4">
+        <div className={`mt-auto ${compact ? 'pt-3' : 'pt-4'}`}>
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <span className="text-base font-bold text-primary sm:text-lg">{formatVnd(product.price)}</span>
+            <span className={`font-bold text-primary ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}>{formatVnd(product.price)}</span>
             {product.oldPrice && <span className="text-xs text-muted-foreground line-through">{formatVnd(product.oldPrice)}</span>}
           </div>
           {(product.unit || product.moq) && (
@@ -52,7 +52,7 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
             </p>
           )}
           {onAddToCart && (
-            <Button onClick={() => onAddToCart(product)} className="mt-3 w-full" size="sm">
+            <Button onClick={() => onAddToCart(product)} className={`${compact ? 'mt-2' : 'mt-3'} w-full`} size="sm">
               <ShoppingCart className="mr-2 h-4 w-4" />
               Thêm vào giỏ
             </Button>
