@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 import { productService } from '@/services/product.service';
 import { Product } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +17,8 @@ import Image from 'next/image';
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const { addToCart: addProductToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -38,14 +40,12 @@ export default function ProductDetailPage() {
 
   const addToCart = async () => {
     if (!product) return;
+    if (!isAuthenticated) {
+      router.push('/login?redirect=/products');
+      return;
+    }
     try {
-      const { cartService } = await import('@/services/cart.service');
-      await cartService.addToCart({
-        userId: user!.id,
-        productId: product.id,
-        quantity: 1,
-        image: product.image,
-      });
+      await addProductToCart(product.id, 1, product.image);
       alert('Product added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);

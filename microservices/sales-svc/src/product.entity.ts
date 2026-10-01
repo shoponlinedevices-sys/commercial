@@ -33,5 +33,5 @@ export class ProductEntity {
   moq: string;
 
   @Column({ nullable: true })
-  category: string;
+  categoryId: number;
 }

@@ -20,12 +20,12 @@ __decorate([
 ], CartLineEntity.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Index)('idx_cart_id'),
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ name: 'cartId' }),
     __metadata("design:type", Number)
 ], CartLineEntity.prototype, "cartId", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)('CartEntity', { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)({ name: 'cart_id' }),
+    (0, typeorm_1.JoinColumn)({ name: 'cartId' }),
     __metadata("design:type", Object)
 ], CartLineEntity.prototype, "cart", void 0);
 __decorate([

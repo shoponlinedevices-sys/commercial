@@ -27,8 +27,14 @@ export const cartService = {
 
   async getCartLinesByUserId(userId: number): Promise<CartLine[]> {
     try {
-      const response = await apiClient.get<CartLine[]>(`/cart/lines/user/${userId}`, CART_BASE_URL);
-      return Array.isArray(response) ? response : [];
+      const response = await apiClient.get<CartLine[] | { cartLines?: CartLine[] }>(
+        `/cart/lines/user/${userId}`,
+        CART_BASE_URL,
+      );
+      if (Array.isArray(response)) {
+        return response;
+      }
+      return Array.isArray(response?.cartLines) ? response.cartLines : [];
     } catch (error) {
       console.error('Error fetching cart lines:', error);
       return [];

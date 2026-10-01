@@ -75,12 +75,17 @@ export default function HomePage() {
     loadPromotions();
   }, []);
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = async (product: Product) => {
     if (!isAuthenticated) {
       router.push('/login?redirect=/products');
       return;
     }
-    addToCart(product.id, 1, product.image);
+    try {
+      await addToCart(product.id, 1, product.image);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Không thể thêm sản phẩm vào giỏ hàng');
+    }
   };
 
   const loadProducts = async () => {

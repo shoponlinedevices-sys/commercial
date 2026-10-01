@@ -15,11 +15,11 @@ export class CartLineEntity {
   id: number;
 
   @Index('idx_cart_id')
-  @Column()
+  @Column({ name: 'cartId' })
   cartId: number;
 
   @ManyToOne('CartEntity', { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'cart_id' })
+  @JoinColumn({ name: 'cartId' })
   cart?: any;
 
   @Index('idx_product_id')

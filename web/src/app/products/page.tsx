@@ -17,8 +17,8 @@ const PRODUCTS_PER_PAGE = 12;
 export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user } = useAuth();
-  const { refreshCartCount } = useCart();
+  const { isAuthenticated } = useAuth();
+  const { addToCart: addProductToCart } = useCart();
   const [productCategories, setProductCategories] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -73,14 +73,12 @@ export default function ProductsPage() {
     .filter((category) => category.products.length > 0);
 
   const addToCart = async (product: Product) => {
-    if (!user) {
+    if (!isAuthenticated) {
       router.push('/login?redirect=/products');
       return;
     }
     try {
-      const { cartService } = await import('@/services/cart.service');
-      await cartService.addToCart({ userId: user.id, productId: product.id, quantity: 1, image: product.image });
-      await refreshCartCount();
+      await addProductToCart(product.id, 1, product.image);
       alert('Đã thêm sản phẩm vào giỏ hàng');
     } catch (error) {
       console.error('Error adding to cart:', error);

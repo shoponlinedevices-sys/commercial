@@ -34,8 +34,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = async (productId: number, quantity: number = 1, image?: string) => {
     if (!isAuthenticated || !user?.id) {
-      console.error('User not authenticated');
-      return;
+      throw new Error('User not authenticated');
     }
 
     try {
@@ -48,6 +47,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       await refreshCartCount();
     } catch (error) {
       console.error('Error adding to cart:', error);
+      throw error;
     }
   };
 
