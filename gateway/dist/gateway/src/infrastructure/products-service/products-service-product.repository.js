@@ -48,6 +48,16 @@ let ProductsServiceProductRepository = class ProductsServiceProductRepository {
         const response = await (0, rxjs_1.firstValueFrom)(this.grpcProductService.getProducts(request));
         return (response.products || []).map((product) => this.toProduct(product));
     }
+    async groupedByCategory(filters) {
+        const request = {
+            search: filters === null || filters === void 0 ? void 0 : filters.search,
+            categoryId: filters === null || filters === void 0 ? void 0 : filters.categoryId,
+            limit: filters === null || filters === void 0 ? void 0 : filters.limit,
+            offset: filters === null || filters === void 0 ? void 0 : filters.offset,
+        };
+        const response = await (0, rxjs_1.firstValueFrom)(this.grpcProductService.getProductsGroupedByCategory(request));
+        return response.categories || [];
+    }
     async create(data) {
         const request = {
             name: data.name,

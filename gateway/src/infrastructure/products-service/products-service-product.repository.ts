@@ -6,7 +6,7 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
 import { firstValueFrom } from 'rxjs';
 import { IGrpcProductService } from '../../../../packages/contracts/grpc/interface/grpc-products.service';
-import { ICreateProductRequest, IGetProductsRequest } from '../../../../packages/contracts/model/product/product.model';
+import { ICreateProductRequest, IGetProductsGroupedByCategoryRequest, IGetProductsRequest } from '../../../../packages/contracts/model/product/product.model';
 
 @Injectable()
 export class ProductsServiceProductRepository implements ProductRepository {
@@ -61,6 +61,19 @@ export class ProductsServiceProductRepository implements ProductRepository {
       this.grpcProductService.getProducts(request),
     );
     return (response.products || []).map((product) => this.toProduct(product));
+  }
+
+  async groupedByCategory(filters?: IGetProductsGroupedByCategoryRequest) {
+    const request: IGetProductsGroupedByCategoryRequest = {
+      search: filters?.search,
+      categoryId: filters?.categoryId,
+      limit: filters?.limit,
+      offset: filters?.offset,
+    };
+    const response = await firstValueFrom(
+      this.grpcProductService.getProductsGroupedByCategory(request),
+    );
+    return response.categories || [];
   }
 
   async create(data: Omit<Product, 'id'> & { createdBy?: string | number }): Promise<Product> {

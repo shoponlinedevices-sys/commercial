@@ -3,6 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 import { ProductEntity } from '../entities/product.entity';
 import { Product } from '../../../domain/product/product.entity';
 import { ProductRepository } from '../../../domain/product/product.repository';
+import { IProductsGroupedByCategoryResponse } from '../../../../../packages/contracts/model/product/product.model';
 
 @Injectable()
 export class DatabaseProductRepository implements ProductRepository {
@@ -66,6 +67,10 @@ export class DatabaseProductRepository implements ProductRepository {
           row.moq ?? undefined,
         ),
     );
+  }
+
+  async groupedByCategory(): Promise<IProductsGroupedByCategoryResponse[]> {
+    return [];
   }
 
     async create(data: Omit<Product, 'id'>): Promise<Product> {

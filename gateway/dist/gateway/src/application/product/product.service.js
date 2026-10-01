@@ -25,6 +25,9 @@ let ProductService = class ProductService {
     findByCategory(categoryId) {
         return this.productRepository.findByCategory(categoryId);
     }
+    groupedByCategory(filters) {
+        return this.productRepository.groupedByCategory(filters);
+    }
     create(data) {
         return this.productRepository.create(data);
     }

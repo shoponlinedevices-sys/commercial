@@ -1,5 +1,6 @@
 import { Product } from '../../domain/product/product.entity';
 import { ProductRepository } from '../../domain/product/product.repository';
+import { IProductsGroupedByCategoryResponse } from '../../../../packages/contracts/model/product/product.model';
 
 export class InMemoryProductRepository extends ProductRepository {
   private products: Product[] = [
@@ -75,6 +76,10 @@ export class InMemoryProductRepository extends ProductRepository {
 
   async findByCategory(categoryId: number): Promise<Product[]> {
     return this.products.filter(product => product.category === categoryId);
+  }
+
+  async groupedByCategory(): Promise<IProductsGroupedByCategoryResponse[]> {
+    return [];
   }
 
   async create(data: Omit<Product, 'id'>): Promise<Product> {

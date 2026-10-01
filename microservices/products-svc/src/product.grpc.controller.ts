@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { ProductService } from './product.service';
+import { IProductsGroupedByCategoryResponse } from '../../../packages/contracts/model/product/product.model';
 
 @Controller()
 export class ProductGrpcController {
@@ -14,6 +15,24 @@ export class ProductGrpcController {
       await this.productService.getProducts(query);
 
     return result;
+  }
+
+  @GrpcMethod('ProductService', 'GetProductsGroupedByCategory')
+  async getProductsGroupedByCategory(filters?: {
+    search?: string;
+    categoryId?: number;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ categories: IProductsGroupedByCategoryResponse[] }> {
+    const result =
+      await this.productService.getProductsGroupedByCategory(filters);
+
+    return {
+      categories: result.map((category: any) => ({
+        ...category,
+        isActive: category.isActive ?? category.is_active,
+      })),
+    };
   }
 
   @GrpcMethod('ProductService', 'GetProduct')

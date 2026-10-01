@@ -2,12 +2,12 @@
   "name": "products-svc",
   "version": "1.0.0",
   "description": "Product microservice with gRPC",
-  "main": "dist/main.js",
+  "main": "dist/microservices/products-svc/src/main.js",
   "scripts": {
     "build": "nest build",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:prod": "node dist/main"
+    "start": "nest start --entryFile microservices/products-svc/src/main",
+    "start:dev": "nest start --watch --entryFile microservices/products-svc/src/main",
+    "start:prod": "node dist/microservices/products-svc/src/main.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -19,7 +19,8 @@
     "mysql2": "^3.6.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "@packages/contracts": "workspace:*"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

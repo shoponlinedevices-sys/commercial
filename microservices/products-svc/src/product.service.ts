@@ -121,4 +121,58 @@ export class ProductService {
     });
     return { product: savedProduct };
   }
+
+  async getProductsGroupedByCategory(filters?: {
+    search?: string;
+    categoryId?: number;
+    limit?: number;
+    offset?: number;
+  }) {
+    const categoryRepository = this.dataSource.getRepository(CategoryEntity);
+
+    const queryBuilder = categoryRepository
+      .createQueryBuilder('category')
+      .leftJoinAndSelect(
+        'category.products',
+        'product',
+        'product.status = :status',
+        { status: 1 },
+      )
+      .where('category.is_active = :isActive', {
+        isActive: 1,
+      });
+
+    // Tìm kiếm sản phẩm
+    if (filters?.search) {
+      queryBuilder.andWhere('product.name LIKE :search', {
+        search: `%${filters.search}%`,
+      });
+    }
+
+    // Lọc theo category
+    if (filters?.categoryId) {
+      queryBuilder.andWhere('category.id = :categoryId', {
+        categoryId: filters.categoryId,
+      });
+    }
+
+    // Sắp xếp danh mục
+    queryBuilder
+      .orderBy('category.sort_order', 'ASC')
+      .addOrderBy('product.createdAt', 'DESC');
+
+    // Phân trang category nếu cần
+    if (filters?.limit !== undefined) {
+      queryBuilder.take(filters.limit);
+    }
+
+    if (filters?.offset !== undefined) {
+      queryBuilder.skip(filters.offset);
+    }
+
+    const categories = await queryBuilder.getMany();
+
+    return categories;
+  }
+
 }

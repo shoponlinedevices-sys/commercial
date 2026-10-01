@@ -31,6 +31,15 @@ let ProductController = class ProductController {
         const products = await this.productService.findAll();
         return { products, total: products.length };
     }
+    async groupedByCategory(query) {
+        const filters = {
+            search: query.search,
+            categoryId: query.categoryId === undefined ? undefined : parseInt(query.categoryId, 10),
+            limit: query.limit === undefined ? undefined : parseInt(query.limit, 10),
+            offset: query.offset === undefined ? undefined : parseInt(query.offset, 10),
+        };
+        return this.productService.groupedByCategory(filters);
+    }
     findOne(id) {
         return this.productService.findOne(parseInt(id, 10));
     }
@@ -58,6 +67,17 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "findAll", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('grouped-by-category'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get products grouped by category' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Grouped products retrieved successfully' }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "groupedByCategory", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

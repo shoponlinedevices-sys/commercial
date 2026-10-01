@@ -29,6 +29,26 @@ export class ProductController {
 
   @Public()
   @UseGuards(JwtAuthGuard)
+  @Get('grouped-by-category')
+  @ApiOperation({ summary: 'Get products grouped by category' })
+  @ApiResponse({ status: 200, description: 'Grouped products retrieved successfully' })
+  async groupedByCategory(@Query() query: {
+    search?: string;
+    categoryId?: string;
+    limit?: string;
+    offset?: string;
+  }) {
+    const filters = {
+      search: query.search,
+      categoryId: query.categoryId === undefined ? undefined : parseInt(query.categoryId, 10),
+      limit: query.limit === undefined ? undefined : parseInt(query.limit, 10),
+      offset: query.offset === undefined ? undefined : parseInt(query.offset, 10),
+    };
+    return this.productService.groupedByCategory(filters);
+  }
+
+  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Get product by ID' })
   @ApiResponse({ status: 200, description: 'Product retrieved successfully' })

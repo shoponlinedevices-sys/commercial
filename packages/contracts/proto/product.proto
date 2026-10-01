@@ -4,6 +4,7 @@ package product;
 
 service ProductService {
   rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+  rpc GetProductsGroupedByCategory (GetProductsGroupedByCategoryRequest) returns (GetProductsGroupedByCategoryResponse);
   rpc GetProduct (GetProductRequest) returns (GetProductResponse);
   rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
 }
@@ -19,6 +20,25 @@ message GetProductsRequest {
 message GetProductsResponse {
   repeated Product products = 1;
   int32 total = 2;
+}
+
+message GetProductsGroupedByCategoryRequest {
+  string search = 1;
+  int32 categoryId = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message ProductsGroupedByCategory {
+  string name = 1;
+  string slug = 2;
+  int32 isActive = 3;
+  string icon = 4;
+  repeated Product products = 5;
+}
+
+message GetProductsGroupedByCategoryResponse {
+  repeated ProductsGroupedByCategory categories = 1;
 }
 
 message GetProductRequest {

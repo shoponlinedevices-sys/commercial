@@ -43,6 +43,9 @@ let DatabaseProductRepository = class DatabaseProductRepository {
             return new product_entity_2.Product(row.id, row.name, Number(row.price), (_a = row.description) !== null && _a !== void 0 ? _a : '', (_b = row.image) !== null && _b !== void 0 ? _b : '', row.oldPrice !== null && row.oldPrice !== undefined ? Number(row.oldPrice) : undefined, (_c = row.badge) !== null && _c !== void 0 ? _c : undefined, (_d = row.sku) !== null && _d !== void 0 ? _d : undefined, (_e = row.unit) !== null && _e !== void 0 ? _e : undefined, (_f = row.moq) !== null && _f !== void 0 ? _f : undefined);
         });
     }
+    async groupedByCategory() {
+        return [];
+    }
     async create(data) {
         var _a, _b, _c, _d, _e, _f;
         const row = this.productRepo.create({

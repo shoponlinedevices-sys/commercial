@@ -49,3 +49,22 @@ export interface ICreateProductRequest {
 export interface ICreateProductResponse {
   product: IProduct;
 }
+
+export interface IProductsGroupedByCategoryResponse {
+  name: string,
+  slug: string,
+  isActive: number,
+  icon: string,
+  products: IProduct[],
+}
+
+export interface IGetProductsGroupedByCategoryRequest {
+  search?: string;
+  categoryId?: number;
+  limit?: number;
+  offset?: number;
+}
+
+export interface IGetProductsGroupedByCategoryResponse {
+  categories: IProductsGroupedByCategoryResponse[];
+}
