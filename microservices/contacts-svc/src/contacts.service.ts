@@ -242,12 +242,18 @@ export class ContactsService {
   async createPaymentMethod(data: {
     userId: number;
     type: string;
-    provider: string;
-    accountNumber: string;
-    accountName: string;
-    isDefault: boolean;
+    provider?: string;
+    accountNumber?: string;
+    accountName?: string;
+    isDefault?: boolean;
   }) {
-    const paymentMethod = this.paymentMethodRepository.create(data);
+    const paymentMethod = this.paymentMethodRepository.create({
+      ...data,
+      provider: data.provider ?? '',
+      accountNumber: data.accountNumber ?? '',
+      accountName: data.accountName ?? '',
+      isDefault: data.isDefault ?? false,
+    });
     const saved = await this.paymentMethodRepository.save(paymentMethod);
     return { paymentMethod: saved };
   }
