@@ -46,10 +46,16 @@ export interface IGetOrderResponse {
   order: IOrder;
 }
 
+export interface ICreateOrderLineRequest {
+  productId: string;
+  unitPrice: string;
+  quantity: number;
+}
+
 export interface ICreateOrderRequest {
   userId: string;
   totalAmount: number;
-  orderLines: IOrderLine[];
+  orderLines: ICreateOrderLineRequest[];
   shippingAddress?: string;
   fcmToken?: string;
   customerEmail?: string;

@@ -20,11 +20,7 @@ import {
 
 const paymentTypes = [
   { id: 'cash', label: 'Tiền mặt', icon: '💵' },
-  { id: 'card', label: 'Thẻ tín dụng/Ghi nợ', icon: '💳' },
   { id: 'bank_transfer', label: 'Chuyển khoản ngân hàng', icon: '🏦' },
-  { id: 'momo', label: 'MoMo', icon: '📱' },
-  { id: 'zalopay', label: 'ZaloPay', icon: '💰' },
-  { id: 'prepayment', label: 'Trả trước', icon: '💸' },
   { id: 'cash_on_delivery', label: 'Thanh toán khi giao hàng', icon: '🚚' },
 ];
 
@@ -33,7 +29,6 @@ export default function PaymentMethodPage() {
   const router = useRouter();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [accountSettings, setAccountSettings] = useState<AccountPaymentSettings>({});
-  const [availablePaymentTypes, setAvailablePaymentTypes] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
@@ -49,14 +44,12 @@ export default function PaymentMethodPage() {
     if (!user) return;
     try {
       setLoading(true);
-      const [methods, settings, available] = await Promise.all([
+      const [methods, settings] = await Promise.all([
         paymentMethodService.getPaymentMethods(user.id),
         paymentMethodService.getAccountPaymentSettings(user.id),
-        paymentMethodService.getAvailablePaymentMethods(user.id),
       ]);
       setPaymentMethods(methods);
       setAccountSettings(settings);
-      setAvailablePaymentTypes(available);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {

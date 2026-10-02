@@ -8,7 +8,6 @@ export const orderService = {
       userId: Number(order.userId),
       totalAmount: order.totalAmount,
       cartLines: order.orderLines,
-      orderLines: order.orderLines,
       shippingAddress: order.shippingAddress,
       fcmToken: order.fcmToken,
       customerEmail: order.customerEmail,

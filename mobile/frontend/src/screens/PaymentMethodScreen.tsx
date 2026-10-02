@@ -49,23 +49,13 @@ const PaymentMethodScreen: React.FC<Props> = ({ navigation, route }) => {
   const [selectedType, setSelectedType] = useState<string>('');
   const [formData, setFormData] = useState<PaymentMethod>({});
   const [accountSettings, setAccountSettings] = useState<AccountPaymentSettings>({});
-  const [availablePaymentTypes, setAvailablePaymentTypes] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const allPaymentTypes = [
+  const paymentTypes = [
     { id: 'cash', label: 'Tiền mặt', icon: '💵' },
-    { id: 'card', label: 'Thẻ tín dụng/Ghi nợ', icon: '💳' },
     { id: 'bank_transfer', label: 'Chuyển khoản ngân hàng', icon: '🏦' },
-    { id: 'momo', label: 'MoMo', icon: '📱' },
-    { id: 'zalopay', label: 'ZaloPay', icon: '💰' },
-    { id: 'prepayment', label: 'Trả trước', icon: '💸' },
     { id: 'cash_on_delivery', label: 'Thanh toán khi giao hàng', icon: '🚚' },
   ];
-
-  const paymentTypes = allPaymentTypes.filter(pt => 
-    availablePaymentTypes.includes(pt.id) || 
-    !availablePaymentTypes.length
-  );
 
   useEffect(() => {
     loadPaymentMethods();
@@ -87,9 +77,6 @@ const PaymentMethodScreen: React.FC<Props> = ({ navigation, route }) => {
     try {
       const settings = await paymentMethodApi.getAccountPaymentSettings(user.id);
       setAccountSettings(settings);
-      
-      const available = await paymentMethodApi.getAvailablePaymentMethods(user.id);
-      setAvailablePaymentTypes(available);
     } catch (error) {
       console.error('Error loading account settings:', error);
       setError(`Error loading account settings: ${error instanceof Error ? error.message : String(error)}`);
