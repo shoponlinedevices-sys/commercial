@@ -16,15 +16,15 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onAddToCart, compact = false }: ProductCardProps) {
   return (
-    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-border/70 bg-card transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-      <Link href={`/products/${product.id}`} className={`relative block ${compact ? 'aspect-[2/1]' : 'aspect-[4/3]'} overflow-hidden bg-muted`} aria-label={`Xem ${product.name}`}>
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+      <Link href={`/products/${product.id}`} className={`relative block ${compact ? 'aspect-[2/1]' : 'aspect-[4/3]'} overflow-hidden bg-muted/70`} aria-label={`Xem ${product.name}`}>
         {product.image ? (
           <Image
             src={product.image}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className={`${compact ? 'object-contain p-2' : 'object-cover'} transition-transform duration-300 group-hover:scale-105`}
+            className={`${compact ? 'object-contain p-3' : 'object-cover'} transition-transform duration-300 group-hover:scale-105`}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-muted-foreground">
@@ -33,7 +33,7 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
         )}
         {product.badge && <Badge className="absolute left-3 top-3 bg-primary text-primary-foreground">{product.badge}</Badge>}
       </Link>
-      <div className={`flex flex-1 flex-col ${compact ? 'p-3' : 'p-4'}`}>
+      <div className={`flex flex-1 flex-col ${compact ? 'p-3.5' : 'p-4'}`}>
         {product.category && <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary">{product.category}</p>}
         <Link href={`/products/${product.id}`} className={`line-clamp-2 text-sm font-semibold leading-5 hover:text-primary ${compact ? '' : 'sm:text-base'}`}>
           {product.name}

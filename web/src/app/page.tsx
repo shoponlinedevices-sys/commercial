@@ -144,21 +144,22 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        <section className="relative overflow-hidden border-b bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/.16),transparent_40%),linear-gradient(120deg,hsl(var(--background)),hsl(var(--muted)/.55))]">
-          <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-16 lg:py-16">
+        <section className="relative overflow-hidden border-b border-border/60 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/.14),transparent_38%),linear-gradient(120deg,hsl(var(--background)),hsl(var(--muted)/.5))]">
+          <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14 lg:py-16">
             <div>
               <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Commercial store</p>
-              <h1 className="max-w-2xl text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-6xl">Thiết bị tốt cho mọi công trình</h1>
+              <h1 className="max-w-2xl text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-[3.5rem]">Thiết bị tốt cho mọi công trình</h1>
               <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground">Dụng cụ, thiết bị điện và vật tư công nghiệp đáng tin cậy, giá minh bạch, giao nhanh cho cả đơn lẻ và đơn số lượng lớn.</p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button size="lg" onClick={() => router.push('/products')}>Khám phá sản phẩm <ArrowRight className="ml-2 h-4 w-4" /></Button>
                 <Button size="lg" variant="outline" onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })}>Xem hàng nổi bật</Button>
               </div>
-              <p className="mt-5 text-xs text-muted-foreground">Đã có sản phẩm sẵn sàng giao hôm nay</p>
+              <p className="mt-5 flex items-center gap-2 text-xs text-muted-foreground"><span className="h-2 w-2 rounded-full bg-emerald-500" />Đã có sản phẩm sẵn sàng giao hôm nay</p>
             </div>
-            <div className="relative rounded-2xl border border-primary/20 bg-primary p-7 text-primary-foreground shadow-xl sm:p-9">
+            <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-primary p-7 text-primary-foreground shadow-xl shadow-primary/20 sm:p-9">
+              <div className="absolute -right-14 -top-16 h-48 w-48 rounded-full bg-white/10" aria-hidden="true" />
               <div className="absolute right-6 top-6 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">Mua sắm dễ dàng</div>
-              <Search className="mb-10 h-10 w-10" aria-hidden="true" />
+              <Search className="relative mb-10 h-10 w-10" aria-hidden="true" />
               <p className="text-sm font-medium text-primary-foreground/75">Tìm kiếm thông minh</p>
               <h2 className="mt-2 max-w-sm text-2xl font-bold leading-tight">Tìm đúng sản phẩm, đặt hàng nhanh</h2>
               <p className="mt-3 max-w-sm text-sm leading-6 text-primary-foreground/80">Tìm theo tên, lọc theo danh mục và xem đầy đủ thông tin trước khi thêm vào giỏ.</p>
@@ -167,8 +168,8 @@ export default function HomePage() {
           </div>
         </section>
 
-       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+       <section className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:py-9">
+          <div className="grid grid-cols-1 gap-3 rounded-2xl border border-border/70 bg-card px-5 py-4 shadow-sm sm:grid-cols-3 sm:gap-0 sm:px-2">
             {serviceFeatures.map((feature, index) => {
               const Icon = feature.icon;
 
@@ -176,21 +177,19 @@ export default function HomePage() {
                 <div
                   key={feature.title}
                   className={`
-                    flex items-center justify-center gap-3
-                    border-b pb-4
-                    lg:border-b-0 lg:py-0
-                    ${index < serviceFeatures.length - 1 ? 'lg:border-r' : ''}
+                    flex items-center gap-3 px-3 py-2 sm:justify-center sm:py-3
+                    ${index < serviceFeatures.length - 1 ? 'sm:border-r sm:border-border/70' : ''}
                   `}
                 >
-                  <div className="shrink-0 rounded-lg bg-primary/10 p-2 text-primary">
-                    <Icon className="h-5 w-5" />
+                  <div className="shrink-0 rounded-xl bg-primary/10 p-2.5 text-primary">
+                    <Icon className="h-4 w-4" />
                   </div>
 
                   <div>
                     <h3 className="text-sm font-semibold">
                       {feature.title}
                     </h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="mt-1 text-xs text-muted-foreground">
                       {feature.description}
                     </p>
                   </div>
@@ -202,9 +201,50 @@ export default function HomePage() {
 
         <PromotionSections products={products} flashSale={flashSale} promotion={promotion} onAddToCart={handleAddToCart} />
 
-        <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6" id="featured-products">
-          <div className="mb-6 flex items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Danh mục sản phẩm</p><h2 className="mt-1 text-2xl font-bold">Mua sắm theo nhu cầu</h2></div><Button variant="ghost" onClick={() => router.push('/products')}>Tất cả sản phẩm <ArrowRight className="ml-2 h-4 w-4" /></Button></div>
-          {categoriesLoading ? <p className="py-12 text-center text-muted-foreground">Đang tải sản phẩm...</p> : categoriesLoadError ? <div className="rounded-xl border border-dashed p-10 text-center"><p className="font-semibold">Không thể tải sản phẩm lúc này</p><p className="mt-1 text-sm text-muted-foreground">Vui lòng thử lại sau ít phút.</p><Button variant="outline" className="mt-4" onClick={loadProductCategories}>Thử lại</Button></div> : categoriesWithProducts.length === 0 ? <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">Chưa có sản phẩm để hiển thị.</div> : <div className="space-y-8">{categoriesWithProducts.slice(0, 5).map((category) => <section key={category.id} aria-labelledby={`category-${category.id}`}><div className="mb-3"><h3 id={`category-${category.id}`} className="text-xl font-semibold">{getCategoryDisplayName(category.name)}</h3></div><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">{category.products.slice(0, 5).map((product) => <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />)}</div></section>)}</div>}
+        <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:pb-16" id="featured-products">
+          <div className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-border/70 pb-5">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Danh mục sản phẩm</p>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">Mua sắm theo nhu cầu</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Lựa chọn thiết bị phù hợp cho công việc của bạn.</p>
+            </div>
+            <Button variant="outline" onClick={() => router.push('/products')}>Tất cả sản phẩm <ArrowRight className="ml-2 h-4 w-4" /></Button>
+          </div>
+          {categoriesLoading ? (
+            <p className="py-12 text-center text-muted-foreground">Đang tải sản phẩm...</p>
+          ) : categoriesLoadError ? (
+            <div className="rounded-2xl border border-dashed p-10 text-center">
+              <p className="font-semibold">Không thể tải sản phẩm lúc này</p>
+              <p className="mt-1 text-sm text-muted-foreground">Vui lòng thử lại sau ít phút.</p>
+              <Button variant="outline" className="mt-4" onClick={loadProductCategories}>Thử lại</Button>
+            </div>
+          ) : categoriesWithProducts.length === 0 ? (
+            <div className="rounded-2xl border border-dashed p-10 text-center text-muted-foreground">Chưa có sản phẩm để hiển thị.</div>
+          ) : (
+            <div className="space-y-10">
+              {categoriesWithProducts.slice(0, 5).map((category) => {
+                const categoryProducts = category.products.slice(0, 5);
+                const gridColumns =
+                  categoryProducts.length <= 1 ? 'grid-cols-1 max-w-sm' :
+                  categoryProducts.length === 2 ? 'grid-cols-2 max-w-2xl' :
+                  categoryProducts.length === 3 ? 'grid-cols-2 sm:grid-cols-3 max-w-4xl' :
+                  categoryProducts.length === 4 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 max-w-6xl' :
+                  'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5';
+
+                return (
+                  <section key={category.id} aria-labelledby={`category-${category.id}`}>
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <h3 id={`category-${category.id}`} className="text-lg font-semibold tracking-tight sm:text-xl">{getCategoryDisplayName(category.name)}</h3>
+                      <span className="text-xs font-medium text-muted-foreground">{category.products.length} sản phẩm</span>
+                    </div>
+                    <div className={`mx-auto grid w-full ${gridColumns} gap-4`}>
+                      {categoryProducts.map((product) => <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />)}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          )}
         </section>
       </main>
     </div>

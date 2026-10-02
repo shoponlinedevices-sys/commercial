@@ -54,9 +54,12 @@ export default function Header() {
 
   return (
     <>
-      <header 
-        className="sticky top-0 z-50 border-b border-border/70 bg-background/95 backdrop-blur"
-        style={{ backgroundColor: colors.darkMode ? '#0f172a' : '#ffffff' }}
+      <header
+        className={`sticky top-0 z-50 border-b backdrop-blur ${
+          colors.darkMode
+            ? 'border-violet-400/20 bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 shadow-md shadow-indigo-950/20'
+            : 'border-border/70 bg-gradient-to-r from-white via-violet-50/70 to-white'
+        }`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="flex min-h-16 items-center gap-3 py-2">
@@ -64,7 +67,7 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className={`lg:hidden mr-2 hover:bg-primary/10 ${colors.darkMode ? 'text-white hover:bg-white/10' : ''}`}
+              className={`mr-2 lg:hidden ${colors.darkMode ? 'text-white hover:bg-white/10' : 'text-slate-700 hover:bg-primary/10'}`}
               onClick={() => setMobileMenuOpen(true)}
             >
               <Menu className="h-5 w-5" />
@@ -72,22 +75,22 @@ export default function Header() {
 
             {/* Store brand */}
             <Link href="/" className="flex shrink-0 items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-md shadow-violet-500/30">
                 <Sparkles className="h-5 w-5 text-white" />
               </div>
-              <span className="hidden font-bold text-lg text-foreground sm:inline">
+              <span className={`hidden text-lg font-bold sm:inline ${colors.darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Commercial
               </span>
             </Link>
 
             <nav className="hidden items-center gap-5 text-sm font-medium lg:flex">
-              <Link href="/products" className="text-muted-foreground transition-colors hover:text-primary">Sản phẩm</Link>
-              <Link href="/orders" className="text-muted-foreground transition-colors hover:text-primary">Đơn hàng</Link>
+              <Link href="/products" className={`transition-colors hover:text-violet-500 ${colors.darkMode ? 'text-slate-200 hover:text-white' : 'text-slate-600'}`}>Sản phẩm</Link>
+              <Link href="/orders" className={`transition-colors hover:text-violet-500 ${colors.darkMode ? 'text-slate-200 hover:text-white' : 'text-slate-600'}`}>Đơn hàng</Link>
             </nav>
 
             {/* Search Bar */}
             <div className="mx-1 min-w-0 flex-1 sm:mx-4">
-              <div className="relative group">
+              <div className="group relative">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors ${colors.darkMode ? 'text-gray-400 group-focus-within:text-white' : 'text-muted-foreground group-focus-within:text-primary'}`} />
                 <Input
                   type="text"
@@ -95,7 +98,7 @@ export default function Header() {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   ref={searchInputRef}
-                  className={`pl-10 pr-10 transition-all text-sm sm:text-base ${colors.darkMode ? 'bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20' : 'bg-muted/50 border-muted focus:border-primary focus:ring-2 focus:ring-primary/20'}`}
+                  className={`pl-10 pr-10 text-sm transition-all sm:text-base ${colors.darkMode ? 'border-white/20 bg-white/10 text-white placeholder:text-slate-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-400/30' : 'border-violet-100 bg-white/80 text-slate-900 placeholder:text-slate-500 focus:border-primary focus:ring-2 focus:ring-primary/20'}`}
                 />
                 {searchQuery && (
                   <button
@@ -115,7 +118,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={() => router.push('/cart')}
-                className={`relative transition-colors ${colors.darkMode ? 'text-white hover:bg-white/10' : 'hover:bg-primary/10'}`}
+                className={`relative transition-colors ${colors.darkMode ? 'text-white hover:bg-violet-400/20 hover:text-violet-100' : 'text-slate-700 hover:bg-primary/10 hover:text-primary'}`}
               >
                 <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
                 {cartCount > 0 && (
@@ -129,7 +132,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={() => router.push('/notifications')}
-                className={`relative transition-colors ${colors.darkMode ? 'text-white hover:bg-white/10' : 'hover:bg-primary/10'}`}
+                className={`relative transition-colors ${colors.darkMode ? 'text-white hover:bg-violet-400/20 hover:text-violet-100' : 'text-slate-700 hover:bg-primary/10 hover:text-primary'}`}
               >
                 <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
                 {notificationCount > 0 && (
@@ -146,7 +149,7 @@ export default function Header() {
                 <span className={`text-xs sm:text-sm font-semibold hidden md:block ${colors.darkMode ? 'text-white' : ''}`}>
                   {user?.username}
                 </span>
-              </Link> : <Link href="/login" className="rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">Đăng nhập</Link>}
+              </Link> : <Link href="/login" className="rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-violet-500/20 transition-all hover:-translate-y-0.5 hover:from-violet-600 hover:to-fuchsia-600">Đăng nhập</Link>}
             </div>
           </div>
         </div>
