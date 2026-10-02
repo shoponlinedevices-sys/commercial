@@ -82,6 +82,7 @@ export default function HomePage() {
     }
     try {
       await addToCart(product.id, 1, product.image);
+      alert('Product added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);
       alert('Không thể thêm sản phẩm vào giỏ hàng');
