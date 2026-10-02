@@ -24,8 +24,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     try {
       const cartLines = await cartService.getCartLinesByUserId(user.id);
-      const count = cartLines.filter(line => line.status === 1).length;
-      setCartCount(count);
+      setCartCount(new Set(cartLines.map((line) => line.productId)).size);
     } catch (error) {
       console.error('Error fetching cart count:', error);
       setCartCount(0);

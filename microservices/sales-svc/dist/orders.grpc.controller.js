@@ -20,6 +20,16 @@ let OrdersGrpcController = class OrdersGrpcController {
     constructor(orderService) {
         this.orderService = orderService;
     }
+    serializeCart(cart) {
+        if (!cart) {
+            return null;
+        }
+        return {
+            ...cart,
+            createdAt: cart.createdAt.toISOString(),
+            updatedAt: cart.updatedAt.toISOString(),
+        };
+    }
     async getHistoryLogs(limit) {
         return this.orderService.getHistoryLogs(Number(limit) || 200);
     }
@@ -39,16 +49,20 @@ let OrdersGrpcController = class OrdersGrpcController {
         return { order: await this.orderService.updateOrderStatus(data.id, data.status, data.createdBy) };
     }
     async getAllCarts() {
-        return this.orderService.findAllCarts();
+        const { carts } = await this.orderService.findAllCarts();
+        return { carts: carts.map((cart) => this.serializeCart(cart)) };
     }
     async getCart(data) {
-        return this.orderService.getCart(data.id);
+        const { cart } = await this.orderService.getCart(data.id);
+        return { cart: this.serializeCart(cart) };
     }
     async getCartByUserId(data) {
-        return this.orderService.getCartByUserId(data.userId);
+        const { cart } = await this.orderService.getCartByUserId(data.userId);
+        return { cart: this.serializeCart(cart) };
     }
     async addToCart(data) {
-        return this.orderService.addToCart(data);
+        const { cart } = await this.orderService.addToCart(data);
+        return { cart: this.serializeCart(cart) };
     }
     async getCartLinesByUserId(data) {
         return this.orderService.getCartLinesByUserId(data.userId);

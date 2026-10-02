@@ -2,6 +2,7 @@ import { OrderService } from './order.service';
 export declare class OrdersGrpcController {
     private readonly orderService;
     constructor(orderService: OrderService);
+    private serializeCart;
     getHistoryLogs(limit?: string): Promise<import("./history-log.entity").HistoryLogEntity[]>;
     getUserOrders(data: {
         userId: string;
@@ -31,20 +32,52 @@ export declare class OrdersGrpcController {
         order: import("./order.entity").OrderEntity;
     }>;
     getAllCarts(): Promise<{
-        carts: import("./cart.entity").CartEntity[];
+        carts: {
+            createdAt: string;
+            updatedAt: string;
+            id: number;
+            userId: number;
+            totalPrice: string;
+            status: number;
+            cartLines?: import("./cart-line.entity").CartLineEntity[];
+        }[];
     }>;
     getCart(data: {
         id: number;
     }): Promise<{
-        cart: import("./cart.entity").CartEntity;
+        cart: {
+            createdAt: string;
+            updatedAt: string;
+            id: number;
+            userId: number;
+            totalPrice: string;
+            status: number;
+            cartLines?: import("./cart-line.entity").CartLineEntity[];
+        };
     }>;
     getCartByUserId(data: {
         userId: number;
     }): Promise<{
-        cart: import("./cart.entity").CartEntity;
+        cart: {
+            createdAt: string;
+            updatedAt: string;
+            id: number;
+            userId: number;
+            totalPrice: string;
+            status: number;
+            cartLines?: import("./cart-line.entity").CartLineEntity[];
+        };
     }>;
     addToCart(data: any): Promise<{
-        cart: import("./cart.entity").CartEntity;
+        cart: {
+            createdAt: string;
+            updatedAt: string;
+            id: number;
+            userId: number;
+            totalPrice: string;
+            status: number;
+            cartLines?: import("./cart-line.entity").CartLineEntity[];
+        };
     }>;
     getCartLinesByUserId(data: {
         userId: number;

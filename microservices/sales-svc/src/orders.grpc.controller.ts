@@ -1,10 +1,23 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { OrderService } from './order.service';
+import { CartEntity } from './cart.entity';
 
 @Controller()
 export class OrdersGrpcController {
   constructor(private readonly orderService: OrderService) {}
+
+  private serializeCart(cart: CartEntity | null) {
+    if (!cart) {
+      return null;
+    }
+
+    return {
+      ...cart,
+      createdAt: cart.createdAt.toISOString(),
+      updatedAt: cart.updatedAt.toISOString(),
+    };
+  }
 
   @Get('history-logs')
   async getHistoryLogs(@Query('limit') limit?: string) {
@@ -38,22 +51,26 @@ export class OrdersGrpcController {
 
   @GrpcMethod('OrdersService', 'GetAllCarts')
   async getAllCarts() {
-    return this.orderService.findAllCarts();
+    const { carts } = await this.orderService.findAllCarts();
+    return { carts: carts.map((cart) => this.serializeCart(cart)) };
   }
 
   @GrpcMethod('OrdersService', 'GetCart')
   async getCart(data: { id: number }) {
-    return this.orderService.getCart(data.id);
+    const { cart } = await this.orderService.getCart(data.id);
+    return { cart: this.serializeCart(cart) };
   }
 
   @GrpcMethod('OrdersService', 'GetCartByUserId')
   async getCartByUserId(data: { userId: number }) {
-    return this.orderService.getCartByUserId(data.userId);
+    const { cart } = await this.orderService.getCartByUserId(data.userId);
+    return { cart: this.serializeCart(cart) };
   }
 
   @GrpcMethod('OrdersService', 'AddToCart')
   async addToCart(data: any) {
-    return this.orderService.addToCart(data);
+    const { cart } = await this.orderService.addToCart(data);
+    return { cart: this.serializeCart(cart) };
   }
 
   @GrpcMethod('OrdersService', 'GetCartLinesByUserId')
