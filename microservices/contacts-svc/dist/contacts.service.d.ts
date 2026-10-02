@@ -81,10 +81,10 @@ export declare class ContactsService {
     createPaymentMethod(data: {
         userId: number;
         type: string;
-        provider: string;
-        accountNumber: string;
-        accountName: string;
-        isDefault: boolean;
+        provider?: string;
+        accountNumber?: string;
+        accountName?: string;
+        isDefault?: boolean;
     }): Promise<{
         paymentMethod: PaymentMethodEntity;
     }>;

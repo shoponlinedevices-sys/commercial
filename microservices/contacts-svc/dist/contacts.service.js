@@ -191,7 +191,13 @@ let ContactsService = class ContactsService {
         return { paymentMethod };
     }
     async createPaymentMethod(data) {
-        const paymentMethod = this.paymentMethodRepository.create(data);
+        const paymentMethod = this.paymentMethodRepository.create({
+            ...data,
+            provider: data.provider ?? '',
+            accountNumber: data.accountNumber ?? '',
+            accountName: data.accountName ?? '',
+            isDefault: data.isDefault ?? false,
+        });
         const saved = await this.paymentMethodRepository.save(paymentMethod);
         return { paymentMethod: saved };
     }
