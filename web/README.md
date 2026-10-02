@@ -97,7 +97,7 @@ npm install
 2. Configure environment variables (optional):
 Create a `.env.local` file in the web directory:
 ```env
-NEXT_PUBLIC_GATEWAY_URL=http://localhost:3000
+NEXT_PUBLIC_GATEWAY=http://localhost:4000
 NEXT_PUBLIC_AUTH_SERVICE_URL=http://localhost:3006
 NEXT_PUBLIC_PRODUCTS_SERVICE_URL=http://localhost:3003
 NEXT_PUBLIC_SALES_SERVICE_URL=http://localhost:3001
@@ -118,6 +118,8 @@ npm run dev
 npm run build
 npm start
 ```
+
+Set `NEXT_PUBLIC_GATEWAY` to the publicly reachable API URL when creating a production build. Next.js embeds this value into browser code at build time; `.env.local` overrides `.env`, so remove any local-only gateway override or set the production URL in the build environment. Production builds fail if the gateway resolves to localhost.
 
 ## API Integration
 

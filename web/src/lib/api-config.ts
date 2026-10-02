@@ -2,7 +2,7 @@
 // Based on microservices architecture - matching mobile app behavior
 
 export const API_CONFIG = {
-  // Gateway URL (port 3000) - primary endpoint for cart, orders, notifications
+  // Gateway URL (port 4000) - primary endpoint for cart, orders, notifications
   GATEWAY_URL: process.env.NEXT_PUBLIC_GATEWAY || 'http://localhost:4000',
   
   // Direct microservice URLs (fallback)
