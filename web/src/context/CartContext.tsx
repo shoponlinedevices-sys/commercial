@@ -41,6 +41,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       throw new Error('User not authenticated');
     }
 
+    let previousQuantity: number | undefined;
+    try {
+      const cartLines = await cartService.getCartLinesByUserId(user.id);
+      previousQuantity = cartLines.find((line) => line.productId === productId)?.quantity ?? 0;
+    } catch (error) {
+      console.error('Error checking cart before adding product:', error);
+    }
+
     try {
       ++cartCountRequestId.current;
       await cartService.addToCart({
@@ -52,7 +60,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
       await refreshCartCount();
     } catch (error) {
       console.error('Error adding to cart:', error);
-      await refreshCartCount();
+      if (previousQuantity !== undefined) {
+        try {
+          const cartLines = await cartService.getCartLinesByUserId(user.id);
+          const addedLine = cartLines.find((line) => line.productId === productId);
+          if (addedLine && addedLine.quantity >= previousQuantity + quantity) {
+            setCartCount(countCartProductTypes(cartLines.map((line) => line.productId)));
+            return;
+          }
+        } catch (verificationError) {
+          console.error('Error verifying cart after failed add:', verificationError);
+        }
+      }
       throw error;
     }
   };

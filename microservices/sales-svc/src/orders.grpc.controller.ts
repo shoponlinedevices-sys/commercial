@@ -13,9 +13,22 @@ export class OrdersGrpcController {
     }
 
     return {
-      ...cart,
-      createdAt: cart.createdAt.toISOString(),
-      updatedAt: cart.updatedAt.toISOString(),
+      id: cart.id,
+      userId: cart.userId,
+      totalPrice: String(cart.totalPrice ?? '0'),
+      status: cart.status,
+      createdAt: cart.createdAt?.toISOString() ?? '',
+      updatedAt: cart.updatedAt?.toISOString() ?? '',
+      cartLines: (cart.cartLines ?? []).map((line) => ({
+        id: line.id,
+        cartId: line.cartId,
+        productId: line.productId,
+        quantity: line.quantity,
+        unitPrice: Number(line.unitPrice ?? 0),
+        status: line.status,
+        name: line.name ?? '',
+        image: line.image ?? '',
+      })),
     };
   }
 

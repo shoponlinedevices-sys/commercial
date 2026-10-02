@@ -33,50 +33,86 @@ export declare class OrdersGrpcController {
     }>;
     getAllCarts(): Promise<{
         carts: {
-            createdAt: string;
-            updatedAt: string;
             id: number;
             userId: number;
             totalPrice: string;
             status: number;
-            cartLines?: import("./cart-line.entity").CartLineEntity[];
+            createdAt: string;
+            updatedAt: string;
+            cartLines: {
+                id: number;
+                cartId: number;
+                productId: number;
+                quantity: number;
+                unitPrice: number;
+                status: number;
+                name: string;
+                image: string;
+            }[];
         }[];
     }>;
     getCart(data: {
         id: number;
     }): Promise<{
         cart: {
-            createdAt: string;
-            updatedAt: string;
             id: number;
             userId: number;
             totalPrice: string;
             status: number;
-            cartLines?: import("./cart-line.entity").CartLineEntity[];
+            createdAt: string;
+            updatedAt: string;
+            cartLines: {
+                id: number;
+                cartId: number;
+                productId: number;
+                quantity: number;
+                unitPrice: number;
+                status: number;
+                name: string;
+                image: string;
+            }[];
         };
     }>;
     getCartByUserId(data: {
         userId: number;
     }): Promise<{
         cart: {
-            createdAt: string;
-            updatedAt: string;
             id: number;
             userId: number;
             totalPrice: string;
             status: number;
-            cartLines?: import("./cart-line.entity").CartLineEntity[];
+            createdAt: string;
+            updatedAt: string;
+            cartLines: {
+                id: number;
+                cartId: number;
+                productId: number;
+                quantity: number;
+                unitPrice: number;
+                status: number;
+                name: string;
+                image: string;
+            }[];
         };
     }>;
     addToCart(data: any): Promise<{
         cart: {
-            createdAt: string;
-            updatedAt: string;
             id: number;
             userId: number;
             totalPrice: string;
             status: number;
-            cartLines?: import("./cart-line.entity").CartLineEntity[];
+            createdAt: string;
+            updatedAt: string;
+            cartLines: {
+                id: number;
+                cartId: number;
+                productId: number;
+                quantity: number;
+                unitPrice: number;
+                status: number;
+                name: string;
+                image: string;
+            }[];
         };
     }>;
     getCartLinesByUserId(data: {
