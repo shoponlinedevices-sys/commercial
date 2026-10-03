@@ -32,8 +32,13 @@ let SalesServiceOrderRepository = class SalesServiceOrderRepository {
     async createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName, createdBy) {
         const calculatedTotal = cartLines.reduce((total, line) => total + Number(line.unitPrice || 0) * Number(line.quantity || 0), 0);
         const orderTotal = Number.isFinite(totalAmount) && totalAmount > 0 ? totalAmount : calculatedTotal;
+        const orderLines = cartLines.map((line) => ({
+            productId: String(line.productId),
+            unitPrice: String(line.unitPrice),
+            quantity: Number(line.quantity),
+        }));
         const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.createOrder({
-            userId: userId.toString(), totalAmount: orderTotal, orderLines: cartLines, fcmToken, customerEmail, customerName, createdBy: createdBy === undefined ? undefined : String(createdBy),
+            userId: userId.toString(), totalAmount: orderTotal, orderLines, fcmToken, customerEmail, customerName, createdBy: createdBy === undefined ? undefined : String(createdBy),
         }));
         return this.toOrder(response.order);
     }

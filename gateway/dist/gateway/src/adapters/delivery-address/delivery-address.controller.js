@@ -20,30 +20,58 @@ let DeliveryAddressController = class DeliveryAddressController {
         this.contactsClient = contactsClient;
     }
     async getAddresses(userId) {
-        const response = await this.contactsClient.getDeliveryAddresses({ userId: parseInt(userId) });
-        return response.addresses || [];
+        const response = await this.contactsClient.getDeliveryAddresses({ userId: parseInt(userId, 10) });
+        return (response.addresses || []).map((address) => this.toDeliveryAddress(address));
     }
     async getAddress(id) {
-        const response = await this.contactsClient.getDeliveryAddress({ id: parseInt(id) });
-        return response.address || null;
+        const response = await this.contactsClient.getDeliveryAddress({ id: parseInt(id, 10) });
+        return response.address ? this.toDeliveryAddress(response.address) : null;
     }
     async getDefaultAddress(userId) {
-        const response = await this.contactsClient.getDefaultDeliveryAddress({ userId: parseInt(userId) });
-        return response.address || null;
+        const response = await this.contactsClient.getDefaultDeliveryAddress({ userId: parseInt(userId, 10) });
+        return response.address ? this.toDeliveryAddress(response.address) : null;
     }
     async createAddress(userId, data) {
-        const response = await this.contactsClient.createDeliveryAddress(Object.assign({ userId: parseInt(userId) }, data));
-        return response.address;
+        var _a, _b, _c, _d, _e, _f;
+        const request = {
+            userId: parseInt(userId, 10),
+            recipientName: (_a = data.recipient_name) !== null && _a !== void 0 ? _a : '',
+            phone: (_b = data.phone) !== null && _b !== void 0 ? _b : '',
+            address: (_c = data.street_address) !== null && _c !== void 0 ? _c : '',
+            city: (_d = data.province) !== null && _d !== void 0 ? _d : '',
+            district: (_e = data.district) !== null && _e !== void 0 ? _e : '',
+            ward: (_f = data.ward) !== null && _f !== void 0 ? _f : '',
+            isDefault: data.is_default === 1,
+        };
+        const response = await this.contactsClient.createDeliveryAddress(request);
+        return this.toDeliveryAddress(response.address);
     }
     async updateAddress(id, data) {
-        const response = await this.contactsClient.updateDeliveryAddress(Object.assign({ id: parseInt(id) }, data));
-        return response.address;
+        const request = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ id: parseInt(id, 10) }, (data.recipient_name !== undefined && { recipientName: data.recipient_name })), (data.phone !== undefined && { phone: data.phone })), (data.street_address !== undefined && { address: data.street_address })), (data.province !== undefined && { city: data.province })), (data.district !== undefined && { district: data.district })), (data.ward !== undefined && { ward: data.ward })), (data.is_default !== undefined && { isDefault: data.is_default === 1 }));
+        const response = await this.contactsClient.updateDeliveryAddress(request);
+        return this.toDeliveryAddress(response.address);
     }
     async deleteAddress(id) {
         await this.contactsClient.deleteDeliveryAddress({ id: parseInt(id) });
     }
     async setDefaultAddress(userId, addressId) {
-        await this.contactsClient.setDefaultDeliveryAddress({ userId: parseInt(userId), addressId: parseInt(addressId) });
+        await this.contactsClient.setDefaultDeliveryAddress({
+            userId: parseInt(userId, 10),
+            addressId: parseInt(addressId, 10),
+        });
+    }
+    toDeliveryAddress(address) {
+        return {
+            id: address.id,
+            user_id: address.userId,
+            recipient_name: address.recipientName,
+            phone: address.phone,
+            province: address.city,
+            district: address.district,
+            ward: address.ward,
+            street_address: address.address,
+            is_default: address.isDefault ? 1 : 0,
+        };
     }
 };
 exports.DeliveryAddressController = DeliveryAddressController;

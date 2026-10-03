@@ -66,3 +66,30 @@ describe('OrderService.createOrder email dispatch', () => {
     expect(sendOrderConfirmationEmail).not.toHaveBeenCalled();
   });
 });
+
+describe('OrderService.clearCartByUserId', () => {
+  it('deletes cart lines without cascading stale eager-loaded lines back into the cart', async () => {
+    const cart = {
+      id: 12,
+      userId: 34,
+      totalPrice: '1850000',
+      cartLines: [{ id: 56, cartId: 12 }],
+    };
+    const repository = {
+      findOne: jest.fn().mockResolvedValue(cart),
+      delete: jest.fn().mockResolvedValue({ affected: 1 }),
+      update: jest.fn().mockResolvedValue({ affected: 1 }),
+      save: jest.fn(),
+    };
+    const dataSource = {
+      getRepository: jest.fn().mockReturnValue(repository),
+    };
+    const service = new OrderService(dataSource as any, {} as any);
+
+    await expect(service.clearCartByUserId(34)).resolves.toEqual({ success: true });
+
+    expect(repository.delete).toHaveBeenCalledWith({ cartId: 12 });
+    expect(repository.update).toHaveBeenCalledWith(12, { totalPrice: '0' });
+    expect(repository.save).not.toHaveBeenCalled();
+  });
+});
