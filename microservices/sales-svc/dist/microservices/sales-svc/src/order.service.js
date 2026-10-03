@@ -314,8 +314,7 @@ let OrderService = class OrderService {
                 return { success: true };
             }
             await this.cartLineRepository.delete({ cartId: cart.id });
-            cart.totalPrice = '0';
-            await this.cartRepository.save(cart);
+            await this.cartRepository.update(cart.id, { totalPrice: '0' });
             return { success: true };
         }
         catch (error) {

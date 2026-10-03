@@ -9,7 +9,7 @@ import { Product } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
 import { formatVnd } from '@/lib/formatters';
 import Image from 'next/image';
@@ -21,6 +21,7 @@ export default function ProductDetailPage() {
   const { addToCart: addProductToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   useEffect(() => {
     loadProduct();
@@ -39,17 +40,20 @@ export default function ProductDetailPage() {
   };
 
   const addToCart = async () => {
-    if (!product) return;
+    if (!product || isAddingToCart) return;
     if (!isAuthenticated) {
       router.push('/login?redirect=/products');
       return;
     }
+    setIsAddingToCart(true);
     try {
       await addProductToCart(product.id, 1, product.image);
       alert('Product added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);
       alert('Failed to add product to cart');
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -161,9 +165,15 @@ export default function ProductDetailPage() {
                   </div>
                 )}
 
-                <Button size="lg" className="w-full" onClick={addToCart}>
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  Thêm vào giỏ hàng
+                <Button
+                  size="lg"
+                  className="w-full"
+                  onClick={addToCart}
+                  disabled={isAddingToCart}
+                  aria-busy={isAddingToCart}
+                >
+                  {isAddingToCart ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <ShoppingCart className="h-5 w-5 mr-2" />}
+                  {isAddingToCart ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
                 </Button>
               </CardContent>
             </div>

@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCart, Package } from 'lucide-react';
+import { Loader2, ShoppingCart, Package } from 'lucide-react';
+import { useState } from 'react';
 import { Product } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,11 +11,24 @@ import { formatVnd } from '@/lib/formatters';
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart?: (product: Product) => void;
+  onAddToCart?: (product: Product) => void | Promise<void>;
   compact?: boolean;
 }
 
 export default function ProductCard({ product, onAddToCart, compact = false }: ProductCardProps) {
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+  const handleAddToCart = async () => {
+    if (!onAddToCart || isAddingToCart) return;
+
+    setIsAddingToCart(true);
+    try {
+      await onAddToCart(product);
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
   return (
     <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
       <Link href={`/products/${product.id}`} className={`relative block ${compact ? 'aspect-[2/1]' : 'aspect-[4/3]'} overflow-hidden bg-muted/70`} aria-label={`Xem ${product.name}`}>
@@ -52,9 +66,15 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
             </p>
           )}
           {onAddToCart && (
-            <Button onClick={() => onAddToCart(product)} className={`${compact ? 'mt-2' : 'mt-3'} w-full`} size="sm">
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              Thêm vào giỏ
+            <Button
+              onClick={() => { void handleAddToCart(); }}
+              className={`${compact ? 'mt-2' : 'mt-3'} w-full`}
+              size="sm"
+              disabled={isAddingToCart}
+              aria-busy={isAddingToCart}
+            >
+              {isAddingToCart ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShoppingCart className="mr-2 h-4 w-4" />}
+              {isAddingToCart ? 'Đang thêm...' : 'Thêm vào giỏ'}
             </Button>
           )}
         </div>
