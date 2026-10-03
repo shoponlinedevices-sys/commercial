@@ -14,12 +14,12 @@ async function bootstrap() {
         options: {
             package: 'notification',
             protoPath: (0, path_1.join)(__dirname, '../../../packages/contracts/proto/notification.proto'),
-            url: `0.0.0.0:${process.env.GRPC_PORT || 50051}`,
+            url: `0.0.0.0:${process.env.GRPC_PORT || 50052}`,
         },
     });
     await app.startAllMicroservices();
     await app.listen(process.env.PORT || 3002);
-    console.log(`Notification-svc Service gRPC running on port ${process.env.GRPC_PORT || 50051}`);
+    console.log(`Notification-svc Service gRPC running on port ${process.env.GRPC_PORT || 50052}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
