@@ -13,9 +13,11 @@ CRM chạy tại `http://localhost:3012`. Khi chạy local, nếu gateway không
 
 ## Triển khai production
 
-1. Cấu hình thư mục ứng dụng là `crm`, lệnh build là `npm run build` và lệnh chạy là `npm start`. Ứng dụng nhận cổng từ biến môi trường `PORT` của hosting; nếu không được cung cấp, Next.js dùng cổng `3000`.
-2. Đặt `NEXT_PUBLIC_GATEWAY_URL` trong môi trường build thành URL HTTPS công khai của API Gateway, ví dụ `https://api.tenmien.vn`. Giá trị này được đóng gói vào ứng dụng lúc build, nên cần build lại sau khi đổi URL.
-3. Tạo DNS cho `crm.tenmien.vn` theo đích CNAME/A mà hosting cung cấp; cấu hình hosting định tuyến subdomain tới ứng dụng CRM và bật HTTPS cho tên miền đó.
+CRM được xuất thành website tĩnh trong thư mục `out`, phù hợp với Cloudflare Pages.
+
+1. Tạo một Cloudflare Pages project từ repository này. Đặt **Root directory** là `crm`, **Build command** là `npm run build`, **Build output directory** là `out`.
+2. Trong Pages project, đặt biến môi trường production `NEXT_PUBLIC_GATEWAY_URL` thành `https://api.thegioithietbi.online`. Giá trị này được đóng gói vào ứng dụng lúc build, nên cần build lại sau khi đổi URL.
+3. Sau khi deploy lần đầu, vào **Custom domains** của Pages project và thêm `crm.thegioithietbi.online`. Đảm bảo zone `thegioithietbi.online` đã được thêm vào Cloudflare và làm theo hướng dẫn DNS/HTTPS mà Cloudflare hiển thị. Subdomain này độc lập với website ở tên miền gốc.
 4. Đảm bảo API Gateway có thể được gọi từ trình duyệt qua HTTPS. Gateway hiện cho phép CORS theo origin yêu cầu.
 
-Build production sẽ dừng nếu thiếu URL API, URL không hợp lệ, dùng HTTP hoặc trỏ đến localhost.
+Build production sẽ dừng nếu thiếu URL API, URL không hợp lệ, dùng HTTP hoặc trỏ đến localhost. Chạy local bằng `npm run dev`; static export không dùng lệnh `next start`.
