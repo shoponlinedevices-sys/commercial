@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useNotification } from '@/context/NotificationContext';
 import { notificationService } from '@/services/notification.service';
@@ -16,23 +16,30 @@ export default function NotificationsPage() {
   const { refreshNotificationCount } = useNotification();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadNotifications();
-  }, [user]);
-
-  const loadNotifications = async () => {
-    if (!user) return;
+  const loadNotifications = useCallback(async () => {
+    if (!user) {
+      setNotifications([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
+      setLoadError(null);
       const data = await notificationService.getUserNotifications(user.id.toString());
       setNotifications(data);
     } catch (error) {
       console.error('Error loading notifications:', error);
+      setLoadError('Không thể tải thông báo. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    void loadNotifications();
+  }, [loadNotifications]);
 
   const markAsRead = async (notificationId: string) => {
     try {
@@ -69,7 +76,16 @@ export default function NotificationsPage() {
             <Bell className="h-8 w-8 mr-2" />
             Thông báo
           </h1>
-          {notifications.length === 0 ? (
+          {loadError ? (
+            <Card>
+              <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
+                <p className="text-muted-foreground">{loadError}</p>
+                <Button variant="outline" onClick={() => void loadNotifications()}>
+                  Thử lại
+                </Button>
+              </CardContent>
+            </Card>
+          ) : notifications.length === 0 ? (
             <Card>
               <CardContent className="text-center py-12">
                 <p className="text-muted-foreground">Bạn chưa có thông báo nào</p>

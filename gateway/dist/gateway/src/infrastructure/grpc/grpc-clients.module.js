@@ -27,7 +27,7 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                     options: {
                         package: 'notification',
                         protoPath: (0, grpc_path_1.contractsProtoPath)('notification.proto'),
-                        url: process.env.NOTIFICATION_GRPC_URL || 'localhost:50051',
+                        url: process.env.NOTIFICATION_GRPC_URL || 'localhost:50052',
                     },
                 },
                 {

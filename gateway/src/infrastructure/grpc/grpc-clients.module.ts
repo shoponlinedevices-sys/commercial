@@ -15,7 +15,7 @@ import { contractsProtoPath } from './grpc-path';
         options: {
           package: 'notification',
           protoPath: contractsProtoPath('notification.proto'),
-          url: process.env.NOTIFICATION_GRPC_URL || 'localhost:50051',
+          url: process.env.NOTIFICATION_GRPC_URL || 'localhost:50052',
         },
       },
       {
