@@ -13,11 +13,11 @@ export default function Navigation() {
   if (!isAuthenticated) return null;
 
   const navItems = [
-    { href: '/products', icon: Package, label: 'Products' },
-    { href: '/cart', icon: ShoppingCart, label: 'Cart' },
-    { href: '/orders', icon: Package, label: 'Orders' },
-    { href: '/notifications', icon: Bell, label: 'Notifications' },
-    { href: '/account', icon: User, label: 'Account' },
+    { href: '/products', icon: Package, label: 'Sản phẩm' },
+    { href: '/cart', icon: ShoppingCart, label: 'Giỏ hàng' },
+    { href: '/orders', icon: Package, label: 'Đơn hàng' },
+    { href: '/notifications', icon: Bell, label: 'Thông báo' },
+    { href: '/account', icon: User, label: 'Tài khoản' },
   ];
 
   return (
@@ -49,13 +49,13 @@ export default function Navigation() {
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm text-muted-foreground">
-              Welcome, {user?.username}
+              Xin chào, {user?.username}
             </span>
             <Button
               variant="ghost"
               size="icon"
               onClick={logout}
-              title="Logout"
+              title="Đăng xuất"
             >
               <LogOut className="h-4 w-4" />
             </Button>

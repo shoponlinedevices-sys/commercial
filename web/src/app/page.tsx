@@ -82,7 +82,7 @@ export default function HomePage() {
     }
     try {
       await addToCart(product.id, 1, product.image);
-      alert('Product added to cart!');
+      alert('Đã thêm sản phẩm vào giỏ hàng!');
     } catch (error) {
       console.error('Error adding to cart:', error);
       alert('Không thể thêm sản phẩm vào giỏ hàng');
@@ -147,7 +147,7 @@ export default function HomePage() {
         <section className="relative overflow-hidden border-b border-border/60 bg-[radial-gradient(circle_at_top_right,hsl(var(--primary)/.14),transparent_38%),linear-gradient(120deg,hsl(var(--background)),hsl(var(--muted)/.5))]">
           <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14 lg:py-16">
             <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Commercial store</p>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Cửa hàng Commercial</p>
               <h1 className="max-w-2xl text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-[3.5rem]">Thiết bị tốt cho mọi công trình</h1>
               <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground">Dụng cụ, thiết bị điện và vật tư công nghiệp đáng tin cậy, giá minh bạch, giao nhanh cho cả đơn lẻ và đơn số lượng lớn.</p>
               <div className="mt-7 flex flex-wrap gap-3">

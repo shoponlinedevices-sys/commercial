@@ -28,7 +28,7 @@ export default function LoginPage() {
         await register(username, password);
       }
     } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+      setError(err.message || 'Xác thực không thành công');
     } finally {
       setLoading(false);
     }
@@ -39,22 +39,22 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            {isLogin ? 'Welcome Back' : 'Create Account'}
+            {isLogin ? 'Chào mừng bạn trở lại' : 'Tạo tài khoản'}
           </CardTitle>
           <CardDescription className="text-center">
             {isLogin
-              ? 'Sign in to your account to continue'
-              : 'Register to start shopping'}
+              ? 'Đăng nhập để tiếp tục'
+              : 'Đăng ký để bắt đầu mua sắm'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Tên đăng nhập</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Nhập tên đăng nhập"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -62,11 +62,11 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Mật khẩu</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Nhập mật khẩu"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -75,12 +75,12 @@ export default function LoginPage() {
             </div>
             {error && (
               <Toast>
-                <ToastTitle>Error</ToastTitle>
+                <ToastTitle>Lỗi</ToastTitle>
                 <ToastDescription>{error}</ToastDescription>
               </Toast>
             )}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Processing...' : isLogin ? 'Sign In' : 'Register'}
+              {loading ? 'Đang xử lý...' : isLogin ? 'Đăng nhập' : 'Đăng ký'}
             </Button>
           </form>
           <div className="mt-4 text-center">
@@ -94,8 +94,8 @@ export default function LoginPage() {
               disabled={loading}
             >
               {isLogin
-                ? "Don't have an account? Sign up"
-                : 'Already have an account? Sign in'}
+                ? 'Chưa có tài khoản? Đăng ký'
+                : 'Đã có tài khoản? Đăng nhập'}
             </button>
           </div>
         </CardContent>

@@ -62,7 +62,7 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
             <p className="mt-1 text-xs text-muted-foreground">
               {product.unit && `Đơn vị: ${product.unit}`}
               {product.unit && product.moq && ' | '}
-              {product.moq && `Tối thiểu: ${product.moq}`}
+              {product.moq && `Số lượng đặt tối thiểu: ${product.moq}`}
             </p>
           )}
           {onAddToCart && (

@@ -29,10 +29,10 @@ export default function AccountPage() {
           <Card className="mb-6 bg-white">
             <CardContent className="p-6 text-center">
               <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center text-white font-bold text-3xl mx-auto mb-4">
-                {user?.username?.charAt(0).toUpperCase() || 'U'}
+                {user?.username?.charAt(0).toUpperCase() || 'N'}
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{user?.username || 'User'}</h2>
-              <p className="text-gray-500">{user?.email || 'user@example.com'}</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{user?.username || 'Người dùng'}</h2>
+              <p className="text-gray-500">{user?.email || 'Chưa cập nhật email'}</p>
             </CardContent>
           </Card>
 

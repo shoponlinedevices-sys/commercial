@@ -103,17 +103,17 @@ class ApiClient {
         const retryData = retryText ? JSON.parse(retryText) : null;
 
         if (!retryResponse.ok) {
-          throw new Error(retryData?.message || retryResponse.statusText || 'API request failed');
+          throw new Error(retryData?.message || `Yêu cầu không thành công (mã ${retryResponse.status})`);
         }
 
         return retryData as T;
       } else {
-        throw new Error('Authentication failed');
+        throw new Error('Xác thực không thành công');
       }
     }
 
     if (!response.ok) {
-      throw new Error(data?.message || response.statusText || 'API request failed');
+      throw new Error(data?.message || `Yêu cầu không thành công (mã ${response.status})`);
     }
 
     return data as T;

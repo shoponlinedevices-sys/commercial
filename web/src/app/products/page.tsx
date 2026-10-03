@@ -91,7 +91,7 @@ export default function ProductsPage() {
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="mb-8 flex flex-col gap-4 border-b pb-8 sm:flex-row sm:items-end sm:justify-between">
-          <div><p className="text-sm font-medium text-primary">Commercial catalog</p><h1 className="mt-1 text-3xl font-bold">Tất cả sản phẩm</h1><p className="mt-2 text-muted-foreground">Chọn thiết bị phù hợp cho công việc và công trình của bạn.</p></div>
+          <div><p className="text-sm font-medium text-primary">Danh mục Commercial</p><h1 className="mt-1 text-3xl font-bold">Tất cả sản phẩm</h1><p className="mt-2 text-muted-foreground">Chọn thiết bị phù hợp cho công việc và công trình của bạn.</p></div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground"><Search className="h-4 w-4" />{filteredProducts.length} sản phẩm</div>
         </div>
         <div className="mb-8 flex flex-wrap gap-2">

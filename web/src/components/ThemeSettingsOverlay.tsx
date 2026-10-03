@@ -24,7 +24,7 @@ export default function ThemeSettingsOverlay({ isOpen, onClose }: { isOpen: bool
 
         <div className="space-y-6">
           <div>
-            <h3 className="font-semibold mb-3">Sidebar</h3>
+            <h3 className="font-semibold mb-3">Thanh bên</h3>
             <div className="flex space-x-2">
               <Button variant="outline" size="sm" className="flex-1">
                 <Moon className="h-4 w-4 mr-2" />
@@ -41,7 +41,7 @@ export default function ThemeSettingsOverlay({ isOpen, onClose }: { isOpen: bool
           </div>
 
           <div>
-            <h3 className="font-semibold mb-3">Topbar</h3>
+            <h3 className="font-semibold mb-3">Thanh trên</h3>
             <div className="flex space-x-2">
               <Button variant="outline" size="sm" className="flex-1">
                 <Moon className="h-4 w-4 mr-2" />

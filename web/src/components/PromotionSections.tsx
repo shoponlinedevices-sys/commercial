@@ -72,7 +72,7 @@ export default function PromotionSections({ products, flashSale, promotion, onAd
         <div className="rounded-2xl bg-slate-950 p-5 text-white sm:p-7">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-violet-300"><Zap className="h-4 w-4 fill-current" /> {getConfigText(flashSale, 'badge_text', 'Flash Sale')}</p>
+              <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.16em] text-violet-300"><Zap className="h-4 w-4 fill-current" /> {getConfigText(flashSale, 'badge_text', 'Siêu khuyến mãi')}</p>
               <h2 className="mt-1 text-2xl font-bold">Giá tốt trong thời gian có hạn</h2>
             </div>
             <Countdown endTime={flashSale?.endTime} />

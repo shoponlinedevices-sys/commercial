@@ -144,7 +144,7 @@ export default function Header() {
 
               {isAuthenticated ? <Link href="/account" className={`flex items-center gap-2 border-l pl-2 sm:pl-4 ${colors.darkMode ? 'border-white/20' : 'border-border'}`}>
                 <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-primary to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg">
-                  {user?.username?.charAt(0).toUpperCase() || 'U'}
+                  {user?.username?.charAt(0).toUpperCase() || 'N'}
                 </div>
                 <span className={`text-xs sm:text-sm font-semibold hidden md:block ${colors.darkMode ? 'text-white' : ''}`}>
                   {user?.username}

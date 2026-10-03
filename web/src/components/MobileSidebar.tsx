@@ -81,7 +81,7 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
           {user ? <div className={`pt-6 border-t ${colors.darkMode ? 'border-white/20' : 'border-gray-200'}`}>
             <div className={`flex items-center space-x-3 mb-3 p-3 rounded-xl ${colors.darkMode ? 'bg-white/10' : 'bg-gray-100'}`}>
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold">
-                {user?.username?.charAt(0).toUpperCase() || 'U'}
+                {user?.username?.charAt(0).toUpperCase() || 'N'}
               </div>
               <div>
                 <p className={`font-semibold text-sm ${colors.darkMode ? 'text-white' : ''}`}>{user?.username}</p>

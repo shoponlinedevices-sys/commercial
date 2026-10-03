@@ -172,18 +172,18 @@ export default function CartPage() {
                       {line.image ? (
                         <Image
                           src={line.image}
-                          alt={line.name || 'Product'}
+                          alt={line.name || 'Sản phẩm'}
                           fill
                           className="object-cover"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
-                          No image
+                          Chưa có hình ảnh
                         </div>
                       )}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold">{line.name || 'Product'}</h3>
+                      <h3 className="font-semibold">{line.name || 'Sản phẩm'}</h3>
                       <p className="text-sm text-muted-foreground">
                         {formatVnd(line.unitPrice)} / sản phẩm
                       </p>

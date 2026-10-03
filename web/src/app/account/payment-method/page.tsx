@@ -150,7 +150,7 @@ export default function PaymentMethodPage() {
           <div className="container mx-auto px-4 py-8 mt-16">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Loading...</p>
+              <p className="mt-4 text-muted-foreground">Đang tải...</p>
             </div>
           </div>
         </div>
@@ -169,7 +169,7 @@ export default function PaymentMethodPage() {
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Account
+          Quay lại tài khoản
         </Button>
 
         <div className="flex justify-between items-center mb-6">

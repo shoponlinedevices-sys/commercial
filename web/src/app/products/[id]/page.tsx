@@ -48,10 +48,10 @@ export default function ProductDetailPage() {
     setIsAddingToCart(true);
     try {
       await addProductToCart(product.id, 1, product.image);
-      alert('Product added to cart!');
+      alert('Đã thêm sản phẩm vào giỏ hàng!');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add product to cart');
+      alert('Không thể thêm sản phẩm vào giỏ hàng');
     } finally {
       setIsAddingToCart(false);
     }
@@ -77,7 +77,7 @@ export default function ProductDetailPage() {
         <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <p className="text-muted-foreground">Product not found</p>
+            <p className="text-muted-foreground">Không tìm thấy sản phẩm</p>
             <Button onClick={() => router.push('/products')} className="mt-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Quay lại sản phẩm
@@ -113,7 +113,7 @@ export default function ProductDetailPage() {
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No image
+                  Chưa có hình ảnh
                 </div>
               )}
             </div>
@@ -155,13 +155,13 @@ export default function ProductDetailPage() {
 
                 {product.unit && (
                   <div>
-                    <span className="text-sm text-muted-foreground">Unit: {product.unit}</span>
+                    <span className="text-sm text-muted-foreground">Đơn vị: {product.unit}</span>
                   </div>
                 )}
 
                 {product.moq && (
                   <div>
-                    <span className="text-sm text-muted-foreground">MOQ: {product.moq}</span>
+                    <span className="text-sm text-muted-foreground">Số lượng đặt tối thiểu (MOQ): {product.moq}</span>
                   </div>
                 )}
 

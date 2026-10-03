@@ -46,6 +46,21 @@ export default function OrdersPage() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return 'Đang chờ xử lý';
+      case 'completed':
+        return 'Đã hoàn tất';
+      case 'cancelled':
+        return 'Đã hủy';
+      case 'processing':
+        return 'Đang xử lý';
+      default:
+        return status;
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex">
@@ -89,7 +104,7 @@ export default function OrdersPage() {
                     <div className="flex justify-between items-start">
                       <CardTitle>Đơn hàng #{order.id}</CardTitle>
                       <Badge className={getStatusColor(order.status)}>
-                        {order.status}
+                        {getStatusLabel(order.status)}
                       </Badge>
                     </div>
                   </CardHeader>
