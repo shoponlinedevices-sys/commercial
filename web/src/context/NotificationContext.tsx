@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, useCallback, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import { notificationService } from '@/services/notification.service';
 
@@ -14,8 +14,10 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const { user, isAuthenticated } = useAuth();
   const [notificationCount, setNotificationCount] = useState(0);
+  const notificationCountRequestId = useRef(0);
 
-  const refreshNotificationCount = async () => {
+  const refreshNotificationCount = useCallback(async () => {
+    const requestId = ++notificationCountRequestId.current;
     if (!isAuthenticated || !user?.id) {
       setNotificationCount(0);
       return;
@@ -23,17 +25,18 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
     try {
       const notifications = await notificationService.getUserNotifications(user.id.toString());
-      const count = notifications.filter(item => !item.isRead).length;
-      setNotificationCount(count);
+      if (requestId === notificationCountRequestId.current) {
+        const count = notifications.filter(item => !item.isRead).length;
+        setNotificationCount(count);
+      }
     } catch (error) {
       console.error('Error fetching notification count:', error);
-      setNotificationCount(0);
     }
-  };
+  }, [isAuthenticated, user?.id]);
 
   useEffect(() => {
-    refreshNotificationCount();
-  }, [isAuthenticated, user?.id]);
+    void refreshNotificationCount();
+  }, [refreshNotificationCount]);
 
   return (
     <NotificationContext.Provider value={{ notificationCount, refreshNotificationCount }}>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { useNotification } from '@/context/NotificationContext';
 import { cartService } from '@/services/cart.service';
 import { Cart, CartLine } from '@/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,7 @@ export default function CartPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { refreshCartCount } = useCart();
+  const { refreshNotificationCount } = useNotification();
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
   const [isOrdering, setIsOrdering] = useState(false);
@@ -113,6 +115,7 @@ export default function CartPage() {
         customerName: user!.username,
       });
 
+      await refreshNotificationCount();
       alert('Đã tạo đơn hàng thành công');
       await clearCart();
       router.push('/orders');
