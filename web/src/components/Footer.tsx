@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Facebook, Instagram, Mail, MapPin, Phone, Sparkles } from 'lucide-react';
+import { Mail, Phone, Sparkles } from 'lucide-react';
 
 const shopLinks = [
   { href: '/', label: 'Trang chủ' },
@@ -29,14 +29,6 @@ export default function Footer() {
             <p className="max-w-xs text-sm leading-6 text-muted-foreground">
               Nền tảng mua sắm thiết bị và sản phẩm chất lượng với mức giá tốt cho mọi nhu cầu.
             </p>
-            <div className="mt-5 flex items-center gap-2">
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Commercial trên Facebook" className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary">
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Commercial trên Instagram" className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary">
-                <Instagram className="h-4 w-4" />
-              </a>
-            </div>
           </div>
 
           <div>
@@ -60,11 +52,11 @@ export default function Footer() {
           <div>
             <h2 className="mb-4 text-sm font-semibold text-foreground">Liên hệ</h2>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" /><span>Thành phố Hồ Chí Minh, Việt Nam</span></li>
-              <li className="flex items-center gap-3"><Phone className="h-4 w-4 flex-shrink-0 text-primary" /><a href="tel:123456789" className="transition-colors hover:text-primary">123 456 789</a></li>
+              <li className="flex items-center gap-3"><Phone className="h-4 w-4 flex-shrink-0 text-primary" /><a href="tel:0396828842" className="transition-colors hover:text-primary">0396 828 842</a></li>
               <li className="flex items-center gap-3"><Mail className="h-4 w-4 flex-shrink-0 text-primary" /><a href="mailto:shoponlinedevices@gmail.com" className="break-all transition-colors hover:text-primary">shoponlinedevices@gmail.com</a></li>
             </ul>
           </div>
+
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-border/70 pt-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">

@@ -5,7 +5,7 @@ import { Product, ProductCategory, AdBanner } from '../types';
 export const productService = {
   async getProducts(category?: string): Promise<Product[]> {
     const endpoint = category ? `/products?category=${encodeURIComponent(category)}` : '/products';
-    const response = await apiClient.get<{ products: Product[]; total: number }>(endpoint, PRODUCTS_BASE_URL);
+    const response = await apiClient.get<{ products: Product[]; total: number }>(endpoint, GATEWAY_URL);
     return response.products || [];
   },
 
