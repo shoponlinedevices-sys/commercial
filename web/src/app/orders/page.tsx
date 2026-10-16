@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { orderService } from '@/services/order.service';
 import { Order } from '@/types';
@@ -10,16 +11,16 @@ import Header from '@/components/Header';
 import { formatDateVi, formatVnd } from '@/lib/formatters';
 
 export default function OrdersPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadOrders();
-  }, [user]);
-
-  const loadOrders = async () => {
-    if (!user) return;
+  const loadOrders = useCallback(async () => {
+    if (!user) {
+      setOrders([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const data = await orderService.getUserOrders(user.id.toString());
@@ -29,7 +30,12 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    void loadOrders();
+  }, [authLoading, loadOrders]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -83,7 +89,16 @@ export default function OrdersPage() {
         <Header />
         <div className="container mx-auto px-4 py-8 mt-16 lg:mt-0">
           <h1 className="text-3xl font-bold mb-6">Đơn hàng của tôi</h1>
-          {orders.length === 0 ? (
+          {!user ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <p className="text-muted-foreground mb-4">Vui lòng đăng nhập để xem đơn hàng của bạn</p>
+                <Link href="/login" className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+                  Đăng nhập
+                </Link>
+              </CardContent>
+            </Card>
+          ) : orders.length === 0 ? (
             <Card>
               <CardContent className="text-center py-12">
                 <p className="text-muted-foreground mb-4">Bạn chưa có đơn hàng nào</p>

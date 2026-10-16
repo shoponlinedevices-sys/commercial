@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Mail, Phone, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+import { Mail, Phone } from 'lucide-react';
 
 const shopLinks = [
   { href: '/', label: 'Trang chủ' },
@@ -21,9 +22,7 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.4fr_1fr_1fr_1.25fr]">
           <div>
             <Link href="/" className="mb-4 inline-flex items-center gap-2 text-lg font-bold text-foreground">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-purple-600 text-white shadow-sm">
-                <Sparkles className="h-5 w-5" />
-              </span>
+              <Image src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 object-contain" />
               Commercial
             </Link>
             <p className="max-w-xs text-sm leading-6 text-muted-foreground">

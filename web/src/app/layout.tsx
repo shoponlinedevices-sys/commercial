@@ -13,6 +13,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Commercial | Thiết bị và dụng cụ chất lượng",
   description: "Mua sắm thiết bị, dụng cụ và sản phẩm công nghiệp tại Commercial.",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export const viewport = {

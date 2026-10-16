@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { Home, Package, User, LogOut, Bell, X, ShoppingCart } from 'lucide-react';
@@ -40,7 +41,8 @@ export default function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
         <div className="p-4 h-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
-            <Link href="/products" className="text-2xl font-bold text-primary">
+            <Link href="/products" className="flex items-center gap-2 text-2xl font-bold text-primary">
+              <Image src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 object-contain" />
               Commercial
             </Link>
             <Button

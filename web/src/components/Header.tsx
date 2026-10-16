@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, Bell, Menu, Sparkles, X } from 'lucide-react';
+import Image from 'next/image';
+import { Search, ShoppingCart, Bell, Menu, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -75,9 +76,7 @@ export default function Header() {
 
             {/* Store brand */}
             <Link href="/" className="flex shrink-0 items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-md shadow-violet-500/30">
-                <Sparkles className="h-5 w-5 text-white" />
-              </div>
+              <Image src="/logo.png" alt="" width={36} height={36} priority className="h-9 w-9 object-contain" />
               <span className={`hidden text-lg font-bold sm:inline ${colors.darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Commercial
               </span>
