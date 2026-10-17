@@ -1,5 +1,5 @@
 import { API_BASE_URL } from './api-config';
-import { authService } from '../services/auth.service';
+import { AUTH_SESSION_EXPIRES_AT_KEY, authService } from '../services/auth.service';
 
 class ApiClient {
   private accessToken: string | null = null;
@@ -25,6 +25,8 @@ class ApiClient {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      localStorage.removeItem('auth_session_expires_at');
+      localStorage.removeItem('user');
     }
   }
 
@@ -46,6 +48,12 @@ class ApiClient {
   private async refreshAccessToken(): Promise<string | null> {
     if (typeof window === 'undefined') return null;
 
+    if (this.isSessionExpired()) {
+      this.clearTokens();
+      window.location.href = '/login';
+      return null;
+    }
+
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) return null;
 
@@ -60,6 +68,14 @@ class ApiClient {
       }
       return null;
     }
+  }
+
+  private isSessionExpired(): boolean {
+    const expiresAt = localStorage.getItem(AUTH_SESSION_EXPIRES_AT_KEY);
+    if (expiresAt === null) return true;
+
+    const expiryTime = Number(expiresAt);
+    return !Number.isFinite(expiryTime) || Date.now() >= expiryTime;
   }
 
   async request<T>(
@@ -77,6 +93,17 @@ class ApiClient {
         ...options.headers,
       },
     };
+
+    if (
+      typeof window !== 'undefined' &&
+      this.getAccessToken() &&
+      !['/auth/login', '/auth/register'].includes(endpoint) &&
+      this.isSessionExpired()
+    ) {
+      this.clearTokens();
+      window.location.href = '/login';
+      throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+    }
 
     const response = await fetch(url, config);
     const text = await response.text();

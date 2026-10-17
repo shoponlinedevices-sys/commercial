@@ -1,8 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { UserInfo } from '@/types';
-import { authService } from '@/services/auth.service';
+import { AUTH_SESSION_EXPIRES_AT_KEY, authService } from '@/services/auth.service';
 import { apiClient } from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
 
@@ -22,19 +22,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const logout = useCallback(async () => {
+    await authService.logout();
+    setUser(null);
+    router.push('/login');
+  }, [router]);
+
   useEffect(() => {
-    // Check if user is logged in on mount
     const currentUser = authService.getCurrentUser();
-    if (currentUser) {
+    const accessToken = localStorage.getItem('access_token');
+    const expiresAtValue = localStorage.getItem(AUTH_SESSION_EXPIRES_AT_KEY);
+    const expiresAt = Number(expiresAtValue);
+
+    if (currentUser && !accessToken) {
       setUser(currentUser);
-      // Restore access token from localStorage to apiClient
-      const accessToken = localStorage.getItem('access_token');
-      if (accessToken) {
-        apiClient.setAccessToken(accessToken);
-      }
+    } else if (currentUser && accessToken && expiresAtValue && Number.isFinite(expiresAt) && Date.now() < expiresAt) {
+      setUser(currentUser);
+      apiClient.setAccessToken(accessToken);
+    } else if (currentUser || accessToken || localStorage.getItem('refresh_token')) {
+      void authService.logout();
+      router.replace('/login');
     }
     setLoading(false);
-  }, []);
+  }, [router]);
+
+  useEffect(() => {
+    if (!user || !localStorage.getItem('access_token')) return;
+
+    const expiresAt = Number(localStorage.getItem(AUTH_SESSION_EXPIRES_AT_KEY));
+    const checkExpiry = () => {
+      if (Date.now() >= expiresAt) {
+        void logout();
+      }
+    };
+
+    if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+      void logout();
+      return;
+    }
+
+    const timeoutId = window.setTimeout(checkExpiry, expiresAt - Date.now());
+    document.addEventListener('visibilitychange', checkExpiry);
+    window.addEventListener('focus', checkExpiry);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      document.removeEventListener('visibilitychange', checkExpiry);
+      window.removeEventListener('focus', checkExpiry);
+    };
+  }, [user, logout]);
 
   const login = async (username: string, password: string) => {
     try {
@@ -56,12 +92,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       throw error;
     }
-  };
-
-  const logout = async () => {
-    await authService.logout();
-    setUser(null);
-    router.push('/login');
   };
 
   return (
