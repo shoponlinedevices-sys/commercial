@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -11,6 +11,7 @@ import { Search } from 'lucide-react';
 import Header from '@/components/Header';
 import ProductCard from '@/components/ProductCard';
 import { getCategoryDisplayName } from '@/lib/category-labels';
+import { recordViewEvent } from '@/lib/view-tracking';
 
 const PRODUCTS_PER_PAGE = 12;
 
@@ -25,6 +26,7 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [currentPage, setCurrentPage] = useState(1);
+  const trackedCategoryId = useRef<number | null>(null);
 
   useEffect(() => {
     productService.getProductsGroupedByCategory()
@@ -44,6 +46,37 @@ export default function ProductsPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedCategory]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!selectedCategory) {
+      trackedCategoryId.current = null;
+      return;
+    }
+    const category = productCategories.find((item) =>
+      item.name === selectedCategory || getCategoryDisplayName(item.name) === selectedCategory,
+    );
+    if (!category) {
+      trackedCategoryId.current = null;
+      return;
+    }
+    if (trackedCategoryId.current !== category.id) {
+      trackedCategoryId.current = category.id;
+      recordViewEvent('category', category.id);
+    }
+  }, [loading, productCategories, selectedCategory]);
+
+  useEffect(() => {
+    const recordSelectedCategory = () => {
+      if (loading || !selectedCategory) return;
+      const category = productCategories.find((item) =>
+        item.name === selectedCategory || getCategoryDisplayName(item.name) === selectedCategory,
+      );
+      if (category) recordViewEvent('category', category.id);
+    };
+    window.addEventListener('commercial-view-tracking-consent', recordSelectedCategory);
+    return () => window.removeEventListener('commercial-view-tracking-consent', recordSelectedCategory);
+  }, [loading, productCategories, selectedCategory]);
 
   const normalizedSearch = searchQuery.toLowerCase();
   const filteredCategories = productCategories

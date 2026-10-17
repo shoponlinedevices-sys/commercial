@@ -1,0 +1,31 @@
+{
+  "name": "cms-svc",
+  "version": "1.0.0",
+  "description": "CMS view-event microservice",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "nest build",
+    "start": "nest start --entryFile main",
+    "start:dev": "nest start --watch --entryFile main",
+    "start:prod": "node dist/main.js",
+    "test": "npm run build && node --test dist/view-event.validation.spec.js dist/cms.service.spec.js"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.4",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.3.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/microservices": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/typeorm": "^10.0.0",
+    "mysql2": "^3.6.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.17"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

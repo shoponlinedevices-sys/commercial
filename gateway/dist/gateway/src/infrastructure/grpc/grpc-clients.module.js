@@ -85,6 +85,15 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                         url: process.env.SALES_GRPC_URL || 'localhost:50055',
                     },
                 },
+                {
+                    name: 'GRPC_CMS_SERVICE',
+                    transport: microservices_1.Transport.GRPC,
+                    options: {
+                        package: 'cms',
+                        protoPath: (0, grpc_path_1.contractsProtoPath)('cms.proto'),
+                        url: process.env.CMS_GRPC_URL || 'localhost:50057',
+                    },
+                },
             ]),
         ],
         providers: [contacts_grpc_client_1.ContactsGrpcClient, notification_provider_1.NotificationProvider, email_provider_1.EmailProvider],

@@ -51,6 +51,47 @@ export type HistoryLog = {
   createdAt: string;
 };
 
+export type ViewEntityType = 'category' | 'brand' | 'product';
+
+export type ViewEvent = {
+  viewEventId: string;
+  entityType: ViewEntityType;
+  entityId: string;
+  entityName: string;
+  visitorId: string;
+  sessionId: string;
+  userId: string;
+  pageUrl: string;
+  referrerUrl: string;
+  viewedAt: string;
+};
+
+export type ViewEventFilters = {
+  entityType?: ViewEntityType | '';
+  entityId?: string;
+  entitySearch?: string;
+  from?: string;
+  to?: string;
+  visitorId?: string;
+  sessionId?: string;
+  userId?: string;
+  page?: number;
+  limit?: number;
+};
+
+export type ViewEventStats = {
+  totalViews: string;
+  uniqueVisitors: string;
+  topEntities: Array<{
+    entityType: ViewEntityType;
+    entityId: string;
+    entityName: string;
+    views: string;
+    uniqueVisitors: string;
+  }>;
+  dailyViews: Array<{ date: string; views: string }>;
+};
+
 async function request<T>(endpoint: string, options: RequestInit = {}, token?: string): Promise<T> {
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
@@ -112,6 +153,26 @@ export const crmApi = {
     return request<FeatureSetting>(`/feature-settings/${featureKey}`, { method: 'PUT', body: JSON.stringify({ isEnabled }) }, token);
   },
   getHistoryLogs(token: string) { return request<HistoryLog[]>('/history-logs?limit=500', {}, token); },
+  getViewEvents(filters: ViewEventFilters, token: string) {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') params.set(key, String(value));
+    });
+    return request<{ items: ViewEvent[]; total: string; page: number; limit: number }>(`/view-events?${params}`, {}, token);
+  },
+  async getViewEventStats(filters: Pick<ViewEventFilters, 'entityType' | 'from' | 'to'>, token: string) {
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') params.set(key, String(value));
+    });
+    const stats = await request<Partial<ViewEventStats>>(`/view-events/stats?${params}`, {}, token);
+    return {
+      totalViews: stats.totalViews ?? '0',
+      uniqueVisitors: stats.uniqueVisitors ?? '0',
+      topEntities: stats.topEntities ?? [],
+      dailyViews: stats.dailyViews ?? [],
+    };
+  },
   createOrder(userId: number, productId: number, totalAmount: number, quantity: number, unitPrice: number, token: string) {
     return request<GatewayOrder>('/orders', {
       method: 'POST',

@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package cms;
+
+service CmsService {
+  rpc RecordViewEvent (RecordViewEventRequest) returns (RecordViewEventResponse);
+  rpc ListViewEvents (ListViewEventsRequest) returns (ListViewEventsResponse);
+  rpc GetViewEventStats (ViewEventStatsRequest) returns (ViewEventStatsResponse);
+  rpc ListViewEventEntityTotals (ViewEventEntityTotalsRequest) returns (ViewEventEntityTotalsResponse);
+}
+
+message RecordViewEventRequest {
+  string entityType = 1;
+  string entityId = 2;
+  string visitorId = 3;
+  string sessionId = 4;
+  string userId = 5;
+  string pageUrl = 6;
+  string referrerUrl = 7;
+}
+
+message RecordViewEventResponse {
+  string viewEventId = 1;
+}
+
+message ListViewEventsRequest {
+  string entityType = 1;
+  string entityId = 2;
+  string entitySearch = 3;
+  string from = 4;
+  string to = 5;
+  string visitorId = 6;
+  string sessionId = 7;
+  string userId = 8;
+  int32 page = 9;
+  int32 limit = 10;
+}
+
+message ViewEvent {
+  string viewEventId = 1;
+  string entityType = 2;
+  string entityId = 3;
+  string entityName = 4;
+  string visitorId = 5;
+  string sessionId = 6;
+  string userId = 7;
+  string pageUrl = 8;
+  string referrerUrl = 9;
+  string viewedAt = 10;
+}
+
+message ListViewEventsResponse {
+  repeated ViewEvent items = 1;
+  string total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message ViewEventStatsRequest {
+  string entityType = 1;
+  string from = 2;
+  string to = 3;
+}
+
+message EntityViewStat {
+  string entityType = 1;
+  string entityId = 2;
+  string entityName = 3;
+  string views = 4;
+  string uniqueVisitors = 5;
+}
+
+message DailyViewStat {
+  string date = 1;
+  string views = 2;
+}
+
+message ViewEventStatsResponse {
+  string totalViews = 1;
+  string uniqueVisitors = 2;
+  repeated EntityViewStat topEntities = 3;
+  repeated DailyViewStat dailyViews = 4;
+}
+
+message ViewEventEntityTotalsRequest {
+  string entityType = 1;
+  string from = 2;
+  string to = 3;
+  int32 page = 4;
+  int32 limit = 5;
+}
+
+message ViewEventEntityTotalsResponse {
+  repeated EntityViewStat items = 1;
+  string total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}

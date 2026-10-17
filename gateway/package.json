@@ -5,6 +5,7 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "nest build",
+    "test": "npm run build && node --test dist/gateway/src/adapters/view-events/view-events.controller.spec.js",
     "start": "nest start --entryFile gateway/src/main",
     "start:dev": "nest start --watch --entryFile gateway/src/main",
     "start:prod": "node dist/gateway/src/main.js"

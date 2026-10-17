@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -13,6 +13,7 @@ import { ShoppingCart, ArrowLeft, Loader2 } from 'lucide-react';
 import Header from '@/components/Header';
 import { formatVnd } from '@/lib/formatters';
 import Image from 'next/image';
+import { recordViewEvent } from '@/lib/view-tracking';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -22,16 +23,29 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const trackedProductId = useRef<number | null>(null);
 
   useEffect(() => {
     loadProduct();
   }, [params.id]);
+
+  useEffect(() => {
+    const recordCurrentView = () => {
+      if (product) recordViewEvent('product', product.id);
+    };
+    window.addEventListener('commercial-view-tracking-consent', recordCurrentView);
+    return () => window.removeEventListener('commercial-view-tracking-consent', recordCurrentView);
+  }, [product]);
 
   const loadProduct = async () => {
     try {
       setLoading(true);
       const data = await productService.getProduct(Number(params.id));
       setProduct(data);
+      if (trackedProductId.current !== data.id) {
+        trackedProductId.current = data.id;
+        recordViewEvent('product', data.id);
+      }
     } catch (error) {
       console.error('Error loading product:', error);
     } finally {

@@ -3,13 +3,14 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
   Bell, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardList, Clock3, LayoutDashboard,
-  History, Menu, PackageCheck, Plus, Search, Settings, ShoppingBag, TrendingUp, Users, X,
+  Eye, History, Menu, PackageCheck, Plus, Search, Settings, ShoppingBag, TrendingUp, Users, X,
 } from 'lucide-react';
 import { crmApi, FeatureSetting, GatewayOrder, GatewayProduct, HistoryLog, UserProfile } from '@/lib/crm-api';
+import ViewEventsPanel from '@/components/ViewEventsPanel';
 
 type Status = 'Mới' | 'Đang xử lý' | 'Đã giao' | 'Đã hủy';
 type Order = { id: string; userId: string | number; customer: string; email: string; items: number; total: number; status: Status; createdAt: string; date: string; initials: string; tone: string };
-type PageType = 'dashboard' | 'orders' | 'customers' | 'products' | 'logs' | 'settings' | 'help';
+type PageType = 'dashboard' | 'orders' | 'customers' | 'products' | 'view-events' | 'logs' | 'settings' | 'help';
 
 const formatVnd = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
 const statusToLabel: Record<string, Status> = { pending: 'Mới', processing: 'Đang xử lý', completed: 'Đã giao', delivered: 'Đã giao', cancelled: 'Đã hủy' };
@@ -53,6 +54,7 @@ export default function Dashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMessage, setProfileMessage] = useState('');
   const [customerProfiles, setCustomerProfiles] = useState<Record<string, UserProfile>>({});
+  const [customerFocusUserId, setCustomerFocusUserId] = useState<string | null>(null);
   const [orderPage, setOrderPage] = useState(1);
   const ordersPerPage = 10;
 
@@ -144,6 +146,10 @@ export default function Dashboard() {
   }, [orders, monthlyRevenueOrders]);
 
   const customers = useMemo(() => Array.from(new Map(orders.map((order) => [order.customer, order])).values()), [orders]);
+  const visibleCustomers = useMemo(
+    () => customers.filter((customer) => !customerFocusUserId || String(customer.userId) === customerFocusUserId),
+    [customers, customerFocusUserId],
+  );
   const filteredHistoryLogs = useMemo(() => historyLogs.filter((log) => {
     const searchable = `${log.action} ${log.entityType} ${log.entityId} ${log.source} ${log.createdBy}`.toLowerCase();
     return searchable.includes(historyQuery.toLowerCase()) && (historyAction === 'Tất cả' || log.action === historyAction) && (historySource === 'Tất cả' || log.source === historySource);
@@ -151,6 +157,10 @@ export default function Dashboard() {
   const navigate = (page: PageType) => {
     setCurrentPage(page);
     setMobileMenuOpen(false);
+  };
+  const openCustomer = (userId: string) => {
+    setCustomerFocusUserId(userId);
+    navigate('customers');
   };
 
   const saveProfile = async (event: FormEvent<HTMLFormElement>) => {
@@ -280,6 +290,7 @@ export default function Dashboard() {
           <button onClick={() => navigate('orders')} className={`nav-item ${currentPage === 'orders' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><ClipboardList size={18} /> Đơn hàng <span className="nav-count">{orders.length}</span></button>
           <button onClick={() => navigate('customers')} className={`nav-item ${currentPage === 'customers' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Users size={18} /> Khách hàng</button>
           <button onClick={() => navigate('products')} className={`nav-item ${currentPage === 'products' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><PackageCheck size={18} /> Sản phẩm</button>
+          <button onClick={() => navigate('view-events')} className={`nav-item ${currentPage === 'view-events' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Eye size={18} /> Lượt xem</button>
           <button onClick={() => navigate('logs')} className={`nav-item ${currentPage === 'logs' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><History size={18} /> Nhật ký <span className="nav-count">{historyLogs.length}</span></button>
         </nav>
         <div className="sidebar-bottom"><button onClick={() => navigate('settings')} className={`nav-item ${currentPage === 'settings' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Settings size={18} /> Cài đặt</button><button onClick={() => navigate('help')} className={`nav-item ${currentPage === 'help' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><CircleHelp size={18} /> Trợ giúp</button></div>
@@ -287,7 +298,7 @@ export default function Dashboard() {
       </aside>
 
       <section className="content">
-        <header className="topbar"><button className="mobile-menu" aria-label="Mở menu" onClick={() => setMobileMenuOpen((open) => !open)}><Menu size={20} /></button><div className="breadcrumbs"><span>Tổng quan</span><b>/</b><strong>{currentPage === 'dashboard' && 'Đơn hàng'}{currentPage === 'orders' && 'Đơn hàng'}{currentPage === 'customers' && 'Khách hàng'}{currentPage === 'products' && 'Sản phẩm'}{currentPage === 'logs' && 'Nhật ký hoạt động'}{currentPage === 'settings' && 'Cài đặt'}{currentPage === 'help' && 'Trợ giúp'}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Thông báo" onClick={() => setNotice('Bạn không có thông báo mới')}><Bell size={19} /><i /></button><div className="avatar avatar-dark top-avatar">{user?.username?.slice(0, 2).toUpperCase() || 'TH'}</div></div></header>
+        <header className="topbar"><button className="mobile-menu" aria-label="Mở menu" onClick={() => setMobileMenuOpen((open) => !open)}><Menu size={20} /></button><div className="breadcrumbs"><span>Tổng quan</span><b>/</b><strong>{currentPage === 'dashboard' && 'Đơn hàng'}{currentPage === 'orders' && 'Đơn hàng'}{currentPage === 'customers' && 'Khách hàng'}{currentPage === 'products' && 'Sản phẩm'}{currentPage === 'view-events' && 'Lượt xem'}{currentPage === 'logs' && 'Nhật ký hoạt động'}{currentPage === 'settings' && 'Cài đặt'}{currentPage === 'help' && 'Trợ giúp'}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Thông báo" onClick={() => setNotice('Bạn không có thông báo mới')}><Bell size={19} /><i /></button><div className="avatar avatar-dark top-avatar">{user?.username?.slice(0, 2).toUpperCase() || 'TH'}</div></div></header>
         <div className="main-content">
 
           {currentPage === 'dashboard' && (
@@ -307,8 +318,8 @@ export default function Dashboard() {
 
           {currentPage === 'customers' && (
             <section className="orders-section">
-              <div className="section-heading"><div><h2>Quản lý khách hàng</h2><p>{customers.length} khách hàng từ dữ liệu đơn hàng</p></div><button className="text-button" onClick={() => navigate('orders')}>Xem đơn hàng <span>→</span></button></div>
-              <div className="table-wrap"><table><thead><tr><th>KHÁCH HÀNG</th><th>EMAIL</th><th>SỐ ĐƠN</th><th>ĐƠN GẦN NHẤT</th><th>TỔNG CHI TIÊU</th></tr></thead><tbody>{customers.length === 0 ? <tr><td colSpan={5} style={{ textAlign: 'center', padding: '32px' }}>Chưa có dữ liệu khách hàng.</td></tr> : customers.map((customer) => { const customerOrders = orders.filter((order) => order.customer === customer.customer); return <tr key={customer.customer}><td><div className="customer"><div className={`avatar avatar-${customer.tone}`}>{customer.initials}</div><strong>{customer.customer}</strong></div></td><td>{customer.email}</td><td>{customerOrders.length}</td><td>{customer.date}</td><td><strong>{formatVnd(customerOrders.reduce((sum, order) => sum + order.total, 0))}</strong></td></tr>; })}</tbody></table></div>
+              <div className="section-heading"><div><h2>Quản lý khách hàng</h2><p>{customerFocusUserId ? `Tài khoản #${customerFocusUserId} từ dữ liệu đơn hàng` : `${customers.length} khách hàng từ dữ liệu đơn hàng`}</p></div>{customerFocusUserId ? <button className="text-button" onClick={() => setCustomerFocusUserId(null)}>Xem tất cả khách hàng</button> : <button className="text-button" onClick={() => navigate('orders')}>Xem đơn hàng <span>→</span></button>}</div>
+              <div className="table-wrap"><table><thead><tr><th>KHÁCH HÀNG</th><th>EMAIL</th><th>SỐ ĐƠN</th><th>ĐƠN GẦN NHẤT</th><th>TỔNG CHI TIÊU</th></tr></thead><tbody>{visibleCustomers.length === 0 ? <tr><td colSpan={5} style={{ textAlign: 'center', padding: '32px' }}>{customerFocusUserId ? `Chưa có hồ sơ khách hàng #${customerFocusUserId} trong dữ liệu đơn hàng hiện có.` : 'Chưa có dữ liệu khách hàng.'}</td></tr> : visibleCustomers.map((customer) => { const customerOrders = orders.filter((order) => order.customer === customer.customer); return <tr key={customer.customer}><td><div className="customer"><div className={`avatar avatar-${customer.tone}`}>{customer.initials}</div><strong>{customer.customer}</strong></div></td><td>{customer.email}</td><td>{customerOrders.length}</td><td>{customer.date}</td><td><strong>{formatVnd(customerOrders.reduce((sum, order) => sum + order.total, 0))}</strong></td></tr>; })}</tbody></table></div>
             </section>
           )}
 
@@ -318,6 +329,8 @@ export default function Dashboard() {
               <div className="table-wrap"><table><thead><tr><th>SẢN PHẨM</th><th>SKU</th><th>ĐƠN VỊ</th><th>GIÁ</th><th>NHÃN</th></tr></thead><tbody>{products.length === 0 ? <tr><td colSpan={5} style={{ textAlign: 'center', padding: '32px' }}>Chưa tải được sản phẩm hoặc kho đang trống.</td></tr> : products.map((product) => <tr key={product.id}><td><strong>{product.name}</strong><small style={{ display: 'block', color: '#9aa4a1', marginTop: '4px' }}>{product.description || 'Không có mô tả'}</small></td><td>{product.sku || `SP-${product.id}`}</td><td>{product.unit || '—'}</td><td><strong>{formatVnd(Number(product.price))}</strong></td><td>{product.badge || '—'}</td></tr>)}</tbody></table></div>
             </section>
           )}
+
+          {currentPage === 'view-events' && token && <ViewEventsPanel token={token} onOpenCustomer={openCustomer} />}
 
           {currentPage === 'logs' && (
             <section className="orders-section">

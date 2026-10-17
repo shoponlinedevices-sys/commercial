@@ -73,6 +73,15 @@ import { contractsProtoPath } from './grpc-path';
           url: process.env.SALES_GRPC_URL || 'localhost:50055',
         },
       },
+      {
+        name: 'GRPC_CMS_SERVICE',
+        transport: Transport.GRPC,
+        options: {
+          package: 'cms',
+          protoPath: contractsProtoPath('cms.proto'),
+          url: process.env.CMS_GRPC_URL || 'localhost:50057',
+        },
+      },
     ]),
   ],
   providers: [ContactsGrpcClient, NotificationProvider, EmailProvider],
