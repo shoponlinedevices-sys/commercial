@@ -1,0 +1,122 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ProductController = void 0;
+const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
+const product_service_1 = require("../../application/product/product.service");
+const jwt_auth_guard_1 = require("../../domain/identity/jwt-auth.guard");
+const public_decorator_1 = require("../../domain/identity/public.decorator");
+let ProductController = class ProductController {
+    constructor(productService) {
+        this.productService = productService;
+    }
+    async findAll(category) {
+        if (category) {
+            const categoryId = parseInt(category, 10);
+            const products = await this.productService.findByCategory(categoryId);
+            return { products, total: products.length };
+        }
+        const products = await this.productService.findAll();
+        return { products, total: products.length };
+    }
+    async groupedByCategory(query) {
+        const filters = {
+            search: query.search,
+            categoryId: query.categoryId === undefined ? undefined : parseInt(query.categoryId, 10),
+            limit: query.limit === undefined ? undefined : parseInt(query.limit, 10),
+            offset: query.offset === undefined ? undefined : parseInt(query.offset, 10),
+        };
+        return this.productService.groupedByCategory(filters);
+    }
+    findOne(id) {
+        return this.productService.findOne(parseInt(id, 10));
+    }
+    create(body, request) {
+        var _a, _b, _c;
+        if (!((_a = body.name) === null || _a === void 0 ? void 0 : _a.trim()) || Number(body.price) < 0) {
+            throw new Error('Tên sản phẩm và giá hợp lệ là bắt buộc');
+        }
+        return this.productService.create(Object.assign(Object.assign({}, body), { name: body.name.trim(), price: Number(body.price), createdBy: ((_b = request.user) === null || _b === void 0 ? void 0 : _b.username) || ((_c = request.user) === null || _c === void 0 ? void 0 : _c.id) || 'gateway' }));
+    }
+    findByCategory(categoryId) {
+        return this.productService.findByCategory(categoryId);
+    }
+};
+exports.ProductController = ProductController;
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all products' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of products retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    __param(0, (0, common_1.Query)('category')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "findAll", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('grouped-by-category'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get products grouped by category' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Grouped products retrieved successfully' }),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "groupedByCategory", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get product by ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Product retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Product not found' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProductController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a product' }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], ProductController.prototype, "create", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)(':categoryId/products'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get products by category ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Products retrieved successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
+    __param(0, (0, common_1.Param)('categoryId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], ProductController.prototype, "findByCategory", null);
+exports.ProductController = ProductController = __decorate([
+    (0, swagger_1.ApiTags)('Products'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.Controller)('products'),
+    __metadata("design:paramtypes", [product_service_1.ProductService])
+], ProductController);
+//# sourceMappingURL=product.controller.js.map
