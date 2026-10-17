@@ -23,6 +23,7 @@ const user_entity_1 = require("./user.entity");
 const history_log_entity_1 = require("./history-log.entity");
 const common_2 = require("@nestjs/common");
 const typeorm_3 = require("typeorm");
+const SESSION_TOKEN_TTL = '60m';
 let AuthService = class AuthService {
     constructor(usersRepository, jwtService, dataSource) {
         this.usersRepository = usersRepository;
@@ -61,8 +62,8 @@ let AuthService = class AuthService {
         }
         const payload = { username: user.username, sub: user.id };
         return {
-            access_token: this.jwtService.sign(payload),
-            refresh_token: this.jwtService.sign(payload, { expiresIn: '30d' }),
+            access_token: this.jwtService.sign(payload, { expiresIn: SESSION_TOKEN_TTL }),
+            refresh_token: this.jwtService.sign(payload, { expiresIn: SESSION_TOKEN_TTL }),
             user: {
                 id: user.id,
                 username: user.username,
@@ -101,7 +102,7 @@ let AuthService = class AuthService {
             }
             const newPayload = { username: user.username, sub: user.id };
             return {
-                access_token: this.jwtService.sign(newPayload),
+                access_token: this.jwtService.sign(newPayload, { expiresIn: SESSION_TOKEN_TTL }),
             };
         }
         catch (error) {

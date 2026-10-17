@@ -9,6 +9,8 @@ import { HistoryLogEntity } from './history-log.entity';
 import { Inject } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
+const SESSION_TOKEN_TTL = '60m';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -57,8 +59,8 @@ export class AuthService {
     }
     const payload = { username: user.username, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
-      refresh_token: this.jwtService.sign(payload, { expiresIn: '30d' }),
+      access_token: this.jwtService.sign(payload, { expiresIn: SESSION_TOKEN_TTL }),
+      refresh_token: this.jwtService.sign(payload, { expiresIn: SESSION_TOKEN_TTL }),
       user: {
         id: user.id,
         username: user.username,
@@ -99,7 +101,7 @@ export class AuthService {
       }
       const newPayload = { username: user.username, sub: user.id };
       return {
-        access_token: this.jwtService.sign(newPayload),
+        access_token: this.jwtService.sign(newPayload, { expiresIn: SESSION_TOKEN_TTL }),
       };
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');

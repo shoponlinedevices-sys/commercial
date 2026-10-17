@@ -3,6 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { createHash } from 'crypto';
 import { AccountRepository } from '../../infrastructure/database/repositories/account.repository';
 
+const SESSION_TOKEN_TTL = '60m';
+
 export type UserInfo = {
   id: number;
   username: string;
@@ -112,14 +114,14 @@ export class IdentityService {
   private createAccessToken(payload: JwtPayload): string {
     return this.jwtService.sign(payload, {
       secret: this.jwtSecret(),
-      expiresIn: '15m',
+      expiresIn: SESSION_TOKEN_TTL,
     });
   }
 
   private createRefreshToken(payload: JwtPayload): string {
     return this.jwtService.sign(payload, {
       secret: this.jwtSecret(),
-      expiresIn: '7d',
+      expiresIn: SESSION_TOKEN_TTL,
     });
   }
 

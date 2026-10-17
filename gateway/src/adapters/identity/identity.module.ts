@@ -12,7 +12,7 @@ import { JwtStrategy } from '../../domain/identity/jwt.strategy';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'default_jwt_secret_change_me',
-      signOptions: { expiresIn: '15m' },
+      signOptions: { expiresIn: '60m' },
     }),
   ],
   providers: [IdentityService, AccountRepository, JwtStrategy],
