@@ -18,7 +18,9 @@ export const API_BASE_URL = API_CONFIG.GATEWAY_URL;
 export const GATEWAY_URL = API_CONFIG.GATEWAY_URL;
 
 // Use products service directly for products (matching mobile app behavior)
-export const PRODUCTS_BASE_URL = API_CONFIG.PRODUCTS_SERVICE_URL;
+export const PRODUCTS_BASE_URL = API_CONFIG.PRODUCTS_SERVICE_URL
+  .replace(/\/+$/, '')
+  .replace(/\/products$/i, '');
 
 // Use gateway for cart (matching mobile app behavior - cart endpoints are on gateway)
 export const CART_BASE_URL = API_CONFIG.GATEWAY_URL;

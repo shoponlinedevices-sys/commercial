@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -22,24 +22,15 @@ export default function ProductDetailPage() {
   const { addToCart: addProductToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const trackedProductId = useRef<number | null>(null);
 
-  useEffect(() => {
-    loadProduct();
-  }, [params.id]);
-
-  useEffect(() => {
-    const recordCurrentView = () => {
-      if (product) recordViewEvent('product', product.id);
-    };
-    window.addEventListener('commercial-view-tracking-consent', recordCurrentView);
-    return () => window.removeEventListener('commercial-view-tracking-consent', recordCurrentView);
-  }, [product]);
-
-  const loadProduct = async () => {
+  const loadProduct = useCallback(async () => {
     try {
       setLoading(true);
+      setLoadError(false);
+      setProduct(null);
       const data = await productService.getProduct(Number(params.id));
       setProduct(data);
       if (trackedProductId.current !== data.id) {
@@ -48,10 +39,23 @@ export default function ProductDetailPage() {
       }
     } catch (error) {
       console.error('Error loading product:', error);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    void loadProduct();
+  }, [loadProduct]);
+
+  useEffect(() => {
+    const recordCurrentView = () => {
+      if (product) recordViewEvent('product', product.id);
+    };
+    window.addEventListener('commercial-view-tracking-consent', recordCurrentView);
+    return () => window.removeEventListener('commercial-view-tracking-consent', recordCurrentView);
+  }, [product]);
 
   const addToCart = async () => {
     if (!product || isAddingToCart) return;
@@ -91,7 +95,14 @@ export default function ProductDetailPage() {
         <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <p className="text-muted-foreground">Không tìm thấy sản phẩm</p>
+            <p className="text-muted-foreground">
+              {loadError ? 'Không thể tải sản phẩm lúc này. Vui lòng thử lại.' : 'Không tìm thấy sản phẩm'}
+            </p>
+            {loadError && (
+              <Button onClick={loadProduct} className="mt-4">
+                Thử lại
+              </Button>
+            )}
             <Button onClick={() => router.push('/products')} className="mt-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Quay lại sản phẩm
