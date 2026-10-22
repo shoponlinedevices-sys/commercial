@@ -7,7 +7,6 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { CartProvider } from "@/context/CartContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import Footer from "@/components/Footer";
-import TrackingConsent from "@/components/TrackingConsent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -43,7 +42,6 @@ export default function RootLayout({
                 <Suspense fallback={null}>
                   {children}
                   <Footer />
-                  <TrackingConsent />
                 </Suspense>
               </NotificationProvider>
             </CartProvider>

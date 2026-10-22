@@ -156,35 +156,37 @@ export default function HomePage() {
               </div>
               <p className="mt-4 flex items-center gap-2 text-xs text-slate-500"><span className="h-2 w-2 rounded-full bg-emerald-500" />Sản phẩm được cập nhật trực tiếp từ cửa hàng</p>
             </div>
-            <div className="relative min-h-[210px] overflow-hidden bg-[radial-gradient(ellipse_at_70%_60%,#c4b5fd_0%,#ede9fe_40%,transparent_72%)] sm:min-h-[260px] lg:min-h-full">
-              {heroProducts.length > 0 ? (
-                <div className="absolute inset-0 flex items-center justify-center px-5 py-4 sm:px-10">
-                  <div className="relative h-full min-h-[190px] w-full max-w-xl">
-                    {heroProducts.map((product, index) => (
-                      product.image ? (
-                        <div
-                          key={product.id}
-                          className={`absolute bottom-0 top-0 ${index === 0 ? 'left-[22%] z-20 w-[48%]' : index === 1 ? 'left-0 z-10 w-[38%] opacity-90' : 'right-0 z-10 w-[38%] opacity-90'}`}
-                        >
-                          <Image
-                            src={product.image}
-                            alt={product.name}
-                            fill
-                            sizes="(max-width: 768px) 40vw, 25vw"
-                            className="object-contain drop-shadow-xl"
-                            priority={index === 0}
-                          />
-                        </div>
-                      ) : null
-                    ))}
+            <div className="relative flex min-h-[290px] flex-col sm:min-h-[340px] lg:min-h-[380px]">
+              <div className="relative min-h-[210px] flex-1 overflow-hidden bg-[radial-gradient(ellipse_at_70%_60%,#c4b5fd_0%,#ede9fe_40%,transparent_72%)] sm:min-h-[260px]">
+                {heroProducts.length > 0 ? (
+                  <div className="absolute inset-0 flex items-center justify-center px-5 py-4 sm:px-10">
+                    <div className="relative h-full min-h-[190px] w-full max-w-xl">
+                      {heroProducts.map((product, index) => (
+                        product.image ? (
+                          <div
+                            key={product.id}
+                            className={`absolute bottom-0 top-0 ${index === 0 ? 'left-[22%] z-20 w-[48%]' : index === 1 ? 'left-0 z-10 w-[38%] opacity-90' : 'right-0 z-10 w-[38%] opacity-90'}`}
+                          >
+                            <Image
+                              src={product.image}
+                              alt={product.name}
+                              fill
+                              sizes="(max-width: 768px) 40vw, 25vw"
+                              className="object-contain drop-shadow-xl"
+                              priority={index === 0}
+                            />
+                          </div>
+                        ) : null
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-primary/50">
-                  <Wrench className="h-24 w-24" strokeWidth={1} />
-                </div>
-              )}
-              <div className="absolute right-4 top-4 z-30 grid gap-2 sm:right-6 sm:top-6">
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-primary/50">
+                    <Wrench className="h-24 w-24" strokeWidth={1} />
+                  </div>
+                )}
+              </div>
+              <div className="grid grid-cols-3 gap-2 px-3 py-3 sm:gap-3 sm:px-5 sm:py-4">
                 {[
                   { icon: Shield, title: 'Chất lượng chính hãng', detail: 'An tâm lựa chọn' },
                   { icon: Truck, title: 'Giao hàng nhanh', detail: 'Toàn quốc' },
@@ -192,9 +194,9 @@ export default function HomePage() {
                 ].map((feature) => {
                   const Icon = feature.icon;
                   return (
-                    <div key={feature.title} className="flex items-center gap-2 rounded-xl border border-white/70 bg-white/90 px-3 py-2 shadow-sm backdrop-blur">
-                      <span className="rounded-lg bg-primary/10 p-2 text-primary"><Icon className="h-4 w-4" /></span>
-                      <span><span className="block text-[11px] font-semibold text-slate-800">{feature.title}</span><span className="block text-[10px] text-slate-500">{feature.detail}</span></span>
+                    <div key={feature.title} className="flex min-w-0 flex-col items-center gap-1 rounded-xl border border-white/70 bg-white/90 px-1.5 py-2 text-center shadow-sm backdrop-blur sm:flex-row sm:gap-2 sm:px-3 sm:text-left">
+                      <span className="shrink-0 rounded-lg bg-primary/10 p-1.5 text-primary sm:p-2"><Icon className="h-4 w-4" /></span>
+                      <span className="min-w-0"><span className="block text-[10px] font-semibold leading-tight text-slate-800 sm:text-[11px]">{feature.title}</span><span className="mt-0.5 block text-[9px] leading-tight text-slate-500 sm:text-[10px]">{feature.detail}</span></span>
                     </div>
                   );
                 })}
