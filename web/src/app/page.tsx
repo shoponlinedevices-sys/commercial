@@ -186,21 +186,6 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
-              <div className="grid grid-cols-3 gap-2 px-3 py-3 sm:gap-3 sm:px-5 sm:py-4">
-                {[
-                  { icon: Shield, title: 'Chất lượng chính hãng', detail: 'An tâm lựa chọn' },
-                  { icon: Truck, title: 'Giao hàng nhanh', detail: 'Toàn quốc' },
-                  { icon: Headphones, title: 'Hỗ trợ 24/7', detail: 'Luôn sẵn sàng' },
-                ].map((feature) => {
-                  const Icon = feature.icon;
-                  return (
-                    <div key={feature.title} className="flex min-w-0 flex-col items-center gap-1 rounded-xl border border-white/70 bg-white/90 px-1.5 py-2 text-center shadow-sm backdrop-blur sm:flex-row sm:gap-2 sm:px-3 sm:text-left">
-                      <span className="shrink-0 rounded-lg bg-primary/10 p-1.5 text-primary sm:p-2"><Icon className="h-4 w-4" /></span>
-                      <span className="min-w-0"><span className="block text-[10px] font-semibold leading-tight text-slate-800 sm:text-[11px]">{feature.title}</span><span className="mt-0.5 block text-[9px] leading-tight text-slate-500 sm:text-[10px]">{feature.detail}</span></span>
-                    </div>
-                  );
-                })}
-              </div>
             </div>
           </div>
         </section>
