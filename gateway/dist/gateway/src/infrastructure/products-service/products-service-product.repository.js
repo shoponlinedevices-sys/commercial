@@ -26,7 +26,7 @@ let ProductsServiceProductRepository = class ProductsServiceProductRepository {
         this.grpcProductService = this.client.getService('ProductService');
     }
     toProduct(productData) {
-        return new product_entity_1.Product(productData.id, productData.name, Number(productData.price), productData.description || '', productData.image || '', productData.oldPrice !== null && productData.oldPrice !== undefined ? Number(productData.oldPrice) : undefined, productData.badge || undefined, productData.sku || undefined, productData.unit || undefined, productData.moq || undefined, productData.quantityAvailable !== null && productData.quantityAvailable !== undefined
+        return new product_entity_1.Product(productData.id, productData.name, Number(productData.price), productData.description || '', productData.image || '', productData.oldPrice !== null && productData.oldPrice !== undefined ? Number(productData.oldPrice) : undefined, productData.badge || undefined, productData.sku || undefined, productData.unit || undefined, productData.moq || undefined, undefined, productData.quantityAvailable !== null && productData.quantityAvailable !== undefined
             ? Number(productData.quantityAvailable)
             : undefined);
     }
