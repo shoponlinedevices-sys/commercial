@@ -1,6 +1,5 @@
 import { DataSource } from 'typeorm';
 import { ProductEntity } from './product.entity';
-import { CategoryEntity } from './category.entity';
 import { HistoryLogEntity } from './history-log.entity';
 import { InventoryEntity } from './inventory.entity';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
@@ -10,6 +9,7 @@ export declare class ProductService {
     private get productRepository();
     private get inventoryRepository();
     private get inventoryTransactionRepository();
+    private addAvailableQuantity;
     getHistoryLogs(limit?: number): Promise<HistoryLogEntity[]>;
     getProducts(filters?: {
         category?: string;
@@ -17,7 +17,9 @@ export declare class ProductService {
         limit?: number;
         offset?: number;
     }): Promise<{
-        products: ProductEntity[];
+        products: (ProductEntity & {
+            quantityAvailable: number;
+        })[];
         total: number;
     }>;
     getProduct(id: number): Promise<{
@@ -43,7 +45,30 @@ export declare class ProductService {
         categoryId?: number;
         limit?: number;
         offset?: number;
-    }): Promise<CategoryEntity[]>;
+    }): Promise<{
+        products: {
+            quantityAvailable: number;
+            id: number;
+            name: string;
+            price: number;
+            oldPrice: number;
+            description: string;
+            image: string;
+            badge: string;
+            sku: string;
+            unit: string;
+            moq: string;
+            categoryId: number;
+        }[];
+        id: number;
+        name: string;
+        slug: string;
+        icon: string;
+        sort_order: number;
+        is_active: number;
+        created_at: Date;
+        updated_at: Date;
+    }[]>;
     getInventorySummary(): Promise<{
         totalProducts: number;
         totalOnHand: number;

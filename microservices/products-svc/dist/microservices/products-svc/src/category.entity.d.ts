@@ -1,3 +1,4 @@
+import type { ProductEntity } from './product.entity';
 export declare class CategoryEntity {
     id: number;
     name: string;
@@ -7,4 +8,5 @@ export declare class CategoryEntity {
     is_active: number;
     created_at: Date;
     updated_at: Date;
+    products?: ProductEntity[];
 }

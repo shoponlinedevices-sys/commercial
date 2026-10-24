@@ -4,7 +4,9 @@ export declare class ProductGrpcController {
     private readonly productService;
     constructor(productService: ProductService);
     getProducts(query: any): Promise<{
-        products: import("./product.entity").ProductEntity[];
+        products: (import("./product.entity").ProductEntity & {
+            quantityAvailable: number;
+        })[];
         total: number;
     }>;
     getProductsGroupedByCategory(filters?: {

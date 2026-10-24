@@ -34,6 +34,23 @@ let ProductService = class ProductService {
     get inventoryTransactionRepository() {
         return this.dataSource.getRepository(inventory_transaction_entity_1.InventoryTransactionEntity);
     }
+    async addAvailableQuantity(products) {
+        if (products.length === 0) {
+            return [];
+        }
+        const inventoryRows = await this.inventoryRepository.find({
+            where: { productId: (0, typeorm_1.In)(products.map((product) => product.id)) },
+            select: ['productId', 'quantityOnHand', 'quantityReserved'],
+        });
+        const quantityByProductId = new Map();
+        inventoryRows.forEach((inventory) => {
+            quantityByProductId.set(inventory.productId, Math.max(0, Number(inventory.quantityOnHand || 0) - Number(inventory.quantityReserved || 0)));
+        });
+        return products.map((product) => ({
+            ...product,
+            quantityAvailable: quantityByProductId.get(product.id) ?? 0,
+        }));
+    }
     async getHistoryLogs(limit = 200) {
         return this.dataSource.getRepository(history_log_entity_1.HistoryLogEntity).find({
             order: { createdAt: 'DESC' },
@@ -72,7 +89,7 @@ let ProductService = class ProductService {
         const products = await queryBuilder.getMany();
         const total = await queryBuilder.getCount();
         return {
-            products,
+            products: await this.addAvailableQuantity(products),
             total,
         };
     }
@@ -134,7 +151,18 @@ let ProductService = class ProductService {
             queryBuilder.skip(filters.offset);
         }
         const categories = await queryBuilder.getMany();
-        return categories;
+        const productsWithQuantity = await this.addAvailableQuantity(categories.flatMap((category) => category.products || []));
+        const quantityByProductId = new Map();
+        productsWithQuantity.forEach((product) => {
+            quantityByProductId.set(product.id, product.quantityAvailable);
+        });
+        return categories.map((category) => ({
+            ...category,
+            products: (category.products || []).map((product) => ({
+                ...product,
+                quantityAvailable: quantityByProductId.get(product.id) ?? 0,
+            })),
+        }));
     }
     async getInventorySummary() {
         const inventoryRows = await this.inventoryRepository

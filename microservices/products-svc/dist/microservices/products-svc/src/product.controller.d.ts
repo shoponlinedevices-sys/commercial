@@ -4,7 +4,9 @@ export declare class ProductController {
     constructor(productService: ProductService);
     getHistoryLogs(limit?: string): Promise<import("./history-log.entity").HistoryLogEntity[]>;
     getProducts(query: any): Promise<{
-        products: import("./product.entity").ProductEntity[];
+        products: (import("./product.entity").ProductEntity & {
+            quantityAvailable: number;
+        })[];
         total: number;
     }>;
     getProduct(id: string): Promise<{

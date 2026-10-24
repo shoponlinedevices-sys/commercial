@@ -67,7 +67,7 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
           )}
           {product.quantityAvailable !== undefined && (
             <p className={`mt-1 text-xs ${product.quantityAvailable > 0 ? 'text-muted-foreground' : 'text-destructive'}`}>
-              Tồn kho: {product.quantityAvailable.toLocaleString('vi-VN')}
+              Có sẵn: {product.quantityAvailable.toLocaleString('vi-VN')}
             </p>
           )}
           {onAddToCart && (

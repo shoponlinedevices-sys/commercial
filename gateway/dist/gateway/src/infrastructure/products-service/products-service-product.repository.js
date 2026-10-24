@@ -26,7 +26,9 @@ let ProductsServiceProductRepository = class ProductsServiceProductRepository {
         this.grpcProductService = this.client.getService('ProductService');
     }
     toProduct(productData) {
-        return new product_entity_1.Product(productData.id, productData.name, Number(productData.price), productData.description || '', productData.image || '', productData.oldPrice !== null && productData.oldPrice !== undefined ? Number(productData.oldPrice) : undefined, productData.badge || undefined, productData.sku || undefined, productData.unit || undefined, productData.moq || undefined);
+        return new product_entity_1.Product(productData.id, productData.name, Number(productData.price), productData.description || '', productData.image || '', productData.oldPrice !== null && productData.oldPrice !== undefined ? Number(productData.oldPrice) : undefined, productData.badge || undefined, productData.sku || undefined, productData.unit || undefined, productData.moq || undefined, productData.quantityAvailable !== null && productData.quantityAvailable !== undefined
+            ? Number(productData.quantityAvailable)
+            : undefined);
     }
     async findAll() {
         const response = await (0, rxjs_1.firstValueFrom)(this.grpcProductService.getProducts({}));
