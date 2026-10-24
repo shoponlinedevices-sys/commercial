@@ -144,23 +144,23 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        <section className="bg-[linear-gradient(180deg,hsl(var(--muted)/.5),hsl(var(--background)))] px-4 pb-3 pt-4 sm:px-6">
-          <div className="relative mx-auto grid max-w-6xl overflow-hidden rounded-2xl border border-primary/10 bg-[linear-gradient(110deg,#f6f3ff_0%,#fff_48%,#eee8ff_100%)] shadow-sm lg:min-h-[300px] lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="relative z-10 px-6 py-8 sm:px-9 sm:py-10 lg:py-12">
+        <section className="bg-[linear-gradient(180deg,hsl(var(--muted)/.45),hsl(var(--background)))] px-3 pb-3 pt-3 sm:px-6 sm:pt-5" aria-label="Giới thiệu cửa hàng">
+          <div className="relative mx-auto grid max-w-6xl overflow-hidden rounded-2xl border border-primary/10 bg-[linear-gradient(110deg,#f6f3ff_0%,#fff_52%,#f1edff_100%)] shadow-sm md:grid-cols-[1fr_0.9fr]">
+            <div className="relative z-10 px-5 py-7 sm:px-9 sm:py-10 lg:py-12">
               <p className="mb-3 inline-flex rounded-full bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-primary">Dụng cụ & thiết bị công nghiệp</p>
-              <h1 className="max-w-lg text-3xl font-bold leading-[1.08] tracking-tight text-slate-950 sm:text-4xl lg:text-[2.75rem]">Thiết bị tốt cho mọi <span className="text-primary">công trình</span></h1>
+              <h1 className="max-w-lg text-[1.75rem] font-bold leading-[1.1] tracking-tight text-slate-950 min-[380px]:text-3xl sm:text-4xl lg:text-[2.75rem]">Thiết bị tốt cho mọi <span className="text-primary">công trình</span></h1>
               <p className="mt-4 max-w-md text-sm leading-6 text-slate-600">Dụng cụ, thiết bị điện và vật tư công nghiệp đáng tin cậy, giá minh bạch, giao nhanh cho mọi nhu cầu.</p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button onClick={() => router.push('/products')}>Khám phá sản phẩm <ArrowRight className="ml-2 h-4 w-4" /></Button>
-                <Button variant="outline" className="border-slate-300 bg-white/70 text-slate-800" onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })}>Xem sản phẩm nổi bật</Button>
+              <div className="mt-6 flex flex-col gap-2 min-[420px]:flex-row min-[420px]:flex-wrap">
+                <Button className="w-full min-[420px]:w-auto" onClick={() => router.push('/products')}>Khám phá sản phẩm <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                <Button variant="outline" className="w-full border-slate-300 bg-white/70 text-slate-800 min-[420px]:w-auto" onClick={() => document.getElementById('featured-products')?.scrollIntoView({ behavior: 'smooth' })}>Xem sản phẩm nổi bật</Button>
               </div>
               <p className="mt-4 flex items-center gap-2 text-xs text-slate-500"><span className="h-2 w-2 rounded-full bg-emerald-500" />Sản phẩm được cập nhật trực tiếp từ cửa hàng</p>
             </div>
-            <div className="relative flex min-h-[290px] flex-col sm:min-h-[340px] lg:min-h-[380px]">
-              <div className="relative min-h-[210px] flex-1 overflow-hidden bg-[radial-gradient(ellipse_at_70%_60%,#c4b5fd_0%,#ede9fe_40%,transparent_72%)] sm:min-h-[260px]">
+            <div className="relative flex min-h-[190px] flex-col sm:min-h-[270px] md:min-h-[330px]">
+              <div className="relative min-h-[190px] flex-1 overflow-hidden bg-[radial-gradient(ellipse_at_70%_60%,#c4b5fd_0%,#ede9fe_40%,transparent_72%)] sm:min-h-[250px]">
                 {heroProducts.length > 0 ? (
                   <div className="absolute inset-0 flex items-center justify-center px-5 py-4 sm:px-10">
-                    <div className="relative h-full min-h-[190px] w-full max-w-xl">
+                    <div className="relative h-full min-h-[175px] w-full max-w-xl">
                       {heroProducts.map((product, index) => (
                         product.image ? (
                           <div
@@ -190,7 +190,7 @@ export default function HomePage() {
           </div>
         </section>
 
-       <section className="mx-auto max-w-6xl px-4 py-3 sm:px-6">
+       <section className="mx-auto max-w-6xl px-3 py-3 sm:px-6" aria-label="Dịch vụ cửa hàng">
           <div className="grid grid-cols-1 gap-2 rounded-xl border border-border/70 bg-card px-4 py-3 shadow-sm sm:grid-cols-3 sm:gap-0 sm:px-2">
             {serviceFeatures.map((feature, index) => {
               const Icon = feature.icon;
@@ -248,7 +248,7 @@ export default function HomePage() {
           )}
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
+        <section className="mx-auto max-w-6xl px-3 pb-10 sm:px-6">
           <div className="mb-4 flex items-end justify-between gap-4">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Tìm nhanh theo nhu cầu</p>
@@ -279,7 +279,7 @@ export default function HomePage() {
                   >
                     <span className="shrink-0 rounded-xl bg-primary/10 p-2.5 text-primary"><Icon className="h-5 w-5" /></span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold">{getCategoryDisplayName(category.name)}</span>
+                      <span className="line-clamp-2 break-words text-sm font-semibold leading-5">{getCategoryDisplayName(category.name)}</span>
                       <span className="mt-1 block text-[11px] text-muted-foreground">{category.products.length} sản phẩm</span>
                     </span>
                     {product?.image ? (

@@ -127,14 +127,14 @@ export default function ProductDetailPage() {
         </Button>
 
         <Card>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="relative h-96 bg-muted rounded-lg overflow-hidden">
+          <div className="grid gap-6 p-4 sm:p-6 md:grid-cols-2 md:gap-8">
+            <div className="relative aspect-square max-h-[32rem] overflow-hidden rounded-lg bg-white">
               {product.image ? (
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-cover"
+                  className="object-contain p-4 sm:p-8"
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -142,18 +142,18 @@ export default function ProductDetailPage() {
                 </div>
               )}
             </div>
-            <div className="p-6">
+            <div className="min-w-0 py-1 md:py-2">
               <CardHeader className="p-0 mb-4">
                 <div className="flex items-start justify-between">
-                  <CardTitle className="text-3xl">{product.name}</CardTitle>
+                  <CardTitle className="break-words text-2xl leading-tight sm:text-3xl">{product.name}</CardTitle>
                   {product.badge && (
                     <Badge className="ml-2">{product.badge}</Badge>
                   )}
                 </div>
               </CardHeader>
               <CardContent className="p-0 space-y-4">
-                <div className="flex items-center space-x-3">
-                  <span className="text-4xl font-bold text-primary">
+                <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+                  <span className="text-3xl font-bold text-primary sm:text-4xl">
                     {formatVnd(product.price)}
                   </span>
                   {product.oldPrice && (

@@ -18,8 +18,8 @@ const supportLinks = [
 export default function Footer() {
   return (
     <footer className="border-t border-border/70 bg-card">
-      <div className="container mx-auto px-4 py-10 sm:px-6 lg:py-12">
-        <div className="grid gap-8 md:grid-cols-[1.4fr_1fr_1fr_1.25fr]">
+      <div className="container mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:py-12">
+        <div className="grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.25fr]">
           <div>
             <Link href="/" className="mb-4 inline-flex items-center gap-2 text-lg font-bold text-foreground">
               <Image src="/logo.png" alt="" width={36} height={36} className="h-9 w-9 object-contain" />

@@ -30,15 +30,15 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
   };
 
   return (
-    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-      <Link href={`/products/${product.id}`} className={`relative block ${compact ? 'aspect-[2/1]' : 'aspect-[4/3]'} overflow-hidden bg-muted/70`} aria-label={`Xem ${product.name}`}>
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card transition-colors duration-200 hover:border-primary/40 hover:shadow-md">
+      <Link href={`/products/${product.id}`} className={`relative block ${compact ? 'aspect-[5/4]' : 'aspect-[4/3]'} overflow-hidden bg-white`} aria-label={`Xem ${product.name}`}>
         {product.image ? (
           <Image
             src={product.image}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className={`${compact ? 'object-contain p-3' : 'object-cover'} transition-transform duration-300 group-hover:scale-105`}
+            className="object-contain p-3 transition-transform duration-200 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-muted-foreground">
@@ -47,12 +47,13 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
         )}
         {product.badge && <Badge className="absolute left-3 top-3 bg-primary text-primary-foreground">{product.badge}</Badge>}
       </Link>
-      <div className={`flex flex-1 flex-col ${compact ? 'p-3.5' : 'p-4'}`}>
-        {product.category && <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary">{product.category}</p>}
-        <Link href={`/products/${product.id}`} className={`line-clamp-2 text-sm font-semibold leading-5 hover:text-primary ${compact ? '' : 'sm:text-base'}`}>
+      <div className={`flex flex-1 flex-col ${compact ? 'p-3 sm:p-3.5' : 'p-4'}`}>
+        {product.category && <p className="mb-1 line-clamp-1 text-[11px] font-medium uppercase tracking-wide text-primary">{product.category}</p>}
+        <Link href={`/products/${product.id}`} title={product.name} className={`line-clamp-2 min-h-10 text-sm font-semibold leading-5 hover:text-primary focus-visible:rounded-sm ${compact ? '' : 'sm:text-base'}`}>
           {product.name}
         </Link>
         {!compact && <p className="mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground">{product.description}</p>}
+        {compact && product.sku && <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">Mã: {product.sku}</p>}
         <div className={`mt-auto ${compact ? 'pt-3' : 'pt-4'}`}>
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className={`font-bold text-primary ${compact ? 'text-sm sm:text-base' : 'text-base sm:text-lg'}`}>{formatVnd(product.price)}</span>
@@ -73,7 +74,7 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
           {onAddToCart && (
             <Button
               onClick={() => { void handleAddToCart(); }}
-              className={`${compact ? 'mt-2' : 'mt-3'} w-full`}
+              className={`${compact ? 'mt-2 min-h-10 px-2 text-xs sm:text-sm' : 'mt-3'} w-full`}
               size="sm"
               disabled={isAddingToCart}
               aria-busy={isAddingToCart}

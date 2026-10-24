@@ -122,18 +122,18 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-        <div className="mb-8 flex flex-col gap-4 border-b pb-8 sm:flex-row sm:items-end sm:justify-between">
+      <main className="mx-auto max-w-7xl px-3 py-6 sm:px-6 sm:py-10">
+        <div className="mb-6 flex flex-col gap-4 border-b pb-6 sm:mb-8 sm:flex-row sm:items-end sm:justify-between sm:pb-8">
           <div><p className="text-sm font-medium text-primary">Danh mục Commercial</p><h1 className="mt-1 text-3xl font-bold">Tất cả sản phẩm</h1><p className="mt-2 text-muted-foreground">Chọn thiết bị phù hợp cho công việc và công trình của bạn.</p></div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground"><Search className="h-4 w-4" />{filteredProducts.length} sản phẩm</div>
         </div>
-        <div className="mb-8 flex flex-wrap gap-2">
+        <nav aria-label="Lọc theo danh mục" className="-mx-3 mb-6 flex gap-2 overflow-x-auto px-3 pb-2 sm:mx-0 sm:mb-8 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
           <Button variant={!selectedCategory ? 'default' : 'outline'} size="sm" onClick={() => router.push(searchQuery ? `/products?search=${encodeURIComponent(searchQuery)}` : '/products')}>Tất cả</Button>
           {productCategories.filter((category) => category.products.length > 0).map((category) => {
             const displayName = getCategoryDisplayName(category.name);
             return <Button key={category.id} variant={selectedCategory === category.name || selectedCategory === displayName ? 'default' : 'outline'} size="sm" onClick={() => router.push(`/products?category=${encodeURIComponent(category.name)}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`)}>{displayName}</Button>;
           })}
-        </div>
+        </nav>
         {loading ? <p className="py-16 text-center text-muted-foreground">Đang tải sản phẩm...</p> : loadError ? <p className="py-16 text-center text-muted-foreground">Không thể tải sản phẩm lúc này. Vui lòng thử lại sau.</p> : filteredProducts.length === 0 ? <p className="py-16 text-center text-muted-foreground">Không tìm thấy sản phẩm phù hợp.</p> : (
           <>
             <div className="space-y-8">
@@ -143,7 +143,7 @@ export default function ProductsPage() {
                     <h2 id={`category-${category.id}`} className="text-xl font-semibold">{getCategoryDisplayName(category.name)}</h2>
                     <span className="text-sm text-muted-foreground">{category.products.length} sản phẩm</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                  <div className="grid grid-cols-2 gap-2.5 min-[420px]:gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                     {category.products.map((product) => <ProductCard key={product.id} product={{ ...product, category: getCategoryDisplayName(category.name) }} onAddToCart={addToCart} compact />)}
                   </div>
                 </section>
