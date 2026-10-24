@@ -33,6 +33,7 @@ export class ProductsServiceProductRepository implements ProductRepository {
       productData.sku || undefined,
       productData.unit || undefined,
       productData.moq || undefined,
+      undefined,
       productData.quantityAvailable !== null && productData.quantityAvailable !== undefined
         ? Number(productData.quantityAvailable)
         : undefined,
