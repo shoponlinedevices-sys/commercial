@@ -53,7 +53,7 @@ let OrderService = class OrderService {
                 referenceType: 'order',
                 referenceId,
                 note: `Đặt hàng - ${createdBy !== null && createdBy !== void 0 ? createdBy : 'gateway'}`,
-                createdBy: String(createdBy !== null && createdBy !== void 0 ? createdBy : 'gateway'),
+                createdBy,
             });
             results.push({ productId, quantity, referenceId });
             if ((_a = result === null || result === void 0 ? void 0 : result.transaction) === null || _a === void 0 ? void 0 : _a.referenceId) {
@@ -75,7 +75,7 @@ let OrderService = class OrderService {
                 referenceType: 'order',
                 referenceId: `ORD-REL-${Date.now()}-${index}`,
                 note: `Huỷ / giải phóng kho - ${createdBy !== null && createdBy !== void 0 ? createdBy : 'gateway'}`,
-                createdBy: String(createdBy !== null && createdBy !== void 0 ? createdBy : 'gateway'),
+                createdBy,
             });
         }
     }
@@ -101,7 +101,7 @@ let OrderService = class OrderService {
                     referenceType: 'order',
                     referenceId: `ORD-SALE-${order.id}-${Date.now()}`,
                     note: `Bán hàng - đơn ${order.id}`,
-                    createdBy: String(createdBy !== null && createdBy !== void 0 ? createdBy : 'gateway'),
+                    createdBy,
                 });
             }
             return;
@@ -119,15 +119,14 @@ let OrderService = class OrderService {
                     referenceType: 'order',
                     referenceId: `ORD-RET-${order.id}-${Date.now()}`,
                     note: `Trả hàng - đơn ${order.id}`,
-                    createdBy: String(createdBy !== null && createdBy !== void 0 ? createdBy : 'gateway'),
+                    createdBy,
                 });
             }
         }
     }
     async createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName, createdBy) {
-        const author = String(createdBy !== null && createdBy !== void 0 ? createdBy : 'gateway');
         try {
-            await this.reserveOrderLines(cartLines, author);
+            await this.reserveOrderLines(cartLines, createdBy);
             const order = await this.orderRepository.createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName, createdBy);
             if (fcmToken) {
                 try {
@@ -157,7 +156,7 @@ let OrderService = class OrderService {
             return order;
         }
         catch (error) {
-            await this.releaseOrderLines(cartLines, author).catch((releaseError) => {
+            await this.releaseOrderLines(cartLines, createdBy).catch((releaseError) => {
                 console.error('Failed to release reserved inventory after order creation failure:', releaseError);
             });
             throw error;

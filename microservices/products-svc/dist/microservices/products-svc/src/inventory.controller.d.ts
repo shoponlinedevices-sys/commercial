@@ -1,7 +1,9 @@
 import { ProductService } from './product.service';
 export declare class InventoryController {
     private readonly productService;
+    private readonly logger;
     constructor(productService: ProductService);
+    private normalizeCreatedBy;
     getSummary(): Promise<{
         totalProducts: number;
         totalOnHand: number;

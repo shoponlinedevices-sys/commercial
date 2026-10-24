@@ -1,9 +1,31 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 
 @Controller('inventory')
 export class InventoryController {
+  private readonly logger = new Logger(InventoryController.name);
+
   constructor(private readonly productService: ProductService) {}
+
+  private normalizeCreatedBy<T extends { createdBy?: number }>(body: T): T {
+    const rawCreatedBy = body.createdBy as unknown;
+    if (rawCreatedBy === undefined || rawCreatedBy === null) {
+      return body;
+    }
+
+    const createdBy = typeof rawCreatedBy === 'number'
+      ? rawCreatedBy
+      : typeof rawCreatedBy === 'string' && /^\d+$/.test(rawCreatedBy)
+        ? Number(rawCreatedBy)
+        : Number.NaN;
+
+    if (Number.isSafeInteger(createdBy) && createdBy > 0) {
+      return { ...body, createdBy };
+    }
+
+    this.logger.warn(`Ignoring non-numeric inventory createdBy value: ${String(rawCreatedBy)}`);
+    return { ...body, createdBy: undefined };
+  }
 
   @Get('summary')
   async getSummary() {
@@ -56,7 +78,7 @@ export class InventoryController {
     note?: string;
     createdBy?: number;
   }) {
-    return this.productService.importInventory(body);
+    return this.productService.importInventory(this.normalizeCreatedBy(body));
   }
 
   @Post('reserve')
@@ -68,7 +90,7 @@ export class InventoryController {
     note?: string;
     createdBy?: number;
   }) {
-    return this.productService.reserveInventory(body);
+    return this.productService.reserveInventory(this.normalizeCreatedBy(body));
   }
 
   @Post('release')
@@ -80,7 +102,7 @@ export class InventoryController {
     note?: string;
     createdBy?: number;
   }) {
-    return this.productService.releaseInventory(body);
+    return this.productService.releaseInventory(this.normalizeCreatedBy(body));
   }
 
   @Post('sale')
@@ -92,7 +114,7 @@ export class InventoryController {
     note?: string;
     createdBy?: number;
   }) {
-    return this.productService.saleInventory(body);
+    return this.productService.saleInventory(this.normalizeCreatedBy(body));
   }
 
   @Post('return')
@@ -104,7 +126,7 @@ export class InventoryController {
     note?: string;
     createdBy?: number;
   }) {
-    return this.productService.returnInventory(body);
+    return this.productService.returnInventory(this.normalizeCreatedBy(body));
   }
 
   @Post('adjustments')
@@ -115,6 +137,6 @@ export class InventoryController {
     note?: string;
     createdBy?: number;
   }) {
-    return this.productService.adjustInventory(body);
+    return this.productService.adjustInventory(this.normalizeCreatedBy(body));
   }
 }

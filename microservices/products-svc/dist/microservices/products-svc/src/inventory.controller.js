@@ -11,13 +11,31 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var InventoryController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryController = void 0;
 const common_1 = require("@nestjs/common");
 const product_service_1 = require("./product.service");
-let InventoryController = class InventoryController {
+let InventoryController = InventoryController_1 = class InventoryController {
     constructor(productService) {
         this.productService = productService;
+        this.logger = new common_1.Logger(InventoryController_1.name);
+    }
+    normalizeCreatedBy(body) {
+        const rawCreatedBy = body.createdBy;
+        if (rawCreatedBy === undefined || rawCreatedBy === null) {
+            return body;
+        }
+        const createdBy = typeof rawCreatedBy === 'number'
+            ? rawCreatedBy
+            : typeof rawCreatedBy === 'string' && /^\d+$/.test(rawCreatedBy)
+                ? Number(rawCreatedBy)
+                : Number.NaN;
+        if (Number.isSafeInteger(createdBy) && createdBy > 0) {
+            return { ...body, createdBy };
+        }
+        this.logger.warn(`Ignoring non-numeric inventory createdBy value: ${String(rawCreatedBy)}`);
+        return { ...body, createdBy: undefined };
     }
     async getSummary() {
         return this.productService.getInventorySummary();
@@ -43,22 +61,22 @@ let InventoryController = class InventoryController {
         return this.productService.getInventoryDetail(Number(productId));
     }
     async importStock(body) {
-        return this.productService.importInventory(body);
+        return this.productService.importInventory(this.normalizeCreatedBy(body));
     }
     async reserveStock(body) {
-        return this.productService.reserveInventory(body);
+        return this.productService.reserveInventory(this.normalizeCreatedBy(body));
     }
     async releaseStock(body) {
-        return this.productService.releaseInventory(body);
+        return this.productService.releaseInventory(this.normalizeCreatedBy(body));
     }
     async saleStock(body) {
-        return this.productService.saleInventory(body);
+        return this.productService.saleInventory(this.normalizeCreatedBy(body));
     }
     async returnStock(body) {
-        return this.productService.returnInventory(body);
+        return this.productService.returnInventory(this.normalizeCreatedBy(body));
     }
     async adjustStock(body) {
-        return this.productService.adjustInventory(body);
+        return this.productService.adjustInventory(this.normalizeCreatedBy(body));
     }
 };
 exports.InventoryController = InventoryController;
@@ -138,7 +156,7 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], InventoryController.prototype, "adjustStock", null);
-exports.InventoryController = InventoryController = __decorate([
+exports.InventoryController = InventoryController = InventoryController_1 = __decorate([
     (0, common_1.Controller)('inventory'),
     __metadata("design:paramtypes", [product_service_1.ProductService])
 ], InventoryController);

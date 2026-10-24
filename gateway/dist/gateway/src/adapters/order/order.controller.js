@@ -22,8 +22,8 @@ let OrderController = class OrderController {
         this.orderService = orderService;
     }
     async createOrder(body, request) {
-        var _a, _b;
-        const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName, ((_a = request.user) === null || _a === void 0 ? void 0 : _a.username) || ((_b = request.user) === null || _b === void 0 ? void 0 : _b.id) || 'gateway');
+        var _a;
+        const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName, (_a = request.user) === null || _a === void 0 ? void 0 : _a.id);
         return order;
     }
     async getAllOrders(from, to, status) {
@@ -37,8 +37,8 @@ let OrderController = class OrderController {
         return this.orderService.findByUserId(parsedUserId);
     }
     async updateOrderStatus(id, body, request) {
-        var _a, _b;
-        return this.orderService.updateStatus(id, body.status, ((_a = request.user) === null || _a === void 0 ? void 0 : _a.username) || ((_b = request.user) === null || _b === void 0 ? void 0 : _b.id) || 'gateway');
+        var _a;
+        return this.orderService.updateStatus(id, body.status, (_a = request.user) === null || _a === void 0 ? void 0 : _a.id);
     }
 };
 exports.OrderController = OrderController;
