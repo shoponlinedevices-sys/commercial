@@ -40,6 +40,30 @@ export type FeatureSetting = {
   isEnabled: boolean;
 };
 
+export type InventorySummary = {
+  totalProducts: number;
+  totalOnHand: number;
+  lowStockItems: number;
+  outOfStockItems: number;
+  inventoryValue: number;
+  hasCostData: boolean;
+};
+
+export type InventoryItem = {
+  id: number;
+  productId: number;
+  productName: string;
+  sku: string;
+  category: string;
+  quantityOnHand: number;
+  quantityReserved: number;
+  reorderLevel: number;
+  unitPrice: number;
+  quantityAvailable: number;
+  status: 'Còn hàng' | 'Sắp hết hàng' | 'Hết hàng';
+  updatedAt: string;
+};
+
 export type HistoryLog = {
   id: string | number;
   action: string;
@@ -141,6 +165,35 @@ export const crmApi = {
     return request<GatewayOrder[]>(`/orders${query ? `?${query}` : ''}`, {}, token);
   },
   getProducts(token: string) { return request<{ products: GatewayProduct[]; total: number }>('/products', {}, token); },
+  getInventorySummary(token: string) { return request<InventorySummary>('/inventory/summary', {}, token); },
+  getInventory(token: string, filters?: { page?: number; limit?: number; search?: string; category?: string; status?: string }) {
+    const params = new URLSearchParams();
+    if (filters?.page) params.set('page', String(filters.page));
+    if (filters?.limit) params.set('limit', String(filters.limit));
+    if (filters?.search) params.set('search', filters.search);
+    if (filters?.category) params.set('category', filters.category);
+    if (filters?.status) params.set('status', filters.status);
+    const query = params.toString();
+    return request<{ items: InventoryItem[]; total: number; page: number; limit: number }>(`/inventory${query ? `?${query}` : ''}`, {}, token);
+  },
+  importInventory(token: string, data: { productId: number; quantity: number; unitCost?: number; reference?: string; note?: string; createdBy?: string }) {
+    return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/import', { method: 'POST', body: JSON.stringify(data) }, token);
+  },
+  adjustInventory(token: string, data: { productId: number; quantityAfter: number; reason: string; note?: string; createdBy?: string }) {
+    return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/adjustments', { method: 'POST', body: JSON.stringify(data) }, token);
+  },
+  reserveInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+    return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/reserve', { method: 'POST', body: JSON.stringify(data) }, token);
+  },
+  releaseInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+    return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/release', { method: 'POST', body: JSON.stringify(data) }, token);
+  },
+  saleInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+    return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/sale', { method: 'POST', body: JSON.stringify(data) }, token);
+  },
+  returnInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+    return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/return', { method: 'POST', body: JSON.stringify(data) }, token);
+  },
   createProduct(data: Omit<GatewayProduct, 'id'>, token: string) {
     return request<{ product: GatewayProduct }>('/products', { method: 'POST', body: JSON.stringify(data) }, token);
   },

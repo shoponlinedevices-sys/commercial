@@ -11,7 +11,10 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const product_service_1 = require("./product.service");
 const product_controller_1 = require("./product.controller");
+const inventory_controller_1 = require("./inventory.controller");
 const product_entity_1 = require("./product.entity");
+const inventory_entity_1 = require("./inventory.entity");
+const inventory_transaction_entity_1 = require("./inventory-transaction.entity");
 const app_module_1 = require("./app.module");
 const product_grpc_controller_1 = require("./product.grpc.controller");
 let ProductModule = class ProductModule {
@@ -21,9 +24,9 @@ exports.ProductModule = ProductModule = __decorate([
     (0, common_1.Module)({
         imports: [
             (0, common_1.forwardRef)(() => app_module_1.AppModule),
-            typeorm_1.TypeOrmModule.forFeature([product_entity_1.ProductEntity]),
+            typeorm_1.TypeOrmModule.forFeature([product_entity_1.ProductEntity, inventory_entity_1.InventoryEntity, inventory_transaction_entity_1.InventoryTransactionEntity]),
         ],
-        controllers: [product_controller_1.ProductController, product_grpc_controller_1.ProductGrpcController],
+        controllers: [product_controller_1.ProductController, inventory_controller_1.InventoryController, product_grpc_controller_1.ProductGrpcController],
         providers: [product_service_1.ProductService],
         exports: [product_service_1.ProductService],
     })

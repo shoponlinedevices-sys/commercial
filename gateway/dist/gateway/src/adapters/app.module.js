@@ -24,6 +24,7 @@ const grpc_clients_module_1 = require("../infrastructure/grpc/grpc-clients.modul
 const identity_module_1 = require("./identity/identity.module");
 const history_log_module_1 = require("./history-log/history-log.module");
 const view_events_module_1 = require("./view-events/view-events.module");
+const inventory_module_1 = require("./inventory/inventory.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,7 +35,7 @@ exports.AppModule = AppModule = __decorate([
                 isGlobal: true,
                 envFilePath: '.env',
             }),
-            grpc_clients_module_1.GrpcClientsModule, identity_module_1.IdentityModule, cart_module_1.CartModule, product_module_1.ProductModule, auth_module_1.AuthModule, ads_module_1.AdsModule, order_module_1.OrderModule, notification_module_1.NotificationModule, user_profile_module_1.UserProfileModule, delivery_address_module_1.DeliveryAddressModule, payment_method_module_1.PaymentMethodModule, email_module_1.EmailModule, feature_settings_module_1.FeatureSettingsModule, history_log_module_1.HistoryLogModule, view_events_module_1.ViewEventsModule,
+            grpc_clients_module_1.GrpcClientsModule, identity_module_1.IdentityModule, cart_module_1.CartModule, product_module_1.ProductModule, auth_module_1.AuthModule, ads_module_1.AdsModule, order_module_1.OrderModule, notification_module_1.NotificationModule, user_profile_module_1.UserProfileModule, delivery_address_module_1.DeliveryAddressModule, payment_method_module_1.PaymentMethodModule, email_module_1.EmailModule, feature_settings_module_1.FeatureSettingsModule, history_log_module_1.HistoryLogModule, view_events_module_1.ViewEventsModule, inventory_module_1.InventoryModule,
         ],
     })
 ], AppModule);

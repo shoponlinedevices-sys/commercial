@@ -5,12 +5,12 @@ import {
   Bell, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardList, Clock3, LayoutDashboard,
   Eye, History, Menu, PackageCheck, Plus, Search, Settings, ShoppingBag, TrendingUp, Users, X,
 } from 'lucide-react';
-import { crmApi, FeatureSetting, GatewayOrder, GatewayProduct, HistoryLog, UserProfile } from '@/lib/crm-api';
+import { crmApi, FeatureSetting, GatewayOrder, GatewayProduct, HistoryLog, InventoryItem, InventorySummary, UserProfile } from '@/lib/crm-api';
 import ViewEventsPanel from '@/components/ViewEventsPanel';
 
 type Status = 'Mới' | 'Đang xử lý' | 'Đã giao' | 'Đã hủy';
 type Order = { id: string; userId: string | number; customer: string; email: string; items: number; total: number; status: Status; createdAt: string; date: string; initials: string; tone: string };
-type PageType = 'dashboard' | 'orders' | 'customers' | 'products' | 'view-events' | 'logs' | 'settings' | 'help';
+type PageType = 'dashboard' | 'orders' | 'customers' | 'products' | 'inventory' | 'view-events' | 'logs' | 'settings' | 'help';
 
 const formatVnd = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
 const statusToLabel: Record<string, Status> = { pending: 'Mới', processing: 'Đang xử lý', completed: 'Đã giao', delivered: 'Đã giao', cancelled: 'Đã hủy' };
@@ -46,6 +46,13 @@ export default function Dashboard() {
   const [products, setProducts] = useState<GatewayProduct[]>([]);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [featureSettings, setFeatureSettings] = useState<FeatureSetting[]>([]);
+  const [inventorySummary, setInventorySummary] = useState<InventorySummary>({ totalProducts: 0, totalOnHand: 0, lowStockItems: 0, outOfStockItems: 0, inventoryValue: 0, hasCostData: false });
+  const [inventoryRows, setInventoryRows] = useState<InventoryItem[]>([]);
+  const [inventoryLoading, setInventoryLoading] = useState(false);
+  const [inventoryError, setInventoryError] = useState('');
+  const [inventoryAction, setInventoryAction] = useState<'import' | 'adjust' | 'reserve' | 'release' | 'sale' | 'return' | 'none'>('none');
+  const [inventoryForm, setInventoryForm] = useState({ productId: '', quantity: '', note: '', reason: '' });
+  const [inventorySubmitting, setInventorySubmitting] = useState(false);
   const [historyLogs, setHistoryLogs] = useState<HistoryLog[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyQuery, setHistoryQuery] = useState('');
@@ -112,6 +119,29 @@ export default function Dashboard() {
       if (settingsResult.status === 'fulfilled') setFeatureSettings(settingsResult.value || []);
     });
   }, [token, user]);
+
+  const refreshInventory = async () => {
+    if (!token) return;
+    setInventoryLoading(true);
+    setInventoryError('');
+    try {
+      const [summary, data] = await Promise.all([
+        crmApi.getInventorySummary(token),
+        crmApi.getInventory(token, { page: 1, limit: 10 }),
+      ]);
+      setInventorySummary(summary);
+      setInventoryRows(data.items || []);
+    } catch (requestError) {
+      setInventoryError((requestError as Error).message);
+    } finally {
+      setInventoryLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!token || currentPage !== 'inventory') return;
+    refreshInventory();
+  }, [token, currentPage]);
 
   useEffect(() => {
     if (!token) return;
@@ -251,6 +281,57 @@ export default function Dashboard() {
     }
   };
 
+  const handleInventorySubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!token || inventoryAction === 'none') return;
+
+    const productId = Number(inventoryForm.productId);
+    const quantity = Number(inventoryForm.quantity);
+
+    if (!productId || !Number.isFinite(productId) || productId <= 0 || !Number.isFinite(quantity) || quantity <= 0) {
+      setInventoryError('Vui lòng nhập mã sản phẩm và số lượng hợp lệ.');
+      return;
+    }
+
+    setInventorySubmitting(true);
+    setInventoryError('');
+
+    try {
+      switch (inventoryAction) {
+        case 'import':
+          await crmApi.importInventory(token, { productId, quantity, note: inventoryForm.note || 'Nhập kho từ CRM', createdBy: user?.username || 'crm' });
+          break;
+        case 'adjust':
+          await crmApi.adjustInventory(token, { productId, quantityAfter: quantity, reason: inventoryForm.reason || inventoryForm.note || 'Điều chỉnh kho', note: inventoryForm.note || 'Điều chỉnh kho', createdBy: user?.username || 'crm' });
+          break;
+        case 'reserve':
+          await crmApi.reserveInventory(token, { productId, quantity, note: inventoryForm.note || 'Giữ chỗ hàng', createdBy: user?.username || 'crm' });
+          break;
+        case 'release':
+          await crmApi.releaseInventory(token, { productId, quantity, note: inventoryForm.note || 'Giải phóng giữ chỗ', createdBy: user?.username || 'crm' });
+          break;
+        case 'sale':
+          await crmApi.saleInventory(token, { productId, quantity, note: inventoryForm.note || 'Bán hàng', createdBy: user?.username || 'crm' });
+          break;
+        case 'return':
+          await crmApi.returnInventory(token, { productId, quantity, note: inventoryForm.note || 'Trả hàng', createdBy: user?.username || 'crm' });
+          break;
+        default:
+          throw new Error('Hành động kho chưa được chọn');
+      }
+
+      setNotice('Cập nhật kho thành công');
+      setInventoryAction('none');
+      setInventoryForm({ productId: '', quantity: '', note: '', reason: '' });
+      await refreshInventory();
+      window.setTimeout(() => setNotice(''), 2500);
+    } catch (requestError) {
+      setInventoryError((requestError as Error).message);
+    } finally {
+      setInventorySubmitting(false);
+    }
+  };
+
   const login = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -290,6 +371,7 @@ export default function Dashboard() {
           <button onClick={() => navigate('orders')} className={`nav-item ${currentPage === 'orders' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><ClipboardList size={18} /> Đơn hàng <span className="nav-count">{orders.length}</span></button>
           <button onClick={() => navigate('customers')} className={`nav-item ${currentPage === 'customers' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Users size={18} /> Khách hàng</button>
           <button onClick={() => navigate('products')} className={`nav-item ${currentPage === 'products' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><PackageCheck size={18} /> Sản phẩm</button>
+          <button onClick={() => navigate('inventory')} className={`nav-item ${currentPage === 'inventory' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><ClipboardList size={18} /> Tồn kho</button>
           <button onClick={() => navigate('view-events')} className={`nav-item ${currentPage === 'view-events' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Eye size={18} /> Lượt xem</button>
           <button onClick={() => navigate('logs')} className={`nav-item ${currentPage === 'logs' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><History size={18} /> Nhật ký <span className="nav-count">{historyLogs.length}</span></button>
         </nav>
@@ -298,7 +380,7 @@ export default function Dashboard() {
       </aside>
 
       <section className="content">
-        <header className="topbar"><button className="mobile-menu" aria-label="Mở menu" onClick={() => setMobileMenuOpen((open) => !open)}><Menu size={20} /></button><div className="breadcrumbs"><span>Tổng quan</span><b>/</b><strong>{currentPage === 'dashboard' && 'Đơn hàng'}{currentPage === 'orders' && 'Đơn hàng'}{currentPage === 'customers' && 'Khách hàng'}{currentPage === 'products' && 'Sản phẩm'}{currentPage === 'view-events' && 'Lượt xem'}{currentPage === 'logs' && 'Nhật ký hoạt động'}{currentPage === 'settings' && 'Cài đặt'}{currentPage === 'help' && 'Trợ giúp'}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Thông báo" onClick={() => setNotice('Bạn không có thông báo mới')}><Bell size={19} /><i /></button><div className="avatar avatar-dark top-avatar">{user?.username?.slice(0, 2).toUpperCase() || 'TH'}</div></div></header>
+        <header className="topbar"><button className="mobile-menu" aria-label="Mở menu" onClick={() => setMobileMenuOpen((open) => !open)}><Menu size={20} /></button><div className="breadcrumbs"><span>Tổng quan</span><b>/</b><strong>{currentPage === 'dashboard' && 'Đơn hàng'}{currentPage === 'orders' && 'Đơn hàng'}{currentPage === 'customers' && 'Khách hàng'}{currentPage === 'products' && 'Sản phẩm'}{currentPage === 'inventory' && 'Tồn kho'}{currentPage === 'view-events' && 'Lượt xem'}{currentPage === 'logs' && 'Nhật ký hoạt động'}{currentPage === 'settings' && 'Cài đặt'}{currentPage === 'help' && 'Trợ giúp'}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Thông báo" onClick={() => setNotice('Bạn không có thông báo mới')}><Bell size={19} /><i /></button><div className="avatar avatar-dark top-avatar">{user?.username?.slice(0, 2).toUpperCase() || 'TH'}</div></div></header>
         <div className="main-content">
 
           {currentPage === 'dashboard' && (
@@ -331,6 +413,77 @@ export default function Dashboard() {
           )}
 
           {currentPage === 'view-events' && token && <ViewEventsPanel token={token} onOpenCustomer={openCustomer} />}
+
+          {currentPage === 'inventory' && (
+            <section className="orders-section">
+              <div className="section-heading"><div><h2>Quản lý tồn kho</h2><p>Dashboard, danh sách, cảnh báo sắp hết hàng và lịch sử giao dịch kho</p></div><button className="primary-button" onClick={() => setNotice('Tính năng nhập kho chi tiết sẽ được bổ sung trong phiên bản tiếp theo')}><Plus size={18} /> Nhập kho</button></div>
+              <div className="stats-grid">
+                <Stat icon={<PackageCheck size={19} />} label="Sản phẩm đang quản lý" value={String(inventorySummary.totalProducts)} trend={inventorySummary.totalProducts > 0 ? 'Được theo dõi' : '0'} hint="Đã tích hợp với gateway" tone="blue" />
+                <Stat icon={<TrendingUp size={19} />} label="Tổng tồn thực tế" value={String(inventorySummary.totalOnHand)} trend={inventorySummary.totalOnHand > 0 ? 'Đơn vị' : '0'} hint="Tổng số lượng hiện có" tone="green" />
+                <Stat icon={<Clock3 size={19} />} label="Sắp hết hàng" value={String(inventorySummary.lowStockItems)} trend={inventorySummary.lowStockItems > 0 ? 'Cần bổ sung' : 'Ổn định'} hint="Theo ngưỡng cảnh báo" tone="yellow" />
+                <Stat icon={<X size={19} />} label="Hết hàng" value={String(inventorySummary.outOfStockItems)} trend={inventorySummary.outOfStockItems > 0 ? 'Cần xử lý' : 'Không có'} hint="Sản phẩm không còn hàng" tone="orange" />
+              </div>
+              <div className="section-heading" style={{ marginTop: '20px' }}>
+                <div>
+                  <h2>Thao tác kho</h2>
+                  <p>Nhập hàng, điều chỉnh tồn kho và xử lý reserve / release / sale / return trực tiếp từ CRM.</p>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                {[
+                  ['import', 'Nhập kho'],
+                  ['adjust', 'Điều chỉnh'],
+                  ['reserve', 'Giữ chỗ'],
+                  ['release', 'Giải phóng'],
+                  ['sale', 'Bán'],
+                  ['return', 'Trả hàng'],
+                ].map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    className="secondary-button"
+                    onClick={() => setInventoryAction(key as 'import' | 'adjust' | 'reserve' | 'release' | 'sale' | 'return')}
+                    style={{
+                      opacity: inventoryAction === key ? 1 : 0.8,
+                      borderColor: inventoryAction === key ? '#1d4ed8' : '#dfe7f5',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              {inventoryAction !== 'none' && (
+                <form onSubmit={handleInventorySubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '20px', padding: '16px', border: '1px solid #ecf0f6', borderRadius: '14px', background: '#fff' }}>
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    Mã sản phẩm
+                    <input value={inventoryForm.productId} onChange={(event) => setInventoryForm((current) => ({ ...current, productId: event.target.value }))} placeholder="Ví dụ: 12" required />
+                  </label>
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    Số lượng
+                    <input value={inventoryForm.quantity} onChange={(event) => setInventoryForm((current) => ({ ...current, quantity: event.target.value }))} placeholder={inventoryAction === 'adjust' ? 'Tồn kho sau kiểm kê' : 'Số lượng'} required />
+                  </label>
+                  {inventoryAction === 'adjust' && (
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      Lý do
+                      <input value={inventoryForm.reason} onChange={(event) => setInventoryForm((current) => ({ ...current, reason: event.target.value }))} placeholder="Ví dụ: kiểm kê cuối ngày" />
+                    </label>
+                  )}
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '8px', gridColumn: '1 / -1' }}>
+                    Ghi chú
+                    <input value={inventoryForm.note} onChange={(event) => setInventoryForm((current) => ({ ...current, note: event.target.value }))} placeholder="Mô tả thao tác kho" />
+                  </label>
+                  <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <button type="submit" className="primary-button" disabled={inventorySubmitting}>{inventorySubmitting ? 'Đang xử lý...' : `Xác nhận ${inventoryAction === 'import' ? 'nhập kho' : inventoryAction === 'adjust' ? 'điều chỉnh' : inventoryAction === 'reserve' ? 'giữ chỗ' : inventoryAction === 'release' ? 'giải phóng' : inventoryAction === 'sale' ? 'bán hàng' : 'trả hàng'}`}</button>
+                    <button type="button" className="secondary-button" onClick={() => { setInventoryAction('none'); setInventoryForm({ productId: '', quantity: '', note: '', reason: '' }); setInventoryError(''); }}>Huỷ</button>
+                  </div>
+                </form>
+              )}
+
+              <div className="table-wrap"><table><thead><tr><th>TÊN SẢN PHẨM</th><th>SKU</th><th>DANH MỤC</th><th>TỒN THỰC TẾ</th><th>GIỮ CHỖ</th><th>CÓ THỂ BÁN</th><th>TRẠNG THÁI</th></tr></thead><tbody>{inventoryLoading && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Đang tải tồn kho...</td></tr>}{inventoryError && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px', color: 'red' }}>{inventoryError}</td></tr>}{!inventoryLoading && !inventoryError && inventoryRows.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Chưa có dữ liệu tồn kho.</td></tr>}{inventoryRows.map((item) => <tr key={item.id}><td><strong>{item.productName}</strong></td><td>{item.sku}</td><td>{item.category || 'Chưa phân loại'}</td><td>{item.quantityOnHand}</td><td>{item.quantityReserved}</td><td>{item.quantityAvailable}</td>              <td><span style={{ display: 'inline-block', borderRadius: 999, padding: '6px 10px', fontSize: '10px', fontWeight: 700, background: item.status === 'Hết hàng' ? '#f8e8e7' : item.status === 'Sắp hết hàng' ? '#eaf2fa' : '#e6f3ed', color: item.status === 'Hết hàng' ? '#bb6f68' : item.status === 'Sắp hết hàng' ? '#5681a6' : '#46866c' }}>{item.status}</span></td></tr>)}</tbody></table></div>              {inventorySummary.hasCostData && <div className="section-heading" style={{ marginTop: '18px' }}><div><h2>Giá trị tồn kho</h2><p>Giá trị được tính theo giá vốn, không dùng giá bán để thay thế.</p></div><strong>{formatVnd(inventorySummary.inventoryValue)}</strong></div>}
+            </section>
+          )}
 
           {currentPage === 'logs' && (
             <section className="orders-section">

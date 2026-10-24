@@ -15,6 +15,7 @@ import { GrpcClientsModule } from '../infrastructure/grpc/grpc-clients.module';
 import { IdentityModule } from './identity/identity.module';
 import { HistoryLogModule } from './history-log/history-log.module';
 import { ViewEventsModule } from './view-events/view-events.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { ViewEventsModule } from './view-events/view-events.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    GrpcClientsModule, IdentityModule, CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule, FeatureSettingsModule, HistoryLogModule, ViewEventsModule,
+    GrpcClientsModule, IdentityModule, CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule, FeatureSettingsModule, HistoryLogModule, ViewEventsModule, InventoryModule,
   ],
 })
 export class AppModule {}
