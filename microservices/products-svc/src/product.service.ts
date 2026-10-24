@@ -378,36 +378,54 @@ export class ProductService {
     const productId = Number(data.productId);
     const quantity = Number(data.quantity || 0);
 
-    if (!Number.isFinite(productId) || productId <= 0) {
+    if (!Number.isInteger(productId) || productId <= 0) {
       throw new Error('Mã sản phẩm không hợp lệ');
     }
-    if (!Number.isFinite(quantity) || quantity <= 0) {
-      throw new Error('Số lượng nhập phải lớn hơn 0');
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      throw new Error('Số lượng nhập phải là số nguyên lớn hơn 0');
     }
 
-    await this.ensureProductExists(productId);
-    const inventory = await this.ensureInventoryRecord(productId);
-    const before = Number(inventory.quantityOnHand || 0);
+    return this.dataSource.transaction(async (manager) => {
+      const product = await manager.getRepository(ProductEntity).findOne({ where: { id: productId } });
+      if (!product) {
+        throw new Error('Sản phẩm không tồn tại');
+      }
 
-    inventory.quantityOnHand = before + quantity;
-    inventory.updatedAt = new Date();
-    const savedInventory = await this.inventoryRepository.save(inventory);
+      await manager.query(
+        'INSERT INTO tbl_inventory (product_id, quantity_on_hand, quantity_reserved, reorder_level) VALUES (?, 0, 0, 0) ON DUPLICATE KEY UPDATE product_id = product_id',
+        [productId],
+      );
 
-    const transaction = this.inventoryTransactionRepository.create({
-      productId,
-      transactionType: 'import',
-      quantity,
-      referenceType: 'purchase',
-      referenceId: data.reference || `INV-IMP-${Date.now()}`,
-      quantityBefore: before,
-      quantityAfter: savedInventory.quantityOnHand,
-      note: data.note || 'Nhập kho',
-      createdBy: data.createdBy || 'admin',
-      createdAt: new Date(),
+      const inventory = await manager.getRepository(InventoryEntity)
+        .createQueryBuilder('inventory')
+        .setLock('pessimistic_write')
+        .where('inventory.productId = :productId', { productId })
+        .getOne();
+      if (!inventory) {
+        throw new Error('Không thể khởi tạo tồn kho cho sản phẩm');
+      }
+
+      const before = Number(inventory.quantityOnHand || 0);
+      inventory.quantityOnHand = before + quantity;
+      inventory.updatedAt = new Date();
+      const savedInventory = await manager.getRepository(InventoryEntity).save(inventory);
+
+      const transaction = manager.getRepository(InventoryTransactionEntity).create({
+        productId,
+        transactionType: 'import',
+        quantity,
+        referenceType: 'purchase',
+        referenceId: data.reference || `INV-IMP-${Date.now()}`,
+        quantityBefore: before,
+        quantityAfter: savedInventory.quantityOnHand,
+        note: data.note || 'Nhập kho',
+        createdBy: data.createdBy || 'admin',
+        createdAt: new Date(),
+      });
+
+      const savedTransaction = await manager.getRepository(InventoryTransactionEntity).save(transaction);
+      return { item: savedInventory, transaction: savedTransaction };
     });
-
-    await this.inventoryTransactionRepository.save(transaction);
-    return { item: savedInventory, transaction };
   }
 
   async reserveInventory(data: {
@@ -652,4 +670,3 @@ export class ProductService {
     return { item: savedInventory, transaction };
   }
 }
-

@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Bell, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardList, Clock3, LayoutDashboard,
   Eye, History, Menu, PackageCheck, Plus, Search, Settings, ShoppingBag, TrendingUp, Users, X,
@@ -120,7 +120,7 @@ export default function Dashboard() {
     });
   }, [token, user]);
 
-  const refreshInventory = async () => {
+  const refreshInventory = useCallback(async () => {
     if (!token) return;
     setInventoryLoading(true);
     setInventoryError('');
@@ -136,12 +136,12 @@ export default function Dashboard() {
     } finally {
       setInventoryLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!token || currentPage !== 'inventory') return;
     refreshInventory();
-  }, [token, currentPage]);
+  }, [token, currentPage, refreshInventory]);
 
   useEffect(() => {
     if (!token) return;
@@ -288,8 +288,8 @@ export default function Dashboard() {
     const productId = Number(inventoryForm.productId);
     const quantity = Number(inventoryForm.quantity);
 
-    if (!productId || !Number.isFinite(productId) || productId <= 0 || !Number.isFinite(quantity) || quantity <= 0) {
-      setInventoryError('Vui lòng nhập mã sản phẩm và số lượng hợp lệ.');
+    if (!Number.isInteger(productId) || productId <= 0 || !Number.isInteger(quantity) || quantity <= 0) {
+      setInventoryError('Vui lòng chọn sản phẩm và nhập số lượng nguyên lớn hơn 0.');
       return;
     }
 
@@ -416,7 +416,38 @@ export default function Dashboard() {
 
           {currentPage === 'inventory' && (
             <section className="orders-section">
-              <div className="section-heading"><div><h2>Quản lý tồn kho</h2><p>Dashboard, danh sách, cảnh báo sắp hết hàng và lịch sử giao dịch kho</p></div><button className="primary-button" onClick={() => setNotice('Tính năng nhập kho chi tiết sẽ được bổ sung trong phiên bản tiếp theo')}><Plus size={18} /> Nhập kho</button></div>
+              <div className="section-heading"><div><h2>Quản lý tồn kho</h2><p>Dashboard, danh sách, cảnh báo sắp hết hàng và lịch sử giao dịch kho</p></div><button className="primary-button" type="button" onClick={() => { setInventoryAction('import'); setInventoryError(''); }}><Plus size={18} /> Nhập kho</button></div>
+              {inventoryAction !== 'none' && (
+                <form onSubmit={handleInventorySubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '20px', padding: '16px', border: '1px solid #ecf0f6', borderRadius: '14px', background: '#fff' }}>
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    Sản phẩm
+                    <select value={inventoryForm.productId} onChange={(event) => setInventoryForm((current) => ({ ...current, productId: event.target.value }))} required>
+                      <option value="">Chọn sản phẩm</option>
+                      {products.map((product) => <option key={product.id} value={product.id}>{product.name} {product.sku ? `(${product.sku})` : `(SP-${product.id})`}</option>)}
+                    </select>
+                  </label>
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    Số lượng
+                    <input type="number" min="1" step="1" value={inventoryForm.quantity} onChange={(event) => setInventoryForm((current) => ({ ...current, quantity: event.target.value }))} placeholder={inventoryAction === 'adjust' ? 'Tồn kho sau kiểm kê' : 'Số lượng'} required />
+                  </label>
+                  {inventoryAction === 'adjust' && (
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      Lý do
+                      <input value={inventoryForm.reason} onChange={(event) => setInventoryForm((current) => ({ ...current, reason: event.target.value }))} placeholder="Ví dụ: kiểm kê cuối ngày" />
+                    </label>
+                  )}
+                  <label style={{ display: 'flex', flexDirection: 'column', gap: '8px', gridColumn: '1 / -1' }}>
+                    Ghi chú
+                    <input value={inventoryForm.note} onChange={(event) => setInventoryForm((current) => ({ ...current, note: event.target.value }))} placeholder="Mô tả thao tác kho" />
+                  </label>
+                  {inventoryError && <p role="alert" style={{ color: '#b42318', gridColumn: '1 / -1', margin: 0 }}>{inventoryError}</p>}
+                  {products.length === 0 && <p style={{ color: '#8b5e00', gridColumn: '1 / -1', margin: 0 }}>Chưa tải được danh sách sản phẩm. Hãy kiểm tra kết nối gateway hoặc tạo sản phẩm trước.</p>}
+                  <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <button type="submit" className="primary-button" disabled={inventorySubmitting || products.length === 0}>{inventorySubmitting ? 'Đang xử lý...' : `Xác nhận ${inventoryAction === 'import' ? 'nhập kho' : inventoryAction === 'adjust' ? 'điều chỉnh' : inventoryAction === 'reserve' ? 'giữ chỗ' : inventoryAction === 'release' ? 'giải phóng' : inventoryAction === 'sale' ? 'bán hàng' : 'trả hàng'}`}</button>
+                    <button type="button" className="secondary-button" style={{ border: '1px solid #dfe7f5', borderRadius: '8px', padding: '9px 14px', background: '#fff', cursor: 'pointer' }} onClick={() => { setInventoryAction('none'); setInventoryForm({ productId: '', quantity: '', note: '', reason: '' }); setInventoryError(''); }}>Huỷ</button>
+                  </div>
+                </form>
+              )}
               <div className="stats-grid">
                 <Stat icon={<PackageCheck size={19} />} label="Sản phẩm đang quản lý" value={String(inventorySummary.totalProducts)} trend={inventorySummary.totalProducts > 0 ? 'Được theo dõi' : '0'} hint="Đã tích hợp với gateway" tone="blue" />
                 <Stat icon={<TrendingUp size={19} />} label="Tổng tồn thực tế" value={String(inventorySummary.totalOnHand)} trend={inventorySummary.totalOnHand > 0 ? 'Đơn vị' : '0'} hint="Tổng số lượng hiện có" tone="green" />
@@ -447,39 +478,18 @@ export default function Dashboard() {
                     style={{
                       opacity: inventoryAction === key ? 1 : 0.8,
                       borderColor: inventoryAction === key ? '#1d4ed8' : '#dfe7f5',
+                      border: '1px solid',
+                      borderRadius: '8px',
+                      padding: '9px 14px',
+                      background: inventoryAction === key ? '#eaf2fa' : '#fff',
+                      color: '#244c62',
+                      cursor: 'pointer',
                     }}
                   >
                     {label}
                   </button>
                 ))}
               </div>
-
-              {inventoryAction !== 'none' && (
-                <form onSubmit={handleInventorySubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginBottom: '20px', padding: '16px', border: '1px solid #ecf0f6', borderRadius: '14px', background: '#fff' }}>
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    Mã sản phẩm
-                    <input value={inventoryForm.productId} onChange={(event) => setInventoryForm((current) => ({ ...current, productId: event.target.value }))} placeholder="Ví dụ: 12" required />
-                  </label>
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    Số lượng
-                    <input value={inventoryForm.quantity} onChange={(event) => setInventoryForm((current) => ({ ...current, quantity: event.target.value }))} placeholder={inventoryAction === 'adjust' ? 'Tồn kho sau kiểm kê' : 'Số lượng'} required />
-                  </label>
-                  {inventoryAction === 'adjust' && (
-                    <label style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      Lý do
-                      <input value={inventoryForm.reason} onChange={(event) => setInventoryForm((current) => ({ ...current, reason: event.target.value }))} placeholder="Ví dụ: kiểm kê cuối ngày" />
-                    </label>
-                  )}
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: '8px', gridColumn: '1 / -1' }}>
-                    Ghi chú
-                    <input value={inventoryForm.note} onChange={(event) => setInventoryForm((current) => ({ ...current, note: event.target.value }))} placeholder="Mô tả thao tác kho" />
-                  </label>
-                  <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <button type="submit" className="primary-button" disabled={inventorySubmitting}>{inventorySubmitting ? 'Đang xử lý...' : `Xác nhận ${inventoryAction === 'import' ? 'nhập kho' : inventoryAction === 'adjust' ? 'điều chỉnh' : inventoryAction === 'reserve' ? 'giữ chỗ' : inventoryAction === 'release' ? 'giải phóng' : inventoryAction === 'sale' ? 'bán hàng' : 'trả hàng'}`}</button>
-                    <button type="button" className="secondary-button" onClick={() => { setInventoryAction('none'); setInventoryForm({ productId: '', quantity: '', note: '', reason: '' }); setInventoryError(''); }}>Huỷ</button>
-                  </div>
-                </form>
-              )}
 
               <div className="table-wrap"><table><thead><tr><th>TÊN SẢN PHẨM</th><th>SKU</th><th>DANH MỤC</th><th>TỒN THỰC TẾ</th><th>GIỮ CHỖ</th><th>CÓ THỂ BÁN</th><th>TRẠNG THÁI</th></tr></thead><tbody>{inventoryLoading && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Đang tải tồn kho...</td></tr>}{inventoryError && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px', color: 'red' }}>{inventoryError}</td></tr>}{!inventoryLoading && !inventoryError && inventoryRows.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Chưa có dữ liệu tồn kho.</td></tr>}{inventoryRows.map((item) => <tr key={item.id}><td><strong>{item.productName}</strong></td><td>{item.sku}</td><td>{item.category || 'Chưa phân loại'}</td><td>{item.quantityOnHand}</td><td>{item.quantityReserved}</td><td>{item.quantityAvailable}</td>              <td><span style={{ display: 'inline-block', borderRadius: 999, padding: '6px 10px', fontSize: '10px', fontWeight: 700, background: item.status === 'Hết hàng' ? '#f8e8e7' : item.status === 'Sắp hết hàng' ? '#eaf2fa' : '#e6f3ed', color: item.status === 'Hết hàng' ? '#bb6f68' : item.status === 'Sắp hết hàng' ? '#5681a6' : '#46866c' }}>{item.status}</span></td></tr>)}</tbody></table></div>              {inventorySummary.hasCostData && <div className="section-heading" style={{ marginTop: '18px' }}><div><h2>Giá trị tồn kho</h2><p>Giá trị được tính theo giá vốn, không dùng giá bán để thay thế.</p></div><strong>{formatVnd(inventorySummary.inventoryValue)}</strong></div>}
             </section>
