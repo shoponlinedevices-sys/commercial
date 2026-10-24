@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import type { ProductEntity } from './product.entity';
 
 @Entity('tbl_category')
 export class CategoryEntity {
@@ -25,4 +26,6 @@ export class CategoryEntity {
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updated_at: Date;
+
+  products?: ProductEntity[];
 }

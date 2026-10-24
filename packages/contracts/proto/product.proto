@@ -79,4 +79,5 @@ message Product {
   string sku = 8;
   string unit = 9;
   string moq = 10;
+  int32 quantityAvailable = 11;
 }

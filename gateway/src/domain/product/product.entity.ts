@@ -10,6 +10,7 @@ export class Product {
     public readonly sku?: string,
     public readonly unit?: string,
     public readonly moq?: string,
-    public readonly category?: number
+    public readonly category?: number,
+    public readonly quantityAvailable?: number
   ) {}
 }

@@ -12,6 +12,7 @@ export interface Product {
   unit?: string;
   moq?: string;
   category?: string;
+  quantityAvailable?: number;
 }
 
 export interface ProductCategory {

@@ -10,6 +10,7 @@ export interface IProduct extends Id {
   sku?: string;
   unit?: string;
   moq?: string;
+  quantityAvailable?: number;
 }
 
 export interface IGetProductsRequest {

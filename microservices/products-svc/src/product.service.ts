@@ -26,6 +26,32 @@ export class ProductService {
     return this.dataSource.getRepository(InventoryTransactionEntity);
   }
 
+  private async addAvailableQuantity<T extends { id: number }>(
+    products: T[],
+  ): Promise<Array<T & { quantityAvailable: number }>> {
+    if (products.length === 0) {
+      return [];
+    }
+
+    const inventoryRows = await this.inventoryRepository.find({
+      where: { productId: In(products.map((product) => product.id)) },
+      select: ['productId', 'quantityOnHand', 'quantityReserved'],
+    });
+    const quantityByProductId = new Map<number, number>();
+
+    inventoryRows.forEach((inventory) => {
+      quantityByProductId.set(
+        inventory.productId,
+        Math.max(0, Number(inventory.quantityOnHand || 0) - Number(inventory.quantityReserved || 0)),
+      );
+    });
+
+    return products.map((product) => ({
+      ...product,
+      quantityAvailable: quantityByProductId.get(product.id) ?? 0,
+    }));
+  }
+
   async getHistoryLogs(limit = 200) {
     return this.dataSource.getRepository(HistoryLogEntity).find({
       order: { createdAt: 'DESC' },
@@ -78,7 +104,7 @@ export class ProductService {
     const total = await queryBuilder.getCount();
 
     return {
-      products,
+      products: await this.addAvailableQuantity(products),
       total,
     };
   }
@@ -174,8 +200,21 @@ export class ProductService {
     }
 
     const categories = await queryBuilder.getMany();
+    const productsWithQuantity = await this.addAvailableQuantity(
+      categories.flatMap((category) => category.products || []),
+    );
+    const quantityByProductId = new Map<number, number>();
+    productsWithQuantity.forEach((product) => {
+      quantityByProductId.set(product.id, product.quantityAvailable);
+    });
 
-    return categories;
+    return categories.map((category) => ({
+      ...category,
+      products: (category.products || []).map((product) => ({
+        ...product,
+        quantityAvailable: quantityByProductId.get(product.id) ?? 0,
+      })),
+    }));
   }
 
   async getInventorySummary() {
