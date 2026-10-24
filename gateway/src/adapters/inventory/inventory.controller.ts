@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
 import { InventoryService } from '../../application/inventory/inventory.service';
 
 @ApiTags('Inventory')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('inventory')
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
@@ -59,42 +62,42 @@ export class InventoryController {
   @Post('import')
   @ApiOperation({ summary: 'Import stock into inventory' })
   @ApiResponse({ status: 201, description: 'Stock imported successfully' })
-  importStock(@Body() body: { productId: number; quantity: number; unitCost?: number; reference?: string; note?: string; createdBy?: string }) {
-    return this.inventoryService.importStock(body);
+  importStock(@Body() body: { productId: number; quantity: number; unitCost?: number; reference?: string; note?: string }, @Req() request: any) {
+    return this.inventoryService.importStock({ ...body, createdBy: request.user.id });
   }
 
   @Post('reserve')
   @ApiOperation({ summary: 'Reserve inventory for an order or pending demand' })
   @ApiResponse({ status: 201, description: 'Stock reserved successfully' })
-  reserveStock(@Body() body: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
-    return this.inventoryService.reserveStock(body);
+  reserveStock(@Body() body: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string }, @Req() request: any) {
+    return this.inventoryService.reserveStock({ ...body, createdBy: request.user.id });
   }
 
   @Post('release')
   @ApiOperation({ summary: 'Release previously reserved inventory' })
   @ApiResponse({ status: 200, description: 'Reserved stock released successfully' })
-  releaseStock(@Body() body: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
-    return this.inventoryService.releaseStock(body);
+  releaseStock(@Body() body: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string }, @Req() request: any) {
+    return this.inventoryService.releaseStock({ ...body, createdBy: request.user.id });
   }
 
   @Post('sale')
   @ApiOperation({ summary: 'Deduct sold inventory from available stock' })
   @ApiResponse({ status: 200, description: 'Sale stock deducted successfully' })
-  saleStock(@Body() body: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
-    return this.inventoryService.saleStock(body);
+  saleStock(@Body() body: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string }, @Req() request: any) {
+    return this.inventoryService.saleStock({ ...body, createdBy: request.user.id });
   }
 
   @Post('return')
   @ApiOperation({ summary: 'Return inventory from a sale or customer return' })
   @ApiResponse({ status: 200, description: 'Returned stock restored successfully' })
-  returnStock(@Body() body: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
-    return this.inventoryService.returnStock(body);
+  returnStock(@Body() body: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string }, @Req() request: any) {
+    return this.inventoryService.returnStock({ ...body, createdBy: request.user.id });
   }
 
   @Post('adjustments')
   @ApiOperation({ summary: 'Adjust inventory after stock take' })
   @ApiResponse({ status: 200, description: 'Inventory adjusted successfully' })
-  adjustStock(@Body() body: { productId: number; quantityAfter: number; reason: string; note?: string; createdBy?: string }) {
-    return this.inventoryService.adjustStock(body);
+  adjustStock(@Body() body: { productId: number; quantityAfter: number; reason: string; note?: string }, @Req() request: any) {
+    return this.inventoryService.adjustStock({ ...body, createdBy: request.user.id });
   }
 }

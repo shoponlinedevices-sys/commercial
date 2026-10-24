@@ -176,22 +176,22 @@ export const crmApi = {
     const query = params.toString();
     return request<{ items: InventoryItem[]; total: number; page: number; limit: number }>(`/inventory${query ? `?${query}` : ''}`, {}, token);
   },
-  importInventory(token: string, data: { productId: number; quantity: number; unitCost?: number; reference?: string; note?: string; createdBy?: string }) {
+  importInventory(token: string, data: { productId: number; quantity: number; unitCost?: number; reference?: string; note?: string; createdBy?: number }) {
     return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/import', { method: 'POST', body: JSON.stringify(data) }, token);
   },
-  adjustInventory(token: string, data: { productId: number; quantityAfter: number; reason: string; note?: string; createdBy?: string }) {
+  adjustInventory(token: string, data: { productId: number; quantityAfter: number; reason: string; note?: string; createdBy?: number }) {
     return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/adjustments', { method: 'POST', body: JSON.stringify(data) }, token);
   },
-  reserveInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+  reserveInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: number }) {
     return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/reserve', { method: 'POST', body: JSON.stringify(data) }, token);
   },
-  releaseInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+  releaseInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: number }) {
     return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/release', { method: 'POST', body: JSON.stringify(data) }, token);
   },
-  saleInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+  saleInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: number }) {
     return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/sale', { method: 'POST', body: JSON.stringify(data) }, token);
   },
-  returnInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+  returnInventory(token: string, data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: number }) {
     return request<{ item: InventoryItem; transaction: { id: number; productId: number; quantity: number; transactionType: string; referenceId?: string } }>('/inventory/return', { method: 'POST', body: JSON.stringify(data) }, token);
   },
   createProduct(data: Omit<GatewayProduct, 'id'>, token: string) {

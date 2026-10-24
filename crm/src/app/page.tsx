@@ -299,22 +299,22 @@ export default function Dashboard() {
     try {
       switch (inventoryAction) {
         case 'import':
-          await crmApi.importInventory(token, { productId, quantity, note: inventoryForm.note || 'Nhập kho từ CRM', createdBy: user?.username || 'crm' });
+          await crmApi.importInventory(token, { productId, quantity, note: inventoryForm.note || 'Nhập kho từ CRM', createdBy: user?.id });
           break;
         case 'adjust':
-          await crmApi.adjustInventory(token, { productId, quantityAfter: quantity, reason: inventoryForm.reason || inventoryForm.note || 'Điều chỉnh kho', note: inventoryForm.note || 'Điều chỉnh kho', createdBy: user?.username || 'crm' });
+          await crmApi.adjustInventory(token, { productId, quantityAfter: quantity, reason: inventoryForm.reason || inventoryForm.note || 'Điều chỉnh kho', note: inventoryForm.note || 'Điều chỉnh kho', createdBy: user?.id });
           break;
         case 'reserve':
-          await crmApi.reserveInventory(token, { productId, quantity, note: inventoryForm.note || 'Giữ chỗ hàng', createdBy: user?.username || 'crm' });
+          await crmApi.reserveInventory(token, { productId, quantity, note: inventoryForm.note || 'Giữ chỗ hàng', createdBy: user?.id });
           break;
         case 'release':
-          await crmApi.releaseInventory(token, { productId, quantity, note: inventoryForm.note || 'Giải phóng giữ chỗ', createdBy: user?.username || 'crm' });
+          await crmApi.releaseInventory(token, { productId, quantity, note: inventoryForm.note || 'Giải phóng giữ chỗ', createdBy: user?.id });
           break;
         case 'sale':
-          await crmApi.saleInventory(token, { productId, quantity, note: inventoryForm.note || 'Bán hàng', createdBy: user?.username || 'crm' });
+          await crmApi.saleInventory(token, { productId, quantity, note: inventoryForm.note || 'Bán hàng', createdBy: user?.id });
           break;
         case 'return':
-          await crmApi.returnInventory(token, { productId, quantity, note: inventoryForm.note || 'Trả hàng', createdBy: user?.username || 'crm' });
+          await crmApi.returnInventory(token, { productId, quantity, note: inventoryForm.note || 'Trả hàng', createdBy: user?.id });
           break;
         default:
           throw new Error('Hành động kho chưa được chọn');

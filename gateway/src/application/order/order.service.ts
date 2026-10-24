@@ -39,7 +39,7 @@ export class OrderService implements OnModuleInit {
     return data as T;
   }
 
-  private async reserveOrderLines(cartLines: any[], createdBy?: string | number) {
+  private async reserveOrderLines(cartLines: any[], createdBy?: number) {
     const results: Array<{ productId: number; quantity: number; referenceId: string }> = [];
 
     for (const [index, line] of (cartLines || []).entries()) {
@@ -56,7 +56,7 @@ export class OrderService implements OnModuleInit {
         referenceType: 'order',
         referenceId,
         note: `Đặt hàng - ${createdBy ?? 'gateway'}`,
-        createdBy: String(createdBy ?? 'gateway'),
+        createdBy,
       });
 
       results.push({ productId, quantity, referenceId });
@@ -68,7 +68,7 @@ export class OrderService implements OnModuleInit {
     return results;
   }
 
-  private async releaseOrderLines(cartLines: any[], createdBy?: string | number) {
+  private async releaseOrderLines(cartLines: any[], createdBy?: number) {
     for (const [index, line] of (cartLines || []).entries()) {
       const productId = Number(line.productId);
       const quantity = Number(line.quantity || 0);
@@ -82,12 +82,12 @@ export class OrderService implements OnModuleInit {
         referenceType: 'order',
         referenceId: `ORD-REL-${Date.now()}-${index}`,
         note: `Huỷ / giải phóng kho - ${createdBy ?? 'gateway'}`,
-        createdBy: String(createdBy ?? 'gateway'),
+        createdBy,
       });
     }
   }
 
-  private async settleOrderInventoryForStatus(order: Order, nextStatus: string, createdBy?: string | number) {
+  private async settleOrderInventoryForStatus(order: Order, nextStatus: string, createdBy?: number) {
     if (!order || !order.orderLines || order.orderLines.length === 0) {
       return;
     }
@@ -112,7 +112,7 @@ export class OrderService implements OnModuleInit {
           referenceType: 'order',
           referenceId: `ORD-SALE-${order.id}-${Date.now()}`,
           note: `Bán hàng - đơn ${order.id}`,
-          createdBy: String(createdBy ?? 'gateway'),
+          createdBy,
         });
       }
       return;
@@ -132,17 +132,15 @@ export class OrderService implements OnModuleInit {
           referenceType: 'order',
           referenceId: `ORD-RET-${order.id}-${Date.now()}`,
           note: `Trả hàng - đơn ${order.id}`,
-          createdBy: String(createdBy ?? 'gateway'),
+          createdBy,
         });
       }
     }
   }
 
-  async createOrder(userId: number, totalAmount: number, cartLines: any[], fcmToken?: string, customerEmail?: string, customerName?: string, createdBy?: string | number): Promise<Order> {
-    const author = String(createdBy ?? 'gateway');
-
+  async createOrder(userId: number, totalAmount: number, cartLines: any[], fcmToken?: string, customerEmail?: string, customerName?: string, createdBy?: number): Promise<Order> {
     try {
-      await this.reserveOrderLines(cartLines, author);
+      await this.reserveOrderLines(cartLines, createdBy);
       const order = await this.orderRepository.createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName, createdBy);
 
       if (fcmToken) {
@@ -172,7 +170,7 @@ export class OrderService implements OnModuleInit {
 
       return order;
     } catch (error) {
-      await this.releaseOrderLines(cartLines, author).catch((releaseError) => {
+      await this.releaseOrderLines(cartLines, createdBy).catch((releaseError) => {
         console.error('Failed to release reserved inventory after order creation failure:', releaseError);
       });
       throw error;
@@ -190,7 +188,7 @@ export class OrderService implements OnModuleInit {
     return this.orderRepository.findAll(filters);
   }
 
-  async updateStatus(orderId: string, status: string, createdBy?: string | number): Promise<Order> {
+  async updateStatus(orderId: string, status: string, createdBy?: number): Promise<Order> {
     const currentOrders = await this.orderRepository.findAll();
     const currentOrder = currentOrders.find((order) => order.id.toString() === orderId);
     const previousStatus = currentOrder?.status || 'pending';

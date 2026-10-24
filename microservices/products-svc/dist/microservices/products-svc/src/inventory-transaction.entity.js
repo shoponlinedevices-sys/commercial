@@ -52,8 +52,8 @@ __decorate([
     __metadata("design:type", String)
 ], InventoryTransactionEntity.prototype, "note", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'created_by', nullable: true }),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)({ name: 'created_by', type: 'int', nullable: true }),
+    __metadata("design:type", Number)
 ], InventoryTransactionEntity.prototype, "createdBy", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),

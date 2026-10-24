@@ -110,7 +110,7 @@ export declare class ProductService {
             referenceId: string;
             quantityBefore: number;
             quantityAfter: number;
-            createdBy: string;
+            createdBy: number;
             createdAt: Date;
             note: string;
         }[];
@@ -126,7 +126,7 @@ export declare class ProductService {
         unitCost?: number;
         reference?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: InventoryEntity;
         transaction: InventoryTransactionEntity;
@@ -137,7 +137,7 @@ export declare class ProductService {
         referenceType?: string;
         referenceId?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: InventoryEntity;
         transaction: InventoryTransactionEntity;
@@ -148,7 +148,7 @@ export declare class ProductService {
         referenceType?: string;
         referenceId?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: InventoryEntity;
         transaction: InventoryTransactionEntity;
@@ -159,7 +159,7 @@ export declare class ProductService {
         referenceType?: string;
         referenceId?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: InventoryEntity;
         transaction: InventoryTransactionEntity;
@@ -170,7 +170,7 @@ export declare class ProductService {
         referenceType?: string;
         referenceId?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: InventoryEntity;
         transaction: InventoryTransactionEntity;
@@ -180,7 +180,7 @@ export declare class ProductService {
         quantityAfter: number;
         reason: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: InventoryEntity;
         transaction: InventoryTransactionEntity;

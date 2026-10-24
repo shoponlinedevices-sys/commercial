@@ -30,8 +30,8 @@ export class InventoryTransactionEntity {
   @Column({ type: 'text', nullable: true })
   note?: string;
 
-  @Column({ name: 'created_by', nullable: true })
-  createdBy?: string;
+  @Column({ name: 'created_by', type: 'int', nullable: true })
+  createdBy?: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

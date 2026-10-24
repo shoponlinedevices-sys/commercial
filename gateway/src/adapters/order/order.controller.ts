@@ -17,7 +17,7 @@ export class OrderController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 400, description: 'Bad request' })
   async createOrder(@Body() body: { userId: number; totalAmount: number; cartLines: any[]; fcmToken?: string; customerEmail?: string; customerName?: string }, @Req() request: any) {
-    const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName, request.user?.username || request.user?.id || 'gateway');
+    const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName, request.user?.id);
     return order;
   }
 
@@ -49,6 +49,6 @@ export class OrderController {
   @Post(':id/status')
   @ApiOperation({ summary: 'Update order status' })
   async updateOrderStatus(@Param('id') id: string, @Body() body: { status: string }, @Req() request: any) {
-    return this.orderService.updateStatus(id, body.status, request.user?.username || request.user?.id || 'gateway');
+    return this.orderService.updateStatus(id, body.status, request.user?.id);
   }
 }

@@ -48,42 +48,42 @@ export class InventoryService {
     return callProductsService<any>(`/inventory/transactions?${params.toString()}`);
   }
 
-  async importStock(data: { productId: number; quantity: number; unitCost?: number; reference?: string; note?: string; createdBy?: string }) {
+  async importStock(data: { productId: number; quantity: number; unitCost?: number; reference?: string; note?: string; createdBy?: number }) {
     return callProductsService<any>('/inventory/import', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async reserveStock(data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+  async reserveStock(data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: number }) {
     return callProductsService<any>('/inventory/reserve', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async releaseStock(data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+  async releaseStock(data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: number }) {
     return callProductsService<any>('/inventory/release', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async saleStock(data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+  async saleStock(data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: number }) {
     return callProductsService<any>('/inventory/sale', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async returnStock(data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: string }) {
+  async returnStock(data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: number }) {
     return callProductsService<any>('/inventory/return', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async adjustStock(data: { productId: number; quantityAfter: number; reason: string; note?: string; createdBy?: string }) {
+  async adjustStock(data: { productId: number; quantityAfter: number; reason: string; note?: string; createdBy?: number }) {
     return callProductsService<any>('/inventory/adjustments', {
       method: 'POST',
       body: JSON.stringify(data),

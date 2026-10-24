@@ -373,7 +373,7 @@ export class ProductService {
     unitCost?: number;
     reference?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     const productId = Number(data.productId);
     const quantity = Number(data.quantity || 0);
@@ -419,7 +419,7 @@ export class ProductService {
         quantityBefore: before,
         quantityAfter: savedInventory.quantityOnHand,
         note: data.note || 'Nhập kho',
-        createdBy: data.createdBy || 'admin',
+        createdBy: data.createdBy,
         createdAt: new Date(),
       });
 
@@ -434,7 +434,7 @@ export class ProductService {
     referenceType?: string;
     referenceId?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     const productId = Number(data.productId);
     const quantity = Number(data.quantity || 0);
@@ -470,7 +470,7 @@ export class ProductService {
       quantityBefore: currentReserved,
       quantityAfter: nextReserved,
       note: data.note || 'Giữ chỗ kho',
-      createdBy: data.createdBy || 'admin',
+      createdBy: data.createdBy,
       createdAt: new Date(),
     });
 
@@ -484,7 +484,7 @@ export class ProductService {
     referenceType?: string;
     referenceId?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     const productId = Number(data.productId);
     const quantity = Number(data.quantity || 0);
@@ -518,7 +518,7 @@ export class ProductService {
       quantityBefore: currentReserved,
       quantityAfter: nextReserved,
       note: data.note || 'Giải phóng giữ chỗ',
-      createdBy: data.createdBy || 'admin',
+      createdBy: data.createdBy,
       createdAt: new Date(),
     });
 
@@ -532,7 +532,7 @@ export class ProductService {
     referenceType?: string;
     referenceId?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     const productId = Number(data.productId);
     const quantity = Number(data.quantity || 0);
@@ -572,7 +572,7 @@ export class ProductService {
       quantityBefore: currentOnHand,
       quantityAfter: nextOnHand,
       note: data.note || 'Bán hàng',
-      createdBy: data.createdBy || 'admin',
+      createdBy: data.createdBy,
       createdAt: new Date(),
     });
 
@@ -586,7 +586,7 @@ export class ProductService {
     referenceType?: string;
     referenceId?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     const productId = Number(data.productId);
     const quantity = Number(data.quantity || 0);
@@ -616,7 +616,7 @@ export class ProductService {
       quantityBefore: currentOnHand,
       quantityAfter: nextOnHand,
       note: data.note || 'Trả hàng',
-      createdBy: data.createdBy || 'admin',
+      createdBy: data.createdBy,
       createdAt: new Date(),
     });
 
@@ -629,7 +629,7 @@ export class ProductService {
     quantityAfter: number;
     reason: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     const inventory = await this.inventoryRepository.findOne({ where: { productId: data.productId }, relations: ['product'] });
     if (!inventory) {
@@ -662,7 +662,7 @@ export class ProductService {
       quantityBefore: current,
       quantityAfter: next,
       note: data.reason || data.note || 'Điều chỉnh kho',
-      createdBy: data.createdBy || 'admin',
+      createdBy: data.createdBy,
       createdAt: new Date(),
     });
 

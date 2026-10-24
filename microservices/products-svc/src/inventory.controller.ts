@@ -54,7 +54,7 @@ export class InventoryController {
     unitCost?: number;
     reference?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     return this.productService.importInventory(body);
   }
@@ -66,7 +66,7 @@ export class InventoryController {
     referenceType?: string;
     referenceId?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     return this.productService.reserveInventory(body);
   }
@@ -78,7 +78,7 @@ export class InventoryController {
     referenceType?: string;
     referenceId?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     return this.productService.releaseInventory(body);
   }
@@ -90,7 +90,7 @@ export class InventoryController {
     referenceType?: string;
     referenceId?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     return this.productService.saleInventory(body);
   }
@@ -102,7 +102,7 @@ export class InventoryController {
     referenceType?: string;
     referenceId?: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     return this.productService.returnInventory(body);
   }
@@ -113,7 +113,7 @@ export class InventoryController {
     quantityAfter: number;
     reason: string;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
   }) {
     return this.productService.adjustInventory(body);
   }

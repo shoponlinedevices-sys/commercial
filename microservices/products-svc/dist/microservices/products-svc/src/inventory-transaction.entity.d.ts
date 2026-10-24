@@ -9,7 +9,7 @@ export declare class InventoryTransactionEntity {
     quantityBefore: number;
     quantityAfter: number;
     note?: string;
-    createdBy?: string;
+    createdBy?: number;
     createdAt: Date;
     product: ProductEntity;
 }

@@ -40,7 +40,7 @@ export declare class InventoryController {
             referenceId: string;
             quantityBefore: number;
             quantityAfter: number;
-            createdBy: string;
+            createdBy: number;
             createdAt: Date;
             note: string;
         }[];
@@ -71,7 +71,7 @@ export declare class InventoryController {
         unitCost?: number;
         reference?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: import("./inventory.entity").InventoryEntity;
         transaction: import("./inventory-transaction.entity").InventoryTransactionEntity;
@@ -82,7 +82,7 @@ export declare class InventoryController {
         referenceType?: string;
         referenceId?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: import("./inventory.entity").InventoryEntity;
         transaction: import("./inventory-transaction.entity").InventoryTransactionEntity;
@@ -93,7 +93,7 @@ export declare class InventoryController {
         referenceType?: string;
         referenceId?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: import("./inventory.entity").InventoryEntity;
         transaction: import("./inventory-transaction.entity").InventoryTransactionEntity;
@@ -104,7 +104,7 @@ export declare class InventoryController {
         referenceType?: string;
         referenceId?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: import("./inventory.entity").InventoryEntity;
         transaction: import("./inventory-transaction.entity").InventoryTransactionEntity;
@@ -115,7 +115,7 @@ export declare class InventoryController {
         referenceType?: string;
         referenceId?: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: import("./inventory.entity").InventoryEntity;
         transaction: import("./inventory-transaction.entity").InventoryTransactionEntity;
@@ -125,7 +125,7 @@ export declare class InventoryController {
         quantityAfter: number;
         reason: string;
         note?: string;
-        createdBy?: string;
+        createdBy?: number;
     }): Promise<{
         item: import("./inventory.entity").InventoryEntity;
         transaction: import("./inventory-transaction.entity").InventoryTransactionEntity;
