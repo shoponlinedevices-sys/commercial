@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IProductSaleStock } from '../../../../packages/contracts/model/product/product.model';
-import { ProductsGrpcClient } from '../../infrastructure/grpc/products-grpc.client';
+import { InventoryGrpcClient } from '../../infrastructure/grpc/inventory-grpc.client';
 
 const PRODUCTS_SERVICE_URL = process.env.PRODUCTS_SERVICE_URL || 'http://localhost:3003';
 
@@ -24,7 +24,7 @@ async function callProductsService<T>(path: string, init?: RequestInit): Promise
 @Injectable()
 export class InventoryService {
    constructor(
-        private readonly productService: ProductsGrpcClient,
+        private readonly inventoryService: InventoryGrpcClient,
     ) {}
   async getSummary() {
     return callProductsService<any>('/inventory/summary');
@@ -82,15 +82,11 @@ export class InventoryService {
   // }
 
   async saleStock(data: IProductSaleStock) {
-    return await this.productService.saleStock(data)
+    return await this.inventoryService.saleStock(data)
   }
 
-
   async returnStock(data: { productId: number; quantity: number; referenceType?: string; referenceId?: string; note?: string; createdBy?: number }) {
-    return callProductsService<any>('/inventory/return', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    return await this.inventoryService.returnInventory(data);
   }
 
   async adjustStock(data: { productId: number; quantityAfter: number; reason: string; note?: string; createdBy?: number }) {

@@ -7,5 +7,4 @@ export interface IGrpcProductService {
   getProductsGroupedByCategory(input?: IGetProductsGroupedByCategoryRequest, metadata?: Metadata): Observable<IGetProductsGroupedByCategoryResponse>;
   getProduct(input?: IGetProductRequest, metadata?: Metadata): Observable<IGetProductResponse>;
   createProduct(input: ICreateProductRequest, metadata?: Metadata): Observable<ICreateProductResponse>;
-  saleStock(input: IProductSaleStock): Observable<ISaleInventory>;
 }

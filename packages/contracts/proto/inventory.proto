@@ -4,6 +4,7 @@ package inventory;
 
 service InventoryService {
   rpc SaleStock (ProductSaleStock) returns (SaleInventory);
+  rpc ReturnInventory (ProductSaleStock) returns (SaleInventory);
 }
 
 message Product {

@@ -5,7 +5,7 @@ import { IGrpcInventoryService } from '../../../../packages/contracts/grpc/inter
 import { IProductSaleStock } from '../../../../packages/contracts/model/product/product.model';
 
 @Injectable()
-export class ProductsGrpcClient implements OnModuleInit {
+export class InventoryGrpcClient implements OnModuleInit {
   private inventoryService!: IGrpcInventoryService;
 
   constructor(@Inject('GRPC_INVENTORY_SERVICE') private readonly client: ClientGrpc) {}
@@ -15,4 +15,5 @@ export class ProductsGrpcClient implements OnModuleInit {
   }
 
   saleStock(data: IProductSaleStock) { return firstValueFrom(this.inventoryService.saleStock(data)); }
+  returnInventory(data: IProductSaleStock) { return firstValueFrom(this.inventoryService.returnInventory(data)); }
 }

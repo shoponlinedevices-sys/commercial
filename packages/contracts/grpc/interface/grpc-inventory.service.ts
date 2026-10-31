@@ -4,4 +4,5 @@ import { ICreateProductRequest, ICreateProductResponse, IGetProductsGroupedByCat
 
 export interface IGrpcInventoryService {
   saleStock(input: IProductSaleStock): Observable<ISaleInventory>;
+  returnInventory(input: IProductSaleStock): Observable<ISaleInventory>;
 }

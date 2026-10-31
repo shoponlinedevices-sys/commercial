@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { InventoryController } from './inventory.controller';
 import { InventoryService } from '../../application/inventory/inventory.service';
-import { ProductsGrpcClient } from '../../infrastructure/grpc/products-grpc.client';
+import { InventoryGrpcClient } from '../../infrastructure/grpc/inventory-grpc.client';
 
 @Module({
   controllers: [InventoryController],
-  providers: [InventoryService, ProductsGrpcClient],
+  providers: [InventoryService, InventoryGrpcClient],
   exports: [InventoryService],
 })
 export class InventoryModule {}

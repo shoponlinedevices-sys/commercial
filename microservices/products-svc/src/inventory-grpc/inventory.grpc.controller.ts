@@ -36,4 +36,11 @@ export class InventoryGrpcController {
     }): Promise<ISaleInventory> {
       return this.productService.saleInventory(this.normalizeCreatedBy({...body.input}));
     }
+
+  @GrpcMethod('InventoryService', 'ReturnInventory')
+   async returnInventory(@Body() body: {
+     input: IProductSaleStock
+    }): Promise<ISaleInventory> {
+      return this.productService.returnInventory(this.normalizeCreatedBy({...body.input}));
+    }
 }

@@ -8,4 +8,7 @@ export declare class InventoryGrpcController {
     saleStock(body: {
         input: IProductSaleStock;
     }): Promise<ISaleInventory>;
+    returnInventory(body: {
+        input: IProductSaleStock;
+    }): Promise<ISaleInventory>;
 }

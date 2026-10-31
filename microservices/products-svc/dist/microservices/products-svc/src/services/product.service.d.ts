@@ -168,29 +168,12 @@ export declare class OriginProductService {
         item: InventoryEntity;
         transaction: InventoryTransactionEntity;
     }>;
-    releaseInventory(data: {
-        productId: number;
-        quantity: number;
-        referenceType?: string;
-        referenceId?: string;
-        note?: string;
-        createdBy?: number;
-    }): Promise<{
+    releaseInventory(data: IProductSaleStock): Promise<{
         item: InventoryEntity;
         transaction: InventoryTransactionEntity;
     }>;
     saleInventory(data: IProductSaleStock): Promise<ISaleInventory>;
-    returnInventory(data: {
-        productId: number;
-        quantity: number;
-        referenceType?: string;
-        referenceId?: string;
-        note?: string;
-        createdBy?: number;
-    }): Promise<{
-        item: InventoryEntity;
-        transaction: InventoryTransactionEntity;
-    }>;
+    returnInventory(data: IProductSaleStock): Promise<ISaleInventory>;
     adjustInventory(data: {
         productId: number;
         quantityAfter: number;

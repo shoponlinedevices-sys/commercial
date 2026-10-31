@@ -517,14 +517,7 @@ export class OriginProductService {
     return { item: savedInventory, transaction };
   }
 
-  async releaseInventory(data: {
-    productId: number;
-    quantity: number;
-    referenceType?: string;
-    referenceId?: string;
-    note?: string;
-    createdBy?: number;
-  }) {
+  async releaseInventory(data: IProductSaleStock) {
     const productId = Number(data.productId);
     const quantity = Number(data.quantity || 0);
 
@@ -612,14 +605,7 @@ export class OriginProductService {
     return { item: savedInventory, transaction } as ISaleInventory;
   }
 
-  async returnInventory(data: {
-    productId: number;
-    quantity: number;
-    referenceType?: string;
-    referenceId?: string;
-    note?: string;
-    createdBy?: number;
-  }) {
+  async returnInventory(data: IProductSaleStock): Promise<ISaleInventory> {
     const productId = Number(data.productId);
     const quantity = Number(data.quantity || 0);
 
@@ -653,7 +639,7 @@ export class OriginProductService {
     });
 
     await this.inventoryTransactionRepository.save(transaction);
-    return { item: savedInventory, transaction };
+    return { item: savedInventory, transaction } as ISaleInventory;
   }
 
   async adjustInventory(data: {
