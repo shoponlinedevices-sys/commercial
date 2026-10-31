@@ -37,6 +37,6 @@ export class ProductService {
   }
 
   create(data: Omit<Product, 'id'> & { createdBy?: string | number }): Promise<Product> {
-    return this.productRepository.create(data);
+    return this.productService.create(data);
   }
 }

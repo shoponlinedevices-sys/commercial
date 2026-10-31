@@ -35,7 +35,7 @@ let ProductService = class ProductService {
         return this.productRepository.groupedByCategory(filters);
     }
     create(data) {
-        return this.productRepository.create(data);
+        return this.productService.create(data);
     }
 };
 exports.ProductService = ProductService;

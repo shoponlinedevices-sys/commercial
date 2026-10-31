@@ -5,6 +5,7 @@ import { IGrpcInventoryService } from '../../../../packages/contracts/grpc/inter
 import { IGetProductsRequest, IGetProductsResponse, IProductSaleStock } from '../../../../packages/contracts/model/product/product.model';
 import { IGrpcProductService } from '../../../../packages/contracts/grpc/interface/grpc-products.service';
 import { Product } from '../../domain/product/product.entity';
+import { ICreateProductRequest } from '../../../../packages/contracts/model/product/product.model';
 
 @Injectable()
 export class ProductGrpcClient implements OnModuleInit {
@@ -41,4 +42,22 @@ export class ProductGrpcClient implements OnModuleInit {
           this.productService.getProducts(request),
         );
   };
+
+  async create(data: Omit<Product, 'id'> & { createdBy?: string | number }): Promise<Product> {
+    const request: ICreateProductRequest = {
+      name: data.name,
+      price: data.price,
+      description: data.description,
+      image: data.image,
+      oldPrice: data.oldPrice,
+      badge: data.badge,
+      sku: data.sku,
+      unit: data.unit,
+      moq: data.moq,
+      category: data.category === undefined ? undefined : String(data.category),
+      createdBy: data.createdBy === undefined ? undefined : String(data.createdBy),
+    };
+    const response = await firstValueFrom(this.productService.createProduct(request));
+    return this.toProduct(response.product);
+  }
 }
