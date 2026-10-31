@@ -1,10 +1,10 @@
-import { ProductService } from './product.service';
-import { IProductsGroupedByCategoryResponse } from '../../../packages/contracts/model/product/product.model';
+import { ProductService } from 'src/product.service';
+import { IProductsGroupedByCategoryResponse } from '../../../../packages/contracts/model/product/product.model';
 export declare class ProductGrpcController {
     private readonly productService;
     constructor(productService: ProductService);
     getProducts(query: any): Promise<{
-        products: (import("./product.entity").ProductEntity & {
+        products: (import("../product.entity").ProductEntity & {
             quantityAvailable: number;
         })[];
         total: number;
@@ -20,9 +20,9 @@ export declare class ProductGrpcController {
     getProduct(request: {
         id: number;
     }): Promise<{
-        product: import("./product.entity").ProductEntity;
+        product: import("../product.entity").ProductEntity;
     }>;
     createProduct(request: any): Promise<{
-        product: import("./product.entity").ProductEntity;
+        product: import("../product.entity").ProductEntity;
     }>;
 }

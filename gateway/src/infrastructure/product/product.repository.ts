@@ -9,7 +9,7 @@ import { IGrpcProductService } from '../../../../packages/contracts/grpc/interfa
 import { ICreateProductRequest, IGetProductsGroupedByCategoryRequest, IGetProductsRequest } from '../../../../packages/contracts/model/product/product.model';
 
 @Injectable()
-export class ProductsServiceProductRepository implements ProductRepository {
+export class ProductsRepository implements ProductRepository {
   private grpcProductService!: IGrpcProductService;
 
   constructor(
@@ -57,14 +57,6 @@ export class ProductsServiceProductRepository implements ProductRepository {
       if (error.code === status.NOT_FOUND) return null;
       throw error;
     }
-  }
-
-  async findByCategory(categoryId: number): Promise<Product[]> {
-    const request: IGetProductsRequest = { category: String(categoryId) };
-    const response = await firstValueFrom(
-      this.grpcProductService.getProducts(request),
-    );
-    return (response.products || []).map((product) => this.toProduct(product));
   }
 
   async groupedByCategory(filters?: IGetProductsGroupedByCategoryRequest) {

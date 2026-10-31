@@ -7,7 +7,7 @@ import { ProductEntity } from './product.entity';
 import { InventoryEntity } from './inventory.entity';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
 import { AppModule } from './app.module';
-import { ProductGrpcController } from './product.grpc.controller';
+import { ProductGrpcController } from './product-grpc/product.grpc.controller';
 
 @Module({
   imports: [

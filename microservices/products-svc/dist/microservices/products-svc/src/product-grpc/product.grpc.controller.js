@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductGrpcController = void 0;
 const common_1 = require("@nestjs/common");
 const microservices_1 = require("@nestjs/microservices");
-const product_service_1 = require("./product.service");
+const product_service_1 = require("../product.service");
 let ProductGrpcController = class ProductGrpcController {
     constructor(productService) {
         this.productService = productService;

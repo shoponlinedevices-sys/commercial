@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { ProductService } from './product.service';
-import { IProductsGroupedByCategoryResponse } from '../../../packages/contracts/model/product/product.model';
+import { ProductService } from 'src/product.service';
+import { IProductsGroupedByCategoryResponse } from '../../../../packages/contracts/model/product/product.model';
 
 @Controller()
 export class ProductGrpcController {

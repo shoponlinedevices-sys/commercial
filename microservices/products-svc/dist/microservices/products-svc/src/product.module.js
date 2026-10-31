@@ -16,7 +16,7 @@ const product_entity_1 = require("./product.entity");
 const inventory_entity_1 = require("./inventory.entity");
 const inventory_transaction_entity_1 = require("./inventory-transaction.entity");
 const app_module_1 = require("./app.module");
-const product_grpc_controller_1 = require("./product.grpc.controller");
+const product_grpc_controller_1 = require("./product-grpc/product.grpc.controller");
 let ProductModule = class ProductModule {
 };
 exports.ProductModule = ProductModule;

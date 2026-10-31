@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductService = void 0;
 const common_1 = require("@nestjs/common");
 const product_repository_1 = require("../../domain/product/product.repository");
+const product_grpc_client_1 = require("../../infrastructure/grpc/product-grpc.client");
 let ProductService = class ProductService {
-    constructor(productRepository) {
+    constructor(productRepository, productService) {
         this.productRepository = productRepository;
+        this.productService = productService;
     }
     findAll() {
         return this.productRepository.findAll();
@@ -22,8 +24,12 @@ let ProductService = class ProductService {
     findOne(id) {
         return this.productRepository.findOne(id);
     }
-    findByCategory(categoryId) {
-        return this.productRepository.findByCategory(categoryId);
+    async findByCategory(categoryId) {
+        const result = await this.productService.findByCategory(categoryId);
+        if (result && result.products) {
+            return result.products;
+        }
+        return [];
     }
     groupedByCategory(filters) {
         return this.productRepository.groupedByCategory(filters);
@@ -35,6 +41,7 @@ let ProductService = class ProductService {
 exports.ProductService = ProductService;
 exports.ProductService = ProductService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [product_repository_1.ProductRepository])
+    __metadata("design:paramtypes", [product_repository_1.ProductRepository,
+        product_grpc_client_1.ProductGrpcClient])
 ], ProductService);
 //# sourceMappingURL=product.service.js.map

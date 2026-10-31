@@ -10,8 +10,9 @@ exports.ProductModule = void 0;
 const common_1 = require("@nestjs/common");
 const product_controller_1 = require("./product.controller");
 const product_service_1 = require("../../application/product/product.service");
-const products_service_product_repository_1 = require("../../infrastructure/products-service/products-service-product.repository");
-const product_repository_1 = require("../../domain/product/product.repository");
+const product_repository_1 = require("../../infrastructure/product/product.repository");
+const product_repository_2 = require("../../domain/product/product.repository");
+const product_grpc_client_1 = require("../../infrastructure/grpc/product-grpc.client");
 let ProductModule = class ProductModule {
 };
 exports.ProductModule = ProductModule;
@@ -21,9 +22,10 @@ exports.ProductModule = ProductModule = __decorate([
         providers: [
             product_service_1.ProductService,
             {
-                provide: product_repository_1.ProductRepository,
-                useClass: products_service_product_repository_1.ProductsServiceProductRepository,
+                provide: product_repository_2.ProductRepository,
+                useClass: product_repository_1.ProductsRepository,
             },
+            product_grpc_client_1.ProductGrpcClient
         ],
         exports: [product_service_1.ProductService],
     })

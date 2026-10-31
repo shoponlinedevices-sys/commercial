@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ProductController } from './product.controller';
 import { ProductService } from '../../application/product/product.service';
-import { ProductsServiceProductRepository } from '../../infrastructure/products-service/products-service-product.repository';
+import { ProductsRepository } from '../../infrastructure/product/product.repository';
 import { ProductRepository } from '../../domain/product/product.repository';
+import { ProductGrpcClient } from '../../infrastructure/grpc/product-grpc.client';
 
 @Module({
   controllers: [ProductController],
@@ -10,8 +11,9 @@ import { ProductRepository } from '../../domain/product/product.repository';
     ProductService,
     {
       provide: ProductRepository,
-      useClass: ProductsServiceProductRepository,
+      useClass: ProductsRepository,
     },
+    ProductGrpcClient
   ],
   exports: [ProductService],
 })
