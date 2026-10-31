@@ -49,6 +49,15 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                     },
                 },
                 {
+                    name: 'GRPC_INVENTORY_SERVICE',
+                    transport: microservices_1.Transport.GRPC,
+                    options: {
+                        package: 'inventory',
+                        protoPath: (0, grpc_path_1.contractsProtoPath)('inventory.proto'),
+                        url: process.env.PRODUCTS_GRPC_URL || 'localhost:50053',
+                    },
+                },
+                {
                     name: 'GRPC_CONTACTS_SERVICE',
                     transport: microservices_1.Transport.GRPC,
                     options: {

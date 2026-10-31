@@ -36,6 +36,15 @@ import { contractsProtoPath } from './grpc-path';
           url: process.env.PRODUCTS_GRPC_URL || 'localhost:50053',
         },
       },
+       {
+        name: 'GRPC_INVENTORY_SERVICE',
+        transport: Transport.GRPC,
+        options: {
+          package: 'inventory',
+          protoPath: contractsProtoPath('inventory.proto'),
+          url: process.env.PRODUCTS_GRPC_URL || 'localhost:50053',
+        },
+      },
       {
         name: 'GRPC_CONTACTS_SERVICE',
         transport: Transport.GRPC,

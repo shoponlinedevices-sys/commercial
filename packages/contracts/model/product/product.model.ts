@@ -1,4 +1,5 @@
 import { Id } from "../common/common.model";
+import { TransactionType } from "./enum";
 
 export interface IProduct extends Id {
   name: string;
@@ -69,4 +70,44 @@ export interface IGetProductsGroupedByCategoryRequest {
 
 export interface IGetProductsGroupedByCategoryResponse {
   categories: IProductsGroupedByCategoryResponse[];
+}
+
+export interface IProductSaleStock {
+  productId: number;
+  quantity: number;
+  referenceType?: string;
+  referenceId?: string;
+  note?: string;
+  createdBy?: number;
+}
+
+export interface IProductSaleStockResult {
+  id: number;
+  productId: number;
+  quantityOnHand: number;
+  quantityReserved: number;
+  reorderLevel: number;
+  createdAt: Date;
+  updatedAt: Date;
+  product: IProduct;
+}
+
+export interface IInventoryTransaction {
+  id: number;
+  productId: number;
+  transactionType: TransactionType;
+  quantity: number;
+  referenceType?: string;
+  referenceId?: string;
+  quantityBefore: number;
+  quantityAfter: number;
+  note?: string;
+  createdBy?: number;
+  createdAt: Date;
+  product: IProduct;
+}
+
+export interface ISaleInventory {
+  item: IProductSaleStockResult;
+  transaction: IInventoryTransaction;
 }
