@@ -3,6 +3,8 @@ import { ProductEntity } from './product.entity';
 import { HistoryLogEntity } from './history-log.entity';
 import { InventoryEntity } from './inventory.entity';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
+import { Id } from '../../../packages/contracts/model/common/common.model';
+import { IProduct, IGetProductsResponse, IFindProducts } from '../../../packages/contracts/model/product/product.model';
 export declare class ProductService {
     private readonly dataSource;
     constructor(dataSource: DataSource);
@@ -210,4 +212,6 @@ export declare class ProductService {
         item: InventoryEntity;
         transaction: InventoryTransactionEntity;
     }>;
+    findOne(id: Id): Promise<IProduct>;
+    findAll(input: IFindProducts): Promise<IGetProductsResponse>;
 }

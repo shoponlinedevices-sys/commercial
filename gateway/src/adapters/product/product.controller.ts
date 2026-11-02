@@ -4,6 +4,7 @@ import { ProductService } from '../../application/product/product.service';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
 import { Public } from '../../domain/identity/public.decorator';
 import { Product } from '../../domain/product/product.entity';
+import { IFindProducts } from '../../../../packages/contracts/model/product/product.model';
 
 @ApiTags('Products')
 @ApiBearerAuth()
@@ -23,8 +24,9 @@ export class ProductController {
       const products = await this.productService.findByCategory(categoryId);
       return { products, total: products.length };
     }
-    const products = await this.productService.findAll();
-    return { products, total: products.length };
+    const input: IFindProducts = {};
+    const products = await this.productService.findAll(input);
+    return { ...products };
   }
 
   @Public()

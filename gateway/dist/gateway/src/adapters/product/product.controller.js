@@ -28,8 +28,9 @@ let ProductController = class ProductController {
             const products = await this.productService.findByCategory(categoryId);
             return { products, total: products.length };
         }
-        const products = await this.productService.findAll();
-        return { products, total: products.length };
+        const input = {};
+        const products = await this.productService.findAll(input);
+        return Object.assign({}, products);
     }
     async groupedByCategory(query) {
         const filters = {

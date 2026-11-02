@@ -1,7 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { ProductService } from 'src/product.service';
-import { IProductsGroupedByCategoryResponse } from '../../../../packages/contracts/model/product/product.model';
+import { IProduct, IProductsGroupedByCategoryResponse, IGetProductsResponse, IFindProducts } from '../../../../packages/contracts/model/product/product.model';
+import { Id } from '../../../../packages/contracts/model/common/common.model';
 
 @Controller()
 export class ProductGrpcController {
@@ -46,5 +47,15 @@ export class ProductGrpcController {
   @GrpcMethod('ProductService', 'CreateProduct')
   async createProduct(request: any) {
     return this.productService.createProduct(request);
+  }
+
+  @GrpcMethod('ProductService', 'FindOne')
+  async findOne(id: Id): Promise<IProduct> {
+    return this.productService.findOne(id);
+  }
+
+  @GrpcMethod('ProductService', 'FindAll')
+  async findAll(input: IFindProducts): Promise<IGetProductsResponse> {
+    return await this.productService.findAll(input);
   }
 }

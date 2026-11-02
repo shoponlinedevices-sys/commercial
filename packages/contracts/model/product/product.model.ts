@@ -111,3 +111,7 @@ export interface ISaleInventory {
   item: IProductSaleStockResult;
   transaction: IInventoryTransaction;
 }
+
+export interface IFindProducts {
+  categoryId?: number;
+}

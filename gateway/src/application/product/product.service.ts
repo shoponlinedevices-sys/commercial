@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Product } from '../../domain/product/product.entity';
 import { ProductRepository } from '../../domain/product/product.repository';
-import { IProductsGroupedByCategoryResponse } from '../../../../packages/contracts/model/product/product.model';
+import { IFindProducts, IGetProductsResponse, IProductsGroupedByCategoryResponse } from '../../../../packages/contracts/model/product/product.model';
 import { ProductGrpcClient } from '../../infrastructure/grpc/product-grpc.client';
 
 @Injectable()
@@ -11,12 +11,12 @@ export class ProductService {
     private readonly productService: ProductGrpcClient,
   ) {}
 
-  findAll(): Promise<Product[]> {
-    return this.productRepository.findAll();
+  async findAll(input?: IFindProducts): Promise<IGetProductsResponse> {
+    return this.productService.findAll(input);
   }
 
-  findOne(id: number): Promise<Product | null> {
-    return this.productRepository.findOne(id);
+  async findOne(id: number): Promise<Product | null> {
+    return this.productService.findOne(id);
   }
 
   async findByCategory(categoryId: number): Promise<Product[]> {

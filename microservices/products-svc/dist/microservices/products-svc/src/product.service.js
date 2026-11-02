@@ -537,6 +537,22 @@ let ProductService = class ProductService {
         await this.inventoryTransactionRepository.save(transaction);
         return { item: savedInventory, transaction };
     }
+    async findOne(id) {
+        const product = await this.productRepository.findOne({ where: { id: id.id } });
+        if (!product) {
+            throw new Error('Product not found');
+        }
+        return { ...product };
+    }
+    async findAll(input) {
+        const products = await this.productRepository.find({
+            where: input.categoryId ? { categoryId: input.categoryId } : {},
+        });
+        return {
+            products: products.map(product => ({ ...product })),
+            total: products.length
+        };
+    }
 };
 exports.ProductService = ProductService;
 exports.ProductService = ProductService = __decorate([

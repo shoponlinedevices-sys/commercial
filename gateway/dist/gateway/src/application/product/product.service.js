@@ -18,11 +18,11 @@ let ProductService = class ProductService {
         this.productRepository = productRepository;
         this.productService = productService;
     }
-    findAll() {
-        return this.productRepository.findAll();
+    async findAll(input) {
+        return this.productService.findAll(input);
     }
-    findOne(id) {
-        return this.productRepository.findOne(id);
+    async findOne(id) {
+        return this.productService.findOne(id);
     }
     async findByCategory(categoryId) {
         const result = await this.productService.findByCategory(categoryId);

@@ -1,5 +1,6 @@
 import { ProductService } from 'src/product.service';
-import { IProductsGroupedByCategoryResponse } from '../../../../packages/contracts/model/product/product.model';
+import { IProduct, IProductsGroupedByCategoryResponse, IGetProductsResponse, IFindProducts } from '../../../../packages/contracts/model/product/product.model';
+import { Id } from '../../../../packages/contracts/model/common/common.model';
 export declare class ProductGrpcController {
     private readonly productService;
     constructor(productService: ProductService);
@@ -25,4 +26,6 @@ export declare class ProductGrpcController {
     createProduct(request: any): Promise<{
         product: import("../product.entity").ProductEntity;
     }>;
+    findOne(id: Id): Promise<IProduct>;
+    findAll(input: IFindProducts): Promise<IGetProductsResponse>;
 }

@@ -6,6 +6,8 @@ import { CategoryEntity } from './category.entity';
 import { HistoryLogEntity } from './history-log.entity';
 import { InventoryEntity } from './inventory.entity';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
+import { Id } from '../../../packages/contracts/model/common/common.model';
+import { IProduct, IGetProductsResponse, IFindProducts } from '../../../packages/contracts/model/product/product.model';
 
 @Injectable()
 export class ProductService {
@@ -708,4 +710,23 @@ export class ProductService {
     await this.inventoryTransactionRepository.save(transaction);
     return { item: savedInventory, transaction };
   }
+
+  async findOne(id: Id): Promise<IProduct> {
+    const product = await this.productRepository.findOne({ where: { id: id.id } });
+    if (!product) {
+      throw new Error('Product not found');
+    }
+    return { ...product }; 
+  }
+
+  async findAll(input: IFindProducts): Promise<IGetProductsResponse> {
+    const products = await this.productRepository.find({
+      where: input.categoryId ? { categoryId: input.categoryId } : {},
+    });
+    return {
+      products: products.map(product => ({ ...product })),
+      total: products.length
+    };
+  }
+
 }

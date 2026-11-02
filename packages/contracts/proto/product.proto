@@ -8,6 +8,12 @@ service ProductService {
   rpc GetProduct (GetProductRequest) returns (GetProductResponse);
   rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
   rpc SaleStock (ProductSaleStock) returns (SaleInventory);
+  rpc FindOne (GetProductRequest) returns (Product);
+  rpc FindAll (FindProducts) returns (GetProductsResponse);
+}
+
+message FindProducts {
+  int32 categoryId = 1;
 }
 
 message GetProductsRequest {

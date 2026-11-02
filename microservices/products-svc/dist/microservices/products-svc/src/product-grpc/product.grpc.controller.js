@@ -37,6 +37,12 @@ let ProductGrpcController = class ProductGrpcController {
     async createProduct(request) {
         return this.productService.createProduct(request);
     }
+    async findOne(id) {
+        return this.productService.findOne(id);
+    }
+    async findAll(input) {
+        return await this.productService.findAll(input);
+    }
 };
 exports.ProductGrpcController = ProductGrpcController;
 __decorate([
@@ -63,6 +69,18 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductGrpcController.prototype, "createProduct", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('ProductService', 'FindOne'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProductGrpcController.prototype, "findOne", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('ProductService', 'FindAll'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProductGrpcController.prototype, "findAll", null);
 exports.ProductGrpcController = ProductGrpcController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [product_service_1.ProductService])
