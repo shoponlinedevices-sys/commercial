@@ -7,7 +7,7 @@ import { HistoryLogEntity } from './history-log.entity';
 import { InventoryEntity } from './inventory.entity';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
 import { Id } from '../../../packages/contracts/model/common/common.model';
-import { IProduct, IGetProductsResponse, IFindProducts } from '../../../packages/contracts/model/product/product.model';
+import { IProduct, IGetProductsResponse, IFindProducts, IGetProductsGroupedByCategoryResponse, IGetProductsGroupedByCategoryRequest } from '../../../packages/contracts/model/product/product.model';
 
 @Injectable()
 export class ProductService {
@@ -160,12 +160,7 @@ export class ProductService {
     return { product: savedProduct };
   }
 
-  async getProductsGroupedByCategory(filters?: {
-    search?: string;
-    categoryId?: number;
-    limit?: number;
-    offset?: number;
-  }) {
+  async getProductsGroupedByCategory(filters?: IGetProductsGroupedByCategoryRequest): Promise<IGetProductsGroupedByCategoryResponse> {
     const categoryRepository = this.dataSource.getRepository(CategoryEntity);
 
     const queryBuilder = categoryRepository

@@ -4,7 +4,8 @@ import { ProductService } from '../../application/product/product.service';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
 import { Public } from '../../domain/identity/public.decorator';
 import { Product } from '../../domain/product/product.entity';
-import { IFindProducts } from '../../../../packages/contracts/model/product/product.model';
+import { IFindProducts, IGetProductsGroupedByCategoryRequest } from '../../../../packages/contracts/model/product/product.model';
+import { GetProductsGroupedByCategoryDto } from '../dto/product.dto';
 
 @ApiTags('Products')
 @ApiBearerAuth()
@@ -34,17 +35,12 @@ export class ProductController {
   @Get('grouped-by-category')
   @ApiOperation({ summary: 'Get products grouped by category' })
   @ApiResponse({ status: 200, description: 'Grouped products retrieved successfully' })
-  async groupedByCategory(@Query() query: {
-    search?: string;
-    categoryId?: string;
-    limit?: string;
-    offset?: string;
-  }) {
+  async groupedByCategory(@Query() query: GetProductsGroupedByCategoryDto) {
     const filters = {
       search: query.search,
-      categoryId: query.categoryId === undefined ? undefined : parseInt(query.categoryId, 10),
-      limit: query.limit === undefined ? undefined : parseInt(query.limit, 10),
-      offset: query.offset === undefined ? undefined : parseInt(query.offset, 10),
+      categoryId: query.categoryId === undefined ? undefined : query.categoryId,
+      limit: query.limit === undefined ? undefined : query.limit,
+      offset: query.offset === undefined ? undefined : query.offset,
     };
     return this.productService.groupedByCategory(filters);
   }

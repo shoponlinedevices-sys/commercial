@@ -4,7 +4,7 @@ import { IProduct, ICreateProductRequest, ICreateProductResponse, IGetProductsGr
 
 export interface IGrpcProductService {
   getProducts(input?: IGetProductsRequest, metadata?: Metadata): Observable<IGetProductsResponse>;
-  getProductsGroupedByCategory(input?: IGetProductsGroupedByCategoryRequest, metadata?: Metadata): Observable<IGetProductsGroupedByCategoryResponse>;
+  getProductsGroupedByCategory(input?: IGetProductsGroupedByCategoryRequest): Observable<IGetProductsGroupedByCategoryResponse>;
   getProduct(input?: IGetProductRequest, metadata?: Metadata): Observable<IGetProductResponse>;
   createProduct(input: ICreateProductRequest, metadata?: Metadata): Observable<ICreateProductResponse>;
   findOne(input: { id: number }, metadata?: Metadata): Observable<IProduct>;

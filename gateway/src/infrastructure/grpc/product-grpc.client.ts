@@ -2,7 +2,7 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { IGrpcInventoryService } from '../../../../packages/contracts/grpc/interface/grpc-inventory.service';
-import { IFindProducts, IGetProductsRequest, IGetProductsResponse, IProductSaleStock } from '../../../../packages/contracts/model/product/product.model';
+import { IFindProducts, IGetProductsGroupedByCategoryRequest, IGetProductsGroupedByCategoryResponse, IGetProductsRequest, IGetProductsResponse, IProductSaleStock, IProductsGroupedByCategoryResponse } from '../../../../packages/contracts/model/product/product.model';
 import { IGrpcProductService } from '../../../../packages/contracts/grpc/interface/grpc-products.service';
 import { Product } from '../../domain/product/product.entity';
 import { ICreateProductRequest } from '../../../../packages/contracts/model/product/product.model';
@@ -71,6 +71,11 @@ export class ProductGrpcClient implements OnModuleInit {
 
   async findAll(input?: IFindProducts): Promise<IGetProductsResponse> {
     const response = await firstValueFrom(this.productService.findAll(input));
+    return response;
+  }
+
+  async groupedByCategory(input?: IGetProductsGroupedByCategoryRequest): Promise<IGetProductsGroupedByCategoryResponse> {
+    const response = await firstValueFrom(this.productService.getProductsGroupedByCategory(input));
     return response;
   }
 }
