@@ -3,6 +3,8 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { OrderRepository } from '../../domain/order/order.repository';
 import { Order } from '../../domain/order/order.entity';
+import { IGrpcOrdersService } from '../../../../packages/contracts/grpc/interface/grpc-orders.service';
+import { IGetAllOrdersRequest } from '../../../../packages/contracts/model/orders/orders.model';
 
 interface NotificationGrpcService {
   sendNotification(data: { token: string; title: string; body: string; data: Record<string, string> }): any;
@@ -14,6 +16,7 @@ const PRODUCTS_SERVICE_URL = process.env.PRODUCTS_SERVICE_URL || 'http://localho
 @Injectable()
 export class OrderService implements OnModuleInit {
   private notificationService!: NotificationGrpcService;
+  private orderService!: IGrpcOrdersService;
 
   constructor(
     private readonly orderRepository: OrderRepository,
@@ -184,8 +187,9 @@ export class OrderService implements OnModuleInit {
     return orders;
   }
 
-  async findAll(filters?: { from?: string; to?: string; statuses?: string[] }): Promise<Order[]> {
-    return this.orderRepository.findAll(filters);
+  async findAll(filters?: IGetAllOrdersRequest): Promise<Order[]> {
+    // return this.orderRepository.findAll(filters);
+    return firstValueFrom(this.orderService.getAllOrders(filters));
   }
 
   async updateStatus(orderId: string, status: string, createdBy?: number): Promise<Order> {

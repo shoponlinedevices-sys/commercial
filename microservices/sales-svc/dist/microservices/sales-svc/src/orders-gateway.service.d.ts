@@ -5,7 +5,7 @@ export declare class OrdersGatewayService {
     private grpcOrdersService;
     constructor(client: ClientGrpc);
     onModuleInit(): void;
-    getUserOrders(userId: string): Promise<OrdersModel.IGetUserOrdersResponse>;
+    getUserOrders(userId: number): Promise<OrdersModel.IGetUserOrdersResponse>;
     getOrder(id: string): Promise<OrdersModel.IGetOrderResponse>;
     createOrder(request: OrdersModel.ICreateOrderRequest): Promise<OrdersModel.ICreateOrderResponse>;
     updateOrderStatus(request: OrdersModel.IUpdateOrderStatusRequest): Promise<OrdersModel.IUpdateOrderStatusResponse>;

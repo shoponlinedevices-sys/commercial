@@ -18,6 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const product_service_1 = require("../../application/product/product.service");
 const jwt_auth_guard_1 = require("../../domain/identity/jwt-auth.guard");
 const public_decorator_1 = require("../../domain/identity/public.decorator");
+const product_dto_1 = require("../dto/product.dto");
 let ProductController = class ProductController {
     constructor(productService) {
         this.productService = productService;
@@ -35,9 +36,9 @@ let ProductController = class ProductController {
     async groupedByCategory(query) {
         const filters = {
             search: query.search,
-            categoryId: query.categoryId === undefined ? undefined : parseInt(query.categoryId, 10),
-            limit: query.limit === undefined ? undefined : parseInt(query.limit, 10),
-            offset: query.offset === undefined ? undefined : parseInt(query.offset, 10),
+            categoryId: query.categoryId === undefined ? undefined : query.categoryId,
+            limit: query.limit === undefined ? undefined : query.limit,
+            offset: query.offset === undefined ? undefined : query.offset,
         };
         return this.productService.groupedByCategory(filters);
     }
@@ -76,7 +77,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Grouped products retrieved successfully' }),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [product_dto_1.GetProductsGroupedByCategoryDto]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "groupedByCategory", null);
 __decorate([

@@ -15,7 +15,7 @@ export class OrdersGatewayService {
   }
 
   // Orders
-  async getUserOrders(userId: string): Promise<OrdersModel.IGetUserOrdersResponse> {
+  async getUserOrders(userId: number): Promise<OrdersModel.IGetUserOrdersResponse> {
     try {
       const response = await firstValueFrom(
         this.grpcOrdersService.getUserOrders({ userId })

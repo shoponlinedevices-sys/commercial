@@ -64,7 +64,8 @@ __decorate([
     __param(1, (0, common_1.Query)('to')),
     __param(2, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [Date,
+        Date, Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "getAllOrders", null);
 __decorate([

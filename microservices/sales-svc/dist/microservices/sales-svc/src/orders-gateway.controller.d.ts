@@ -2,7 +2,7 @@ import { OrdersGatewayService } from './orders-gateway.service';
 export declare class OrdersGatewayController {
     private readonly ordersGatewayService;
     constructor(ordersGatewayService: OrdersGatewayService);
-    getUserOrders(userId: string): Promise<import("../../../packages/contracts/model/orders/orders.model").IGetUserOrdersResponse>;
+    getUserOrders(userId: number): Promise<import("../../../packages/contracts/model/orders/orders.model").IGetUserOrdersResponse>;
     getOrder(id: string): Promise<import("../../../packages/contracts/model/orders/orders.model").IGetOrderResponse>;
     createOrder(body: any): Promise<import("../../../packages/contracts/model/orders/orders.model").ICreateOrderResponse>;
     updateOrderStatus(id: string, body: {

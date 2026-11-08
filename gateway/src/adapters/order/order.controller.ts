@@ -25,8 +25,8 @@ export class OrderController {
   @Get()
   @ApiOperation({ summary: 'Get all orders for CRM' })
   async getAllOrders(
-    @Query('from') from?: string,
-    @Query('to') to?: string,
+    @Query('from') from?: Date,
+    @Query('to') to?: Date,
     @Query('status') status?: string | string[],
   ) {
     const statuses = status ? (Array.isArray(status) ? status : [status]) : undefined;

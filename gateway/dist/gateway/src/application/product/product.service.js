@@ -31,8 +31,8 @@ let ProductService = class ProductService {
         }
         return [];
     }
-    groupedByCategory(filters) {
-        return this.productRepository.groupedByCategory(filters);
+    async groupedByCategory(filters) {
+        return await this.productService.groupedByCategory(filters);
     }
     create(data) {
         return this.productService.create(data);

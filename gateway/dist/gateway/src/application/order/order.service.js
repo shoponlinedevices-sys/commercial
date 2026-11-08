@@ -169,7 +169,7 @@ let OrderService = class OrderService {
         return orders;
     }
     async findAll(filters) {
-        return this.orderRepository.findAll(filters);
+        return (0, rxjs_1.firstValueFrom)(this.orderService.getAllOrders(filters));
     }
     async updateStatus(orderId, status, createdBy) {
         const currentOrders = await this.orderRepository.findAll();

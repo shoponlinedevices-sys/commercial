@@ -43,12 +43,11 @@ let SalesServiceOrderRepository = class SalesServiceOrderRepository {
         return this.toOrder(response.order);
     }
     async findByUserId(userId) {
-        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.getUserOrders({ userId: userId.toString() }));
+        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.getUserOrders({ userId }));
         return (response.orders || []).map((order) => this.toOrder(order));
     }
     async findAll(filters) {
-        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.getAllOrders(filters || {}));
-        return (response.orders || []).map((order) => this.toOrder(order));
+        return await (0, rxjs_1.firstValueFrom)(this.ordersService.getAllOrders(filters));
     }
     async updateStatus(orderId, status, createdBy) {
         const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.updateOrderStatus({ id: orderId, status, createdBy: createdBy === undefined ? undefined : String(createdBy) }));

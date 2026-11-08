@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { OrderRepository } from '../../domain/order/order.repository';
 import { Order } from '../../domain/order/order.entity';
 import { IGrpcOrdersService } from '../../../../packages/contracts/grpc/interface/grpc-orders.service';
+import { IGetAllOrdersRequest } from '../../../../packages/contracts/model/orders/orders.model';
 
 @Injectable()
 export class SalesServiceOrderRepository implements OrderRepository, OnModuleInit {
@@ -42,13 +43,12 @@ export class SalesServiceOrderRepository implements OrderRepository, OnModuleIni
   }
 
   async findByUserId(userId: number): Promise<Order[]> {
-    const response = await firstValueFrom(this.ordersService.getUserOrders({ userId: userId.toString() }));
+    const response = await firstValueFrom(this.ordersService.getUserOrders({ userId }));
     return (response.orders || []).map((order) => this.toOrder(order));
   }
 
-  async findAll(filters?: { from?: string; to?: string; statuses?: string[] }): Promise<Order[]> {
-    const response = await firstValueFrom(this.ordersService.getAllOrders(filters || {}));
-    return (response.orders || []).map((order) => this.toOrder(order));
+  async findAll(filters?: IGetAllOrdersRequest): Promise<Order[]> {
+    return await firstValueFrom(this.ordersService.getAllOrders(filters));
   }
 
   async updateStatus(orderId: string, status: string, createdBy?: string | number): Promise<Order> {

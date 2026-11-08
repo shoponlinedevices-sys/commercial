@@ -1,5 +1,5 @@
 import { ProductService } from 'src/product.service';
-import { IProduct, IProductsGroupedByCategoryResponse, IGetProductsResponse, IFindProducts } from '../../../../packages/contracts/model/product/product.model';
+import { IProduct, IGetProductsResponse, IFindProducts, IGetProductsGroupedByCategoryRequest, IGetProductsGroupedByCategoryResponse } from '../../../../packages/contracts/model/product/product.model';
 import { Id } from '../../../../packages/contracts/model/common/common.model';
 export declare class ProductGrpcController {
     private readonly productService;
@@ -10,14 +10,7 @@ export declare class ProductGrpcController {
         })[];
         total: number;
     }>;
-    getProductsGroupedByCategory(filters?: {
-        search?: string;
-        categoryId?: number;
-        limit?: number;
-        offset?: number;
-    }): Promise<{
-        categories: IProductsGroupedByCategoryResponse[];
-    }>;
+    getProductsGroupedByCategory(filters?: IGetProductsGroupedByCategoryRequest): Promise<IGetProductsGroupedByCategoryResponse>;
     getProduct(request: {
         id: number;
     }): Promise<{

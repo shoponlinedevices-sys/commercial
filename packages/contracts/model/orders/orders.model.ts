@@ -2,8 +2,8 @@ import { Id } from "../common/common.model";
 
 // Orders
 export interface IOrder {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   totalAmount: number;
   status: string;
   orderLines?: IOrderLine[];
@@ -14,18 +14,19 @@ export interface IOrder {
 }
 
 export interface IOrderLine {
-  id: string;
-  orderId: string;
-  productId: string;
-  unitPrice: string;
+  id: number;
+  orderId: number;
+  productId: number;
+  unitPrice: number;
   quantity: number;
-  totalPrice: string;
+  totalPrice: number;
   createdAt: Date;
   updatedAt: Date;
+  status: number;
 }
 
 export interface IGetUserOrdersRequest {
-  userId: string;
+  userId: number;
 }
 
 export interface IGetUserOrdersResponse {
@@ -33,8 +34,8 @@ export interface IGetUserOrdersResponse {
 }
 
 export interface IGetAllOrdersRequest {
-  from?: string;
-  to?: string;
+  from?: Date;
+  to?: Date;
   statuses?: string[];
 }
 

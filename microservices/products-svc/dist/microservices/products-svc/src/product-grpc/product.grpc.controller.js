@@ -23,12 +23,7 @@ let ProductGrpcController = class ProductGrpcController {
     }
     async getProductsGroupedByCategory(filters) {
         const result = await this.productService.getProductsGroupedByCategory(filters);
-        return {
-            categories: result.map((category) => ({
-                ...category,
-                isActive: category.isActive ?? category.is_active,
-            })),
-        };
+        return result;
     }
     async getProduct(request) {
         const result = await this.productService.getProduct(request.id);

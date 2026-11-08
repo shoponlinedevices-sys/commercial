@@ -4,7 +4,7 @@ import { HistoryLogEntity } from './history-log.entity';
 import { InventoryEntity } from './inventory.entity';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
 import { Id } from '../../../packages/contracts/model/common/common.model';
-import { IProduct, IGetProductsResponse, IFindProducts } from '../../../packages/contracts/model/product/product.model';
+import { IProduct, IGetProductsResponse, IFindProducts, IGetProductsGroupedByCategoryResponse, IGetProductsGroupedByCategoryRequest } from '../../../packages/contracts/model/product/product.model';
 export declare class ProductService {
     private readonly dataSource;
     constructor(dataSource: DataSource);
@@ -42,35 +42,7 @@ export declare class ProductService {
     }): Promise<{
         product: ProductEntity;
     }>;
-    getProductsGroupedByCategory(filters?: {
-        search?: string;
-        categoryId?: number;
-        limit?: number;
-        offset?: number;
-    }): Promise<{
-        products: {
-            quantityAvailable: number;
-            id: number;
-            name: string;
-            price: number;
-            oldPrice: number;
-            description: string;
-            image: string;
-            badge: string;
-            sku: string;
-            unit: string;
-            moq: string;
-            categoryId: number;
-        }[];
-        id: number;
-        name: string;
-        slug: string;
-        icon: string;
-        sort_order: number;
-        is_active: number;
-        created_at: Date;
-        updated_at: Date;
-    }[]>;
+    getProductsGroupedByCategory(filters?: IGetProductsGroupedByCategoryRequest): Promise<IGetProductsGroupedByCategoryResponse>;
     getInventorySummary(): Promise<{
         totalProducts: number;
         totalOnHand: number;

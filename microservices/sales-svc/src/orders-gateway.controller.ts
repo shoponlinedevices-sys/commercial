@@ -7,7 +7,7 @@ export class OrdersGatewayController {
 
   // Orders
   @Get('orders/user/:userId')
-  async getUserOrders(@Param('userId') userId: string) {
+  async getUserOrders(@Param('userId') userId: number) {
     return this.ordersGatewayService.getUserOrders(userId);
   }
 
