@@ -205,13 +205,16 @@ export class ProductService {
       quantityByProductId.set(product.id, product.quantityAvailable);
     });
 
-    return categories.map((category) => ({
-      ...category,
-      products: (category.products || []).map((product) => ({
-        ...product,
-        quantityAvailable: quantityByProductId.get(product.id) ?? 0,
+    return {
+      categories: categories.map((category) => ({
+        ...category,
+        isActive: category.is_active,
+        products: (category.products || []).map((product) => ({
+          ...product,
+          quantityAvailable: quantityByProductId.get(product.id) ?? 0,
+        })),
       })),
-    }));
+    };
   }
 
   async getInventorySummary() {
