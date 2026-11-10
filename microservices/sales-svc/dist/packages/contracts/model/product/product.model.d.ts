@@ -50,7 +50,7 @@ export interface IProductsGroupedByCategoryResponse {
     slug: string;
     isActive: number;
     icon: string;
-    products: IProduct[];
+    products?: IProduct[];
 }
 export interface IGetProductsGroupedByCategoryRequest {
     search?: string;

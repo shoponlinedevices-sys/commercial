@@ -48,20 +48,20 @@ export interface IGetOrderResponse {
 }
 
 export interface ICreateOrderLineRequest {
-  productId: string;
-  unitPrice: string;
+  productId: number;
+  unitPrice: number;
   quantity: number;
 }
 
 export interface ICreateOrderRequest {
-  userId: string;
+  userId: number;
   totalAmount: number;
   orderLines: ICreateOrderLineRequest[];
   shippingAddress?: string;
   fcmToken?: string;
   customerEmail?: string;
   customerName?: string;
-  createdBy?: string;
+  createdBy?: number;
 }
 
 export interface ICreateOrderResponse {
@@ -71,7 +71,7 @@ export interface ICreateOrderResponse {
 export interface IUpdateOrderStatusRequest {
   id: string;
   status: string;
-  createdBy?: string;
+  createdBy?: number;
 }
 
 export interface IUpdateOrderStatusResponse {

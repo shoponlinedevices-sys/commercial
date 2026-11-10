@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { And, DataSource, FindOptionsWhere, In, LessThan, MoreThanOrEqual } from 'typeorm';
 import { OrderEntity } from './order.entity';
@@ -85,14 +85,20 @@ export class OrderService {
   async createOrder(data: {
     userId: string;
     totalAmount: number;
-    orderLines: any[];
+    orderLines?: any[];
+    cartLines?: any[];
     shippingAddress?: string;
     fcmToken?: string;
     customerEmail?: string;
     customerName?: string;
     createdBy?: string;
   }) {
-    const calculatedTotal = data.orderLines.reduce((total, line) => {
+    const normalizedOrderLines = data.orderLines ?? data.cartLines;
+    if (!Array.isArray(normalizedOrderLines)) {
+      throw new BadRequestException('orderLines must be an array');
+    }
+
+    const calculatedTotal = normalizedOrderLines.reduce((total, line) => {
       const unitPrice = Number(line.unitPrice);
       const quantity = Number(line.quantity);
       return Number.isFinite(unitPrice) && Number.isFinite(quantity)
@@ -114,7 +120,7 @@ export class OrderService {
       const savedOrder = await manager.save(OrderEntity, order);
 
       // Create order lines
-      const orderLineEntities = data.orderLines.map((line) => {
+      const orderLineEntities = normalizedOrderLines.map((line) => {
         const unitPrice = parseFloat(line.unitPrice);
         const totalPrice = unitPrice * line.quantity;
         

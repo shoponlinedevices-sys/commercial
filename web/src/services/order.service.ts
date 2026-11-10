@@ -7,7 +7,7 @@ export const orderService = {
     return await apiClient.post<Order>('/orders', {
       userId: Number(order.userId),
       totalAmount: order.totalAmount,
-      cartLines: order.orderLines,
+      orderLines: order.orderLines,
       shippingAddress: order.shippingAddress,
       fcmToken: order.fcmToken,
       customerEmail: order.customerEmail,

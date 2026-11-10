@@ -1,7 +1,8 @@
-import { Controller, Post, Body, UseGuards, Get, Param, Query, Req } from '@nestjs/common';
+import { BadRequestException, Controller, Post, Body, UseGuards, Get, Param, Query, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../domain/identity/jwt-auth.guard';
 import { OrderService } from '../../application/order/order.service';
+import { ICreateOrderRequest } from '../../../../packages/contracts/model/orders/orders.model';
 
 @ApiTags('Orders')
 @ApiBearerAuth()
@@ -12,12 +13,21 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @ApiOperation({ summary: 'Create a new order' })
-  @ApiBody({ schema: { example: { userId: 1, cartLines: [{ productId: 1, quantity: 2 }], fcmToken: 'optional_fcm_token' } } })
+  @ApiBody({ schema: { example: { userId: 1, orderLines: [{ productId: 1, unitPrice: 10, quantity: 2 }], fcmToken: 'optional_fcm_token' } } })
   @ApiResponse({ status: 201, description: 'Order created successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async createOrder(@Body() body: { userId: number; totalAmount: number; cartLines: any[]; fcmToken?: string; customerEmail?: string; customerName?: string }, @Req() request: any) {
-    const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName, request.user?.id);
+  async createOrder(@Body() body: Omit<ICreateOrderRequest, 'orderLines'> & {
+    orderLines?: ICreateOrderRequest['orderLines'];
+    cartLines?: ICreateOrderRequest['orderLines'];
+  }) {
+    const { cartLines, orderLines: providedOrderLines, ...orderData } = body;
+    const orderLines = providedOrderLines ?? cartLines;
+    if (!Array.isArray(orderLines)) {
+      throw new BadRequestException('orderLines must be an array');
+    }
+
+    const order = await this.orderService.createOrder({ ...orderData, orderLines });
     return order;
   }
 

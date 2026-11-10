@@ -65,6 +65,18 @@ describe('OrderService.createOrder email dispatch', () => {
 
     expect(sendOrderConfirmationEmail).not.toHaveBeenCalled();
   });
+
+  it('rejects requests without order lines before starting a transaction', async () => {
+    const transaction = jest.fn();
+    const service = new OrderService({ transaction } as any, {} as any);
+
+    await expect(service.createOrder({
+      userId: 'user-1',
+      totalAmount: 125,
+    })).rejects.toThrow('orderLines must be an array');
+
+    expect(transaction).not.toHaveBeenCalled();
+  });
 });
 
 describe('OrderService.clearCartByUserId', () => {

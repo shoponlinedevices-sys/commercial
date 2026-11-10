@@ -18,12 +18,14 @@ const rxjs_1 = require("rxjs");
 const order_repository_1 = require("../../domain/order/order.repository");
 const PRODUCTS_SERVICE_URL = process.env.PRODUCTS_SERVICE_URL || 'http://localhost:3003';
 let OrderService = class OrderService {
-    constructor(orderRepository, notificationClient) {
+    constructor(orderRepository, notificationClient, orderClient) {
         this.orderRepository = orderRepository;
         this.notificationClient = notificationClient;
+        this.orderClient = orderClient;
     }
     onModuleInit() {
         this.notificationService = this.notificationClient.getService('NotificationService');
+        this.orderService = this.orderClient.getService('OrdersService');
     }
     async callInventory(action, payload) {
         const response = await fetch(`${PRODUCTS_SERVICE_URL}/inventory/${action}`, {
@@ -124,17 +126,17 @@ let OrderService = class OrderService {
             }
         }
     }
-    async createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName, createdBy) {
+    async createOrder(input) {
         try {
-            await this.reserveOrderLines(cartLines, createdBy);
-            const order = await this.orderRepository.createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName, createdBy);
-            if (fcmToken) {
+            await this.reserveOrderLines(input.orderLines, input.createdBy);
+            const order = await (0, rxjs_1.firstValueFrom)(this.orderService.createOrder(input));
+            if (input.fcmToken) {
                 try {
                     await (0, rxjs_1.firstValueFrom)(this.notificationService.sendNotification({
-                        token: fcmToken,
+                        token: input.fcmToken,
                         title: 'Đặt hàng thành công',
-                        body: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
-                        data: { orderId: order.id.toString(), type: 'order_created' },
+                        body: `Đơn hàng #${order.order.id} của bạn đã được đặt thành công. Tổng giá: ${order.order.totalAmount}₫`,
+                        data: { orderId: order.order.id.toString(), type: 'order_created' },
                     }));
                 }
                 catch (error) {
@@ -143,20 +145,20 @@ let OrderService = class OrderService {
             }
             try {
                 await (0, rxjs_1.firstValueFrom)(this.notificationService.createNotification({
-                    userId: userId.toString(),
+                    userId: input.userId.toString(),
                     title: 'Đặt hàng thành công',
-                    message: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
+                    message: `Đơn hàng #${order.order.id} của bạn đã được đặt thành công. Tổng giá: ${order.order.totalAmount}₫`,
                     type: 'order',
-                    metadata: { orderId: order.id.toString(), totalAmount: order.totalAmount.toString() },
+                    metadata: { orderId: order.order.id.toString(), totalAmount: order.order.totalAmount.toString() },
                 }));
             }
             catch (error) {
                 console.error('Failed to save notification to database:', error);
             }
-            return order;
+            return order.order;
         }
         catch (error) {
-            await this.releaseOrderLines(cartLines, createdBy).catch((releaseError) => {
+            await this.releaseOrderLines(input.orderLines, input.createdBy).catch((releaseError) => {
                 console.error('Failed to release reserved inventory after order creation failure:', releaseError);
             });
             throw error;
@@ -194,6 +196,7 @@ exports.OrderService = OrderService;
 exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, common_1.Inject)('GRPC_NOTIFICATIONS_SERVICE')),
-    __metadata("design:paramtypes", [order_repository_1.OrderRepository, Object])
+    __param(2, (0, common_1.Inject)('GRPC_ORDERS_SERVICE')),
+    __metadata("design:paramtypes", [order_repository_1.OrderRepository, Object, Object])
 ], OrderService);
 //# sourceMappingURL=order.service.js.map

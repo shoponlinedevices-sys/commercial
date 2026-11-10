@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { OrderRepository } from '../../domain/order/order.repository';
 import { Order } from '../../domain/order/order.entity';
 import { IGrpcOrdersService } from '../../../../packages/contracts/grpc/interface/grpc-orders.service';
-import { IGetAllOrdersRequest } from '../../../../packages/contracts/model/orders/orders.model';
+import { ICreateOrderRequest, IGetAllOrdersRequest } from '../../../../packages/contracts/model/orders/orders.model';
 
 interface NotificationGrpcService {
   sendNotification(data: { token: string; title: string; body: string; data: Record<string, string> }): any;
@@ -21,10 +21,12 @@ export class OrderService implements OnModuleInit {
   constructor(
     private readonly orderRepository: OrderRepository,
     @Inject('GRPC_NOTIFICATIONS_SERVICE') private readonly notificationClient: ClientGrpc,
+    @Inject('GRPC_ORDERS_SERVICE') private readonly orderClient: ClientGrpc,
   ) {}
 
   onModuleInit() {
     this.notificationService = this.notificationClient.getService<NotificationGrpcService>('NotificationService');
+    this.orderService = this.orderClient.getService<IGrpcOrdersService>('OrdersService');
   }
 
   private async callInventory<T>(action: 'reserve' | 'release' | 'sale' | 'return', payload: Record<string, any>): Promise<T> {
@@ -141,18 +143,18 @@ export class OrderService implements OnModuleInit {
     }
   }
 
-  async createOrder(userId: number, totalAmount: number, cartLines: any[], fcmToken?: string, customerEmail?: string, customerName?: string, createdBy?: number): Promise<Order> {
+  async createOrder(input: ICreateOrderRequest): Promise<Order> {
     try {
-      await this.reserveOrderLines(cartLines, createdBy);
-      const order = await this.orderRepository.createOrder(userId, totalAmount, cartLines, fcmToken, customerEmail, customerName, createdBy);
+      await this.reserveOrderLines(input.orderLines, input.createdBy);
+      const order = await firstValueFrom(this.orderService.createOrder(input));
 
-      if (fcmToken) {
+      if (input.fcmToken) {
         try {
           await firstValueFrom(this.notificationService.sendNotification({
-            token: fcmToken,
+            token: input.fcmToken,
             title: 'Đặt hàng thành công',
-            body: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
-            data: { orderId: order.id.toString(), type: 'order_created' },
+            body: `Đơn hàng #${order.order.id} của bạn đã được đặt thành công. Tổng giá: ${order.order.totalAmount}₫`,
+            data: { orderId: order.order.id.toString(), type: 'order_created' },
           }));
         } catch (error) {
           console.error('Failed to send notification:', error);
@@ -161,19 +163,19 @@ export class OrderService implements OnModuleInit {
 
       try {
         await firstValueFrom(this.notificationService.createNotification({
-          userId: userId.toString(),
+          userId: input.userId.toString(),
           title: 'Đặt hàng thành công',
-          message: `Đơn hàng #${order.id} của bạn đã được đặt thành công. Tổng giá: ${order.totalAmount}₫`,
+          message: `Đơn hàng #${order.order.id} của bạn đã được đặt thành công. Tổng giá: ${order.order.totalAmount}₫`,
           type: 'order',
-          metadata: { orderId: order.id.toString(), totalAmount: order.totalAmount.toString() },
+          metadata: { orderId: order.order.id.toString(), totalAmount: order.order.totalAmount.toString() },
         }));
       } catch (error) {
         console.error('Failed to save notification to database:', error);
       }
 
-      return order;
+      return order.order;
     } catch (error) {
-      await this.releaseOrderLines(cartLines, createdBy).catch((releaseError) => {
+      await this.releaseOrderLines(input.orderLines, input.createdBy).catch((releaseError) => {
         console.error('Failed to release reserved inventory after order creation failure:', releaseError);
       });
       throw error;

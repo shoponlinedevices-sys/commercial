@@ -11,6 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderController = void 0;
 const common_1 = require("@nestjs/common");
@@ -21,9 +32,13 @@ let OrderController = class OrderController {
     constructor(orderService) {
         this.orderService = orderService;
     }
-    async createOrder(body, request) {
-        var _a;
-        const order = await this.orderService.createOrder(body.userId, body.totalAmount, body.cartLines, body.fcmToken, body.customerEmail, body.customerName, (_a = request.user) === null || _a === void 0 ? void 0 : _a.id);
+    async createOrder(body) {
+        const { cartLines, orderLines: providedOrderLines } = body, orderData = __rest(body, ["cartLines", "orderLines"]);
+        const orderLines = providedOrderLines !== null && providedOrderLines !== void 0 ? providedOrderLines : cartLines;
+        if (!Array.isArray(orderLines)) {
+            throw new common_1.BadRequestException('orderLines must be an array');
+        }
+        const order = await this.orderService.createOrder(Object.assign(Object.assign({}, orderData), { orderLines }));
         return order;
     }
     async getAllOrders(from, to, status) {
@@ -46,14 +61,13 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new order' }),
-    (0, swagger_1.ApiBody)({ schema: { example: { userId: 1, cartLines: [{ productId: 1, quantity: 2 }], fcmToken: 'optional_fcm_token' } } }),
+    (0, swagger_1.ApiBody)({ schema: { example: { userId: 1, orderLines: [{ productId: 1, unitPrice: 10, quantity: 2 }], fcmToken: 'optional_fcm_token' } } }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Order created successfully' }),
     (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized' }),
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad request' }),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrderController.prototype, "createOrder", null);
 __decorate([
