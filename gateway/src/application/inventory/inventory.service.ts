@@ -27,7 +27,7 @@ export class InventoryService {
         private readonly inventoryService: InventoryGrpcClient,
     ) {}
   async getSummary() {
-    return callProductsService<any>('/inventory/summary');
+    return await this.inventoryService.summary();
   }
 
   async getItems(page = 1, limit = 10, search = '', category = '', status = '') {
@@ -94,5 +94,9 @@ export class InventoryService {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+
+  async summary() {
+    return await this.inventoryService.summary();
   }
 }

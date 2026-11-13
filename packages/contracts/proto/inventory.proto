@@ -5,6 +5,7 @@ package inventory;
 service InventoryService {
   rpc SaleStock (ProductSaleStock) returns (SaleInventory);
   rpc ReturnInventory (ProductSaleStock) returns (SaleInventory);
+  rpc Summary (InventorySummaryRequest) returns (InventorySummary);
 }
 
 message Product {
@@ -29,6 +30,8 @@ message ProductSaleStock {
   string note = 5;
   int64 createdBy = 6;
 }
+
+message InventorySummaryRequest {}
 
 message ProductSaleStockResult {
   int64 id = 1;
@@ -59,4 +62,13 @@ message InventoryTransaction {
 message SaleInventory {
   ProductSaleStockResult item = 1;
   InventoryTransaction transaction = 2;
+}
+
+message InventorySummary {
+  int32 totalProducts = 1;
+  int32 totalOnHand = 2;
+  int32 lowStockItems = 3;
+  int32 outOfStockItems = 4;
+  int32 inventoryValue = 5;
+  bool hasCostData = 6;
 }

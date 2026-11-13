@@ -84,7 +84,11 @@ let OrderService = class OrderService {
         });
     }
     async createOrder(data) {
-        const calculatedTotal = data.orderLines.reduce((total, line) => {
+        const normalizedOrderLines = data.orderLines ?? data.cartLines;
+        if (!Array.isArray(normalizedOrderLines)) {
+            throw new common_1.BadRequestException('orderLines must be an array');
+        }
+        const calculatedTotal = normalizedOrderLines.reduce((total, line) => {
             const unitPrice = Number(line.unitPrice);
             const quantity = Number(line.quantity);
             return Number.isFinite(unitPrice) && Number.isFinite(quantity)
@@ -101,7 +105,7 @@ let OrderService = class OrderService {
                 status: 'pending',
             });
             const savedOrder = await manager.save(order_entity_1.OrderEntity, order);
-            const orderLineEntities = data.orderLines.map((line) => {
+            const orderLineEntities = normalizedOrderLines.map((line) => {
                 const unitPrice = parseFloat(line.unitPrice);
                 const totalPrice = unitPrice * line.quantity;
                 return manager.create(order_line_entity_1.OrderLineEntity, {

@@ -44,6 +44,9 @@ let InventoryGrpcController = InventoryGrpcController_1 = class InventoryGrpcCon
     async returnInventory(body) {
         return this.productService.returnInventory(this.normalizeCreatedBy({ ...body.input }));
     }
+    async summary() {
+        return this.productService.getInventorySummary();
+    }
 };
 exports.InventoryGrpcController = InventoryGrpcController;
 __decorate([
@@ -60,6 +63,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], InventoryGrpcController.prototype, "returnInventory", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('InventoryService', 'Summary'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], InventoryGrpcController.prototype, "summary", null);
 exports.InventoryGrpcController = InventoryGrpcController = InventoryGrpcController_1 = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [product_service_1.OriginProductService])

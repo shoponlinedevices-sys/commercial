@@ -2,6 +2,7 @@ import { Body, Controller, Logger } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { OriginProductService } from 'src/services/product.service';
 import { IProductSaleStock, ISaleInventory } from '../../../../packages/contracts/model/product/product.model';
+import { IInventorySummary } from '../../../../packages/contracts/model/inventory/inventory.model';
 
 @Controller()
 export class InventoryGrpcController {
@@ -42,5 +43,10 @@ export class InventoryGrpcController {
      input: IProductSaleStock
     }): Promise<ISaleInventory> {
       return this.productService.returnInventory(this.normalizeCreatedBy({...body.input}));
+    }
+
+  @GrpcMethod('InventoryService', 'Summary')
+   async summary(): Promise<IInventorySummary> {
+      return this.productService.getInventorySummary();
     }
 }

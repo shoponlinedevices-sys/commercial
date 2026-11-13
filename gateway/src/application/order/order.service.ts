@@ -184,9 +184,10 @@ export class OrderService implements OnModuleInit {
 
   async findByUserId(userId: number): Promise<Order[]> {
     console.log(`[OrderService] Finding orders for userId: ${userId}`);
-    const orders = await this.orderRepository.findByUserId(userId);
-    console.log(`[OrderService] Found ${orders.length} orders for userId: ${userId}`);
-    return orders;
+    // const orders = await this.orderRepository.findByUserId(userId);
+    const orders = await firstValueFrom(this.orderService.getUserOrders({ userId }));
+    console.log(`[OrderService] Found ${orders.orders.length} orders for userId: ${userId}`);
+    return orders.orders;
   }
 
   async findAll(filters?: IGetAllOrdersRequest): Promise<Order[]> {
@@ -195,13 +196,14 @@ export class OrderService implements OnModuleInit {
   }
 
   async updateStatus(orderId: string, status: string, createdBy?: number): Promise<Order> {
-    const currentOrders = await this.orderRepository.findAll();
+    // const currentOrders = await this.orderRepository.findAll();
+    const currentOrders = await firstValueFrom(this.orderService.getAllOrders());
     const currentOrder = currentOrders.find((order) => order.id.toString() === orderId);
     const previousStatus = currentOrder?.status || 'pending';
-    const updated = await this.orderRepository.updateStatus(orderId, status, createdBy);
-
+    // const updated = await this.orderRepository.updateStatus(orderId, status, createdBy);
+    const updated = await firstValueFrom(this.orderService.updateOrderStatus({ id: orderId, status, createdBy }));
     try {
-      await this.settleOrderInventoryForStatus(updated, status, createdBy);
+      await this.settleOrderInventoryForStatus(updated.order, status, createdBy);
     } catch (error) {
       console.error(`Failed to sync inventory for order ${orderId} status ${status}:`, error);
     }
@@ -212,6 +214,6 @@ export class OrderService implements OnModuleInit {
       });
     }
 
-    return updated;
+    return updated.order;
   }
 }

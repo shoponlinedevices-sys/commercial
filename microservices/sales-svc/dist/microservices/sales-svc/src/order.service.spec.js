@@ -60,6 +60,15 @@ describe('OrderService.createOrder email dispatch', () => {
         })).rejects.toThrow('database failure');
         expect(sendOrderConfirmationEmail).not.toHaveBeenCalled();
     });
+    it('rejects requests without order lines before starting a transaction', async () => {
+        const transaction = jest.fn();
+        const service = new order_service_1.OrderService({ transaction }, {});
+        await expect(service.createOrder({
+            userId: 'user-1',
+            totalAmount: 125,
+        })).rejects.toThrow('orderLines must be an array');
+        expect(transaction).not.toHaveBeenCalled();
+    });
 });
 describe('OrderService.clearCartByUserId', () => {
     it('deletes cart lines without cascading stale eager-loaded lines back into the cart', async () => {

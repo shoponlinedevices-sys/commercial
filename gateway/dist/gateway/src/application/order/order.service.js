@@ -166,20 +166,20 @@ let OrderService = class OrderService {
     }
     async findByUserId(userId) {
         console.log(`[OrderService] Finding orders for userId: ${userId}`);
-        const orders = await this.orderRepository.findByUserId(userId);
-        console.log(`[OrderService] Found ${orders.length} orders for userId: ${userId}`);
-        return orders;
+        const orders = await (0, rxjs_1.firstValueFrom)(this.orderService.getUserOrders({ userId }));
+        console.log(`[OrderService] Found ${orders.orders.length} orders for userId: ${userId}`);
+        return orders.orders;
     }
     async findAll(filters) {
         return (0, rxjs_1.firstValueFrom)(this.orderService.getAllOrders(filters));
     }
     async updateStatus(orderId, status, createdBy) {
-        const currentOrders = await this.orderRepository.findAll();
+        const currentOrders = await (0, rxjs_1.firstValueFrom)(this.orderService.getAllOrders());
         const currentOrder = currentOrders.find((order) => order.id.toString() === orderId);
         const previousStatus = (currentOrder === null || currentOrder === void 0 ? void 0 : currentOrder.status) || 'pending';
-        const updated = await this.orderRepository.updateStatus(orderId, status, createdBy);
+        const updated = await (0, rxjs_1.firstValueFrom)(this.orderService.updateOrderStatus({ id: orderId, status, createdBy }));
         try {
-            await this.settleOrderInventoryForStatus(updated, status, createdBy);
+            await this.settleOrderInventoryForStatus(updated.order, status, createdBy);
         }
         catch (error) {
             console.error(`Failed to sync inventory for order ${orderId} status ${status}:`, error);
@@ -189,7 +189,7 @@ let OrderService = class OrderService {
                 console.error('Failed to re-reserve inventory after status recovery:', reserveError);
             });
         }
-        return updated;
+        return updated.order;
     }
 };
 exports.OrderService = OrderService;

@@ -24,7 +24,8 @@ export declare class OrderService {
     createOrder(data: {
         userId: string;
         totalAmount: number;
-        orderLines: any[];
+        orderLines?: any[];
+        cartLines?: any[];
         shippingAddress?: string;
         fcmToken?: string;
         customerEmail?: string;

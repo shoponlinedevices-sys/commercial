@@ -16,4 +16,5 @@ export class InventoryGrpcClient implements OnModuleInit {
 
   saleStock(data: IProductSaleStock) { return firstValueFrom(this.inventoryService.saleStock(data)); }
   returnInventory(data: IProductSaleStock) { return firstValueFrom(this.inventoryService.returnInventory(data)); }
+  summary() { return firstValueFrom(this.inventoryService.summary({})); }
 }
