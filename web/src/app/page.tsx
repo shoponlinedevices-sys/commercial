@@ -242,7 +242,7 @@ export default function HomePage() {
           ) : featuredProducts.length === 0 ? (
             <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">Chưa có sản phẩm nổi bật để hiển thị.</div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               {featuredProducts.map((product) => <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />)}
             </div>
           )}
@@ -266,7 +266,7 @@ export default function HomePage() {
           ) : categoriesWithProducts.length === 0 ? (
             <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">Chưa có danh mục sản phẩm để hiển thị.</div>
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {categoriesWithProducts.map((category, index) => {
                 const Icon = categoryIcons[index % categoryIcons.length];
                 const product = category.products[0];

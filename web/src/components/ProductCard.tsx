@@ -30,7 +30,7 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
   };
 
   return (
-    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card transition-colors duration-200 hover:border-primary/40 hover:shadow-md">
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
       <Link href={`/products/${product.id}`} className={`relative block ${compact ? 'aspect-[5/4]' : 'aspect-[4/3]'} overflow-hidden bg-white`} aria-label={`Xem ${product.name}`}>
         {product.image ? (
           <Image
