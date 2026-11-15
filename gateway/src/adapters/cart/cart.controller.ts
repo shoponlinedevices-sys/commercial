@@ -3,7 +3,6 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/s
 import { Public } from '../../domain/identity/public.decorator';
 import { AddToCartDto } from './dto/cart.dto';
 import { CartService } from '../../application/cart/cart.service';
-import { Cart } from '../../domain/cart/cart.entity';
 import { ProductService } from '../../application/product/product.service';
 
 @ApiTags('Cart')

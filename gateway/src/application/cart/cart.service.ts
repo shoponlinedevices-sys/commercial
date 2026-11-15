@@ -1,83 +1,65 @@
-import { Injectable } from '@nestjs/common';
-import { CartRepository } from '../../domain/cart/cart.repository';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import { Cart } from '../../domain/cart/cart.entity';
-import { AddToCartDto } from '../../adapters/cart/dto/cart.dto';
-import { CartLineEntity } from '../../infrastructure/database/entities';
-
+import { ICart, ICartLine } from '../../../../packages/contracts/model/orders/orders.model';
+import { IGrpcOrdersService } from '../../../../packages/contracts/grpc/interface/grpc-orders.service';
 
 @Injectable()
-export class CartService {
-  constructor(private readonly cartRepository: CartRepository) {}
+export class CartService implements OnModuleInit {
+  private ordersService!: IGrpcOrdersService;
 
-  findAll(): Promise<Cart[]> {
-    return this.cartRepository.findAll();
+  constructor(@Inject('GRPC_ORDERS_SERVICE') private readonly client: ClientGrpc) {}
+
+  onModuleInit() {
+    this.ordersService = this.client.getService<IGrpcOrdersService>('OrdersService');
   }
 
-  findOne(id: number): Promise<Cart | null> {
-    return this.cartRepository.findOne(id);
+  async findAll(): Promise<ICart[]> {
+    const response = await firstValueFrom(this.ordersService.getAllCarts({}));
+    return response.carts || [];
   }
 
-  async getCartByUserId(userId: number): Promise<Cart | null> {
-    try {
-      console.log('Service: Fetching cart for userId:', userId);
-      const result = await this.cartRepository.getCartByUserId(userId);
-      console.log('Service: Cart result:', result);
-      return result;
-    } catch (error) {
-      console.error('Service: Error fetching cart by userId:', error);
-      throw error;
-    }
+  async findOne(id: number): Promise<ICart | null> {
+    const response = await firstValueFrom(this.ordersService.getCart({ id }));
+    return response.cart || null;
   }
 
-  async create(item: Cart): Promise<Cart> {
-    console.log('Service: Creating cart with item:', JSON.stringify(item));
-    try {
-      const result = await this.cartRepository.create(item);
-      console.log('Service: Cart created successfully:', JSON.stringify(result));
-      return result;
-    } catch (error) {
-      console.error('Service: Error creating cart:', error);
-      throw error;
-    }
+  async getCartByUserId(userId: number): Promise<ICart | null> {
+    const response = await firstValueFrom(this.ordersService.getCartByUserId({ userId }));
+    return response.cart || null;
   }
 
-  async addToCart(userId: number, productId: number, quantity: number, image?: string): Promise<Cart> {
-    console.log('Service: Adding to cart - userId:', userId, 'productId:', productId, 'quantity:', quantity, 'image:', image);
-    try {
-      const result = await this.cartRepository.addToCart(userId, productId, quantity, image);
-      console.log('Service: Item added to cart successfully:', JSON.stringify(result));
-      return result;
-    } catch (error) {
-      console.error('Service: Error adding to cart:', error);
-      throw error;
-    }
+  async create(item: Cart): Promise<ICart> {
+    const line = item.cartLines?.[0];
+    const response = await firstValueFrom(this.ordersService.addToCart({
+      userId: item.userId,
+      productId: line?.productId || 0,
+      quantity: line?.quantity || 0,
+      cartLines: item.cartLines?.map((cartLine) => ({
+        ...cartLine,
+        unitPrice: Number(cartLine.unitPrice),
+      })),
+      image: line?.image,
+    }));
+    return response.cart;
   }
 
-  deleteCartLineById(id: number): Promise<void> {
-   try{
-      return (this.cartRepository as any).deleteCartLineById(id);
-    }
-    catch (error) {
-      console.error('Error deleting cart line:', error);
-      throw error;
-    }
+  async addToCart(userId: number, productId: number, quantity: number, image?: string): Promise<ICart> {
+    const response = await firstValueFrom(this.ordersService.addToCart({ userId, productId, quantity, image }));
+    return response.cart;
   }
 
-  async getCartLinesByUserId(userId: number): Promise<CartLineEntity[]> {
-    try {
-      return (this.cartRepository as any).getCartLinesByUserId(userId);
-    } catch (error) {
-      console.error('Error fetching cart lines:', error);
-      throw error;
-    }
+  async deleteCartLineById(id: number): Promise<void> {
+    await firstValueFrom(this.ordersService.removeCartLine({ cartLineId: id }));
+  }
+
+  async getCartLinesByUserId(userId: number): Promise<ICartLine[]> {
+    const response = await firstValueFrom(this.ordersService.getCartLinesByUserId({ userId }));
+    return response.cartLines || [];
   }
 
   async clearCartByUserId(userId: number): Promise<void> {
-    try {
-      await this.cartRepository.clearCartByUserId(userId);
-    } catch (error) {
-      console.error('Error clearing cart:', error);
-      throw error;
-    }
+    await firstValueFrom(this.ordersService.clearCartByUserId({ userId }));
   }
 }

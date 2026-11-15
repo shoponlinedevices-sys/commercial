@@ -9,24 +9,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CartModule = void 0;
 const common_1 = require("@nestjs/common");
 const cart_controller_1 = require("./cart.controller");
-const cart_repository_1 = require("../../domain/cart/cart.repository");
 const cart_service_1 = require("../../application/cart/cart.service");
-const sales_service_cart_repository_1 = require("../../infrastructure/sales-service/sales-service-cart.repository");
+const grpc_clients_module_1 = require("../../infrastructure/grpc/grpc-clients.module");
 const product_module_1 = require("../product/product.module");
 let CartModule = class CartModule {
 };
 exports.CartModule = CartModule;
 exports.CartModule = CartModule = __decorate([
     (0, common_1.Module)({
-        imports: [product_module_1.ProductModule],
+        imports: [grpc_clients_module_1.GrpcClientsModule, product_module_1.ProductModule],
         controllers: [cart_controller_1.CartController],
-        providers: [
-            cart_service_1.CartService,
-            {
-                provide: cart_repository_1.CartRepository,
-                useClass: sales_service_cart_repository_1.SalesServiceCartRepository,
-            },
-        ],
+        providers: [cart_service_1.CartService],
     })
 ], CartModule);
 //# sourceMappingURL=cart.module.js.map
