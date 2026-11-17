@@ -14,7 +14,6 @@ import {
   ShoppingBag,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { useTheme } from '@/context/ThemeContext';
 import { orderService } from '@/services/order.service';
 import { Order } from '@/types';
 import { formatDateVi, formatVnd } from '@/lib/formatters';
@@ -45,25 +44,15 @@ const getStatusLabel = (status: string) => {
   }
 };
 
-const getStatusStyle = (status: string, darkMode: boolean) => {
+const getStatusStyle = (status: string) => {
   const styles: Record<string, string> = {
-    pending: darkMode
-      ? 'border-amber-400/20 bg-amber-400/10 text-amber-300'
-      : 'border-amber-200 bg-amber-50 text-amber-700',
-    processing: darkMode
-      ? 'border-blue-400/20 bg-blue-400/10 text-blue-300'
-      : 'border-blue-200 bg-blue-50 text-blue-700',
-    completed: darkMode
-      ? 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300'
-      : 'border-emerald-200 bg-emerald-50 text-emerald-700',
-    cancelled: darkMode
-      ? 'border-rose-400/20 bg-rose-400/10 text-rose-300'
-      : 'border-rose-200 bg-rose-50 text-rose-700',
+    pending: 'border-amber-200 bg-amber-50 text-amber-700',
+    processing: 'border-blue-200 bg-blue-50 text-blue-700',
+    completed: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+    cancelled: 'border-rose-200 bg-rose-50 text-rose-700',
   };
 
-  return styles[status.toLowerCase()] || (darkMode
-    ? 'border-slate-400/20 bg-slate-400/10 text-slate-300'
-    : 'border-slate-200 bg-slate-50 text-slate-600');
+  return styles[status.toLowerCase()] || 'border-slate-200 bg-slate-50 text-slate-600';
 };
 
 const getOrderTotal = (order: Order) => {
@@ -76,13 +65,10 @@ const getOrderTotal = (order: Order) => {
 
 export default function OrdersPage() {
   const { user, loading: authLoading } = useAuth();
-  const { colors } = useTheme();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeStatus, setActiveStatus] = useState<OrderStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const darkMode = colors.darkMode;
-
   const loadOrders = useCallback(async () => {
     if (!user) {
       setOrders([]);
@@ -119,25 +105,15 @@ export default function OrdersPage() {
 
   const pendingCount = orders.filter((order) => ['pending', 'processing'].includes(order.status.toLowerCase())).length;
   const completedCount = orders.filter((order) => order.status.toLowerCase() === 'completed').length;
-  const pageColors = darkMode
-    ? {
-        background: 'bg-slate-950 text-slate-100',
-        muted: 'text-slate-400',
-        card: 'border-white/10 bg-slate-900/80 shadow-black/20',
-        softCard: 'border-white/10 bg-white/[0.04]',
-        input: 'border-white/10 bg-slate-900 text-slate-100 placeholder:text-slate-500 focus:border-violet-400',
-        divider: 'border-white/10',
-        subtle: 'text-slate-300',
-      }
-    : {
-        background: 'bg-slate-50 text-slate-900',
-        muted: 'text-slate-500',
-        card: 'border-slate-200/80 bg-white shadow-slate-200/60',
-        softCard: 'border-slate-200 bg-slate-50',
-        input: 'border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-violet-400',
-        divider: 'border-slate-100',
-        subtle: 'text-slate-600',
-      };
+  const pageColors = {
+    background: 'bg-slate-50 text-slate-900',
+    muted: 'text-slate-500',
+    card: 'border-slate-200/80 bg-white shadow-slate-200/60',
+    softCard: 'border-slate-200 bg-slate-50',
+    input: 'border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:border-violet-400',
+    divider: 'border-slate-100',
+    subtle: 'text-slate-600',
+  };
 
   if (loading || authLoading) {
     return (
@@ -159,17 +135,11 @@ export default function OrdersPage() {
     <div className={`min-h-screen ${pageColors.background}`}>
       <Header />
       <main className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
-        <section className={`relative isolate overflow-hidden rounded-3xl border p-6 shadow-xl sm:p-9 ${
-          darkMode
-            ? 'border-violet-300/10 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 shadow-indigo-950/30'
-            : 'border-violet-100 bg-gradient-to-br from-violet-100 via-white to-indigo-50 shadow-violet-100/70'
-        }`}>
+        <section className="relative isolate overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-indigo-50 p-6 shadow-xl shadow-violet-100/70 sm:p-9">
           <div className="pointer-events-none absolute -right-10 -top-20 -z-10 h-64 w-64 rounded-full bg-violet-500/15 blur-3xl" />
           <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
             <div className="max-w-2xl">
-              <div className={`mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] ${
-                darkMode ? 'border-violet-300/20 bg-violet-300/10 text-violet-200' : 'border-violet-200 bg-white/70 text-violet-700'
-              }`}>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/70 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-violet-700">
                 <ShoppingBag className="h-3.5 w-3.5" />
                 Khu vực mua sắm
               </div>
@@ -289,9 +259,7 @@ export default function OrdersPage() {
                       className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-full border px-3.5 text-sm font-medium transition ${
                         isActive
                           ? 'border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20'
-                          : darkMode
-                            ? 'border-white/10 bg-white/[0.04] text-slate-300 hover:bg-white/[0.08]'
-                            : 'border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-primary'
+                          : 'border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-primary'
                       }`}
                     >
                       {filter.label}
@@ -322,9 +290,7 @@ export default function OrdersPage() {
                   {filteredOrders.map((order) => (
                     <article
                       key={order.id}
-                      className={`overflow-hidden rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg ${
-                        darkMode ? 'border-white/10 bg-slate-900/80 hover:shadow-black/25' : 'border-slate-200/80 bg-white hover:shadow-slate-200/80'
-                      }`}
+                      className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-200/80"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-6">
                         <div className="flex min-w-0 items-center gap-3">
@@ -336,13 +302,13 @@ export default function OrdersPage() {
                             <h3 className="truncate font-bold">#{order.id}</h3>
                           </div>
                         </div>
-                        <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${getStatusStyle(order.status, darkMode)}`}>
+                        <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${getStatusStyle(order.status)}`}>
                           <span className="h-1.5 w-1.5 rounded-full bg-current" />
                           {getStatusLabel(order.status)}
                         </span>
                       </div>
 
-                      <div className={`grid gap-3 border-y px-5 py-4 sm:grid-cols-2 sm:px-6 ${pageColors.divider} ${darkMode ? 'bg-white/[0.025]' : 'bg-slate-50/70'}`}>
+                      <div className={`grid gap-3 border-y px-5 py-4 sm:grid-cols-2 sm:px-6 ${pageColors.divider} bg-slate-50/70`}>
                         <div className="flex items-start gap-3">
                           <CalendarDays className={`mt-0.5 h-4 w-4 shrink-0 ${pageColors.muted}`} />
                           <div>
@@ -367,7 +333,7 @@ export default function OrdersPage() {
                             {order.orderLines.map((line: any, index: number) => (
                               <div key={`${order.id}-${line.productId}-${index}`} className="flex items-start justify-between gap-4">
                                 <div className="flex min-w-0 items-start gap-3">
-                                  <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${darkMode ? 'bg-white/[0.06] text-slate-300' : 'bg-slate-100 text-slate-500'}`}>
+                                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
                                     <ShoppingBag className="h-4 w-4" />
                                   </div>
                                   <div className="min-w-0">

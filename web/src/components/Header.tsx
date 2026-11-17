@@ -63,7 +63,7 @@ export default function Header() {
         }`}
       >
         <div className="mx-auto max-w-7xl px-3 sm:px-6">
-          <div className="flex min-h-16 flex-wrap items-center gap-x-2 gap-y-2 py-2 sm:gap-3">
+          <div className="flex min-h-16 flex-nowrap items-center gap-x-1 py-2 sm:gap-3">
             {/* Mobile Menu Toggle */}
             <Button
               variant="ghost"
@@ -79,7 +79,7 @@ export default function Header() {
             {/* Store brand */}
             <Link href="/" aria-label="Commercial - Trang chủ" className="flex shrink-0 items-center gap-2">
               <Image src="/logo.png" alt="" width={36} height={36} priority className="h-9 w-9 object-contain" />
-              <span className={`hidden text-lg font-bold sm:inline ${colors.darkMode ? 'text-white' : 'text-slate-900'}`}>
+              <span className={`hidden text-base font-bold min-[420px]:inline sm:text-lg ${colors.darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Commercial
               </span>
             </Link>
@@ -90,7 +90,7 @@ export default function Header() {
             </nav>
 
             {/* Search Bar */}
-            <div className="order-last min-w-0 basis-full sm:order-none sm:flex-1 sm:basis-0 sm:px-2 lg:px-4">
+            <div className="min-w-0 flex-1 px-1 sm:px-2 lg:px-4">
               <div className="group relative">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors ${colors.darkMode ? 'text-gray-400 group-focus-within:text-white' : 'text-muted-foreground group-focus-within:text-primary'}`} />
                 <Input
@@ -116,7 +116,7 @@ export default function Header() {
             </div>
 
             {/* Right Actions */}
-            <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
+            <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-2">
               <Button
                 variant="ghost"
                 size="icon"

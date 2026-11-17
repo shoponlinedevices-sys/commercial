@@ -125,12 +125,12 @@ export default function ProductsPage() {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
-        <section className="relative isolate mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-6 py-8 text-white shadow-xl shadow-violet-950/10 sm:mb-10 sm:px-10 sm:py-11">
-          <div aria-hidden="true" className="absolute -right-16 -top-28 -z-10 h-80 w-80 rounded-full bg-violet-500/20 blur-3xl" />
-          <div aria-hidden="true" className="absolute -bottom-36 right-1/4 -z-10 h-64 w-64 rounded-full bg-indigo-400/10 blur-3xl" />
+        <section className="relative isolate mb-8 overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-indigo-50 px-6 py-8 text-slate-900 shadow-xl shadow-violet-100/70 sm:mb-10 sm:px-10 sm:py-11">
+          <div aria-hidden="true" className="absolute -right-16 -top-28 -z-10 h-80 w-80 rounded-full bg-violet-300/30 blur-3xl" />
+          <div aria-hidden="true" className="absolute -bottom-36 right-1/4 -z-10 h-64 w-64 rounded-full bg-indigo-200/30 blur-3xl" />
           <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
             <div className="max-w-2xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-violet-100">
+              <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/70 px-3 py-1 text-xs font-medium text-violet-700">
                 <Sparkles className="h-3.5 w-3.5" />
                 Danh mục Commercial
               </span>
@@ -139,21 +139,21 @@ export default function ProductsPage() {
                   ? getCategoryDisplayName(selectedCategory)
                   : searchQuery ? 'Kết quả tìm kiếm' : 'Tất cả sản phẩm'}
               </h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
+              <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
                 Thiết bị và dụng cụ phù hợp cho công việc, công trình và nhu cầu hằng ngày của bạn.
               </p>
-              <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-300 sm:text-sm">
-                <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-violet-300" />Mua sắm an tâm</span>
-                <span className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-violet-300" />Thông tin rõ ràng</span>
+              <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-600 sm:text-sm">
+                <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" />Mua sắm an tâm</span>
+                <span className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" />Thông tin rõ ràng</span>
               </div>
             </div>
-            <div className="flex w-fit items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-400/20 text-violet-200">
+            <div className="flex w-fit items-center gap-3 rounded-2xl border border-violet-100 bg-white/75 px-4 py-3 shadow-sm backdrop-blur-sm">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Boxes className="h-5 w-5" />
               </span>
               <span>
                 <span className="block text-xl font-bold leading-6">{filteredProducts.length}</span>
-                <span className="text-xs text-slate-300">sản phẩm phù hợp</span>
+                <span className="text-xs text-slate-500">sản phẩm phù hợp</span>
               </span>
             </div>
           </div>
