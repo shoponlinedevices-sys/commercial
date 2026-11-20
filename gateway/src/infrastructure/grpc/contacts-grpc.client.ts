@@ -29,4 +29,7 @@ export class ContactsGrpcClient implements OnModuleInit {
   updatePaymentMethod(data: any) { return firstValueFrom(this.contactsService.updatePaymentMethod(data)); }
   deletePaymentMethod(data: any) { return firstValueFrom(this.contactsService.deletePaymentMethod(data)); }
   setDefaultPaymentMethod(data: any) { return firstValueFrom(this.contactsService.setDefaultPaymentMethod(data)); }
+  getAvailablePaymentMethods(data: { userId: number }) { return firstValueFrom(this.contactsService.getAvailablePaymentMethods(data)); }
+  getAccountPaymentSettings(data: { userId: number }) { return firstValueFrom(this.contactsService.getAccountPaymentSettings(data)); }
+  updateAccountPaymentSettings(data: { userId: number; settingsJson: string }) { return firstValueFrom(this.contactsService.updateAccountPaymentSettings(data)); }
 }

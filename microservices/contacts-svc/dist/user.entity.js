@@ -43,6 +43,18 @@ __decorate([
     __metadata("design:type", Number)
 ], User.prototype, "status", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ name: 'prepayment_enabled', type: 'tinyint', default: 1 }),
+    __metadata("design:type", Number)
+], User.prototype, "prepaymentEnabled", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'cash_on_delivery_enabled', type: 'tinyint', default: 1 }),
+    __metadata("design:type", Number)
+], User.prototype, "cashOnDeliveryEnabled", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'payment_settings', type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], User.prototype, "paymentSettings", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ name: 'created_at' }),
     __metadata("design:type", Date)
 ], User.prototype, "createdAt", void 0);

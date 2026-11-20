@@ -24,6 +24,12 @@ export declare class AuthService {
         fullName: string;
         role: string;
         status: number;
+        prepaymentEnabled: number;
+        cashOnDeliveryEnabled: number;
+        paymentSettings: {
+            show_only_prepayment?: boolean;
+            show_both_options?: boolean;
+        } | null;
         createdAt: Date;
     }>;
     refresh(refreshToken: string): Promise<{

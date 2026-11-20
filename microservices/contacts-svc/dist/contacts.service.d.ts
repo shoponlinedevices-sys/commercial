@@ -3,6 +3,14 @@ import { UserProfileEntity } from './user-profile.entity';
 import { DeliveryAddressEntity } from './delivery-address.entity';
 import { PaymentMethodEntity } from './payment-method.entity';
 import { HistoryLogEntity } from './history-log.entity';
+type AccountPaymentSettingsPatch = {
+    prepayment_enabled?: number;
+    cash_on_delivery_enabled?: number;
+    payment_settings?: {
+        show_only_prepayment?: boolean;
+        show_both_options?: boolean;
+    };
+};
 export declare class ContactsService {
     private readonly dataSource;
     constructor(dataSource: DataSource);
@@ -104,4 +112,18 @@ export declare class ContactsService {
     setDefaultPaymentMethod(userId: number, paymentMethodId: number): Promise<{
         success: boolean;
     }>;
+    getAccountPaymentSettings(userId: number): Promise<{
+        prepaymentEnabled: number;
+        cashOnDeliveryEnabled: number;
+        paymentSettingsJson: string;
+    }>;
+    getAvailablePaymentMethods(userId: number): Promise<{
+        paymentMethods: string[];
+    }>;
+    updateAccountPaymentSettings(userId: number, settings: AccountPaymentSettingsPatch): Promise<{
+        prepaymentEnabled: number;
+        cashOnDeliveryEnabled: number;
+        paymentSettingsJson: string;
+    }>;
 }
+export {};

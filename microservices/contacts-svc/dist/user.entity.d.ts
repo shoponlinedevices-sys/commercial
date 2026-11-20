@@ -6,5 +6,11 @@ export declare class User {
     fullName: string;
     role: string;
     status: number;
+    prepaymentEnabled: number;
+    cashOnDeliveryEnabled: number;
+    paymentSettings: {
+        show_only_prepayment?: boolean;
+        show_both_options?: boolean;
+    } | null;
     createdAt: Date;
 }

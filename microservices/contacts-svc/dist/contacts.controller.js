@@ -134,6 +134,16 @@ let ContactsController = class ContactsController {
     setDefaultPaymentMethodGrpc(data) {
         return this.contactsService.setDefaultPaymentMethod(data.userId, data.paymentMethodId);
     }
+    getAvailablePaymentMethodsGrpc(data) {
+        return this.contactsService.getAvailablePaymentMethods(data.userId);
+    }
+    getAccountPaymentSettingsGrpc(data) {
+        return this.contactsService.getAccountPaymentSettings(data.userId);
+    }
+    updateAccountPaymentSettingsGrpc(data) {
+        const settings = JSON.parse(data.settingsJson);
+        return this.contactsService.updateAccountPaymentSettings(data.userId, settings);
+    }
 };
 exports.ContactsController = ContactsController;
 __decorate([
@@ -358,6 +368,24 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ContactsController.prototype, "setDefaultPaymentMethodGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('ContactsService', 'GetAvailablePaymentMethods'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ContactsController.prototype, "getAvailablePaymentMethodsGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('ContactsService', 'GetAccountPaymentSettings'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ContactsController.prototype, "getAccountPaymentSettingsGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('ContactsService', 'UpdateAccountPaymentSettings'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ContactsController.prototype, "updateAccountPaymentSettingsGrpc", null);
 exports.ContactsController = ContactsController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [contacts_service_1.ContactsService])

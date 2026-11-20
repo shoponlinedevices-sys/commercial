@@ -137,4 +137,24 @@ export declare class ContactsController {
     }): Promise<{
         success: boolean;
     }>;
+    getAvailablePaymentMethodsGrpc(data: {
+        userId: number;
+    }): Promise<{
+        paymentMethods: string[];
+    }>;
+    getAccountPaymentSettingsGrpc(data: {
+        userId: number;
+    }): Promise<{
+        prepaymentEnabled: number;
+        cashOnDeliveryEnabled: number;
+        paymentSettingsJson: string;
+    }>;
+    updateAccountPaymentSettingsGrpc(data: {
+        userId: number;
+        settingsJson: string;
+    }): Promise<{
+        prepaymentEnabled: number;
+        cashOnDeliveryEnabled: number;
+        paymentSettingsJson: string;
+    }>;
 }

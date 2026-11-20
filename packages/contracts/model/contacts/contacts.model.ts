@@ -188,3 +188,32 @@ export interface ISetDefaultPaymentMethodRequest {
 export interface ISetDefaultPaymentMethodResponse {
   success: boolean;
 }
+
+export interface IGetAvailablePaymentMethodsRequest {
+  userId: number;
+}
+
+export interface IGetAvailablePaymentMethodsResponse {
+  paymentMethods: string[];
+}
+
+export interface IGetAccountPaymentSettingsRequest {
+  userId: number;
+}
+
+export interface IGetAccountPaymentSettingsResponse {
+  prepaymentEnabled: number;
+  cashOnDeliveryEnabled: number;
+  paymentSettingsJson: string;
+}
+
+export interface IUpdateAccountPaymentSettingsRequest {
+  userId: number;
+  settingsJson: string;
+}
+
+export interface IUpdateAccountPaymentSettingsResponse {
+  prepaymentEnabled: number;
+  cashOnDeliveryEnabled: number;
+  paymentSettingsJson: string;
+}

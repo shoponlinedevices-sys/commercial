@@ -14,6 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContactsService = void 0;
 const common_1 = require("@nestjs/common");
+const microservices_1 = require("@nestjs/microservices");
+const grpc_js_1 = require("@grpc/grpc-js");
 const common_2 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const user_profile_entity_1 = require("./user-profile.entity");
@@ -242,6 +244,69 @@ let ContactsService = class ContactsService {
         paymentMethod.isDefault = true;
         await this.paymentMethodRepository.save(paymentMethod);
         return { success: true };
+    }
+    async getAccountPaymentSettings(userId) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            return {
+                prepaymentEnabled: 1,
+                cashOnDeliveryEnabled: 1,
+                paymentSettingsJson: JSON.stringify({
+                    show_only_prepayment: false,
+                    show_both_options: true,
+                }),
+            };
+        }
+        return {
+            prepaymentEnabled: user.prepaymentEnabled ?? 1,
+            cashOnDeliveryEnabled: user.cashOnDeliveryEnabled ?? 1,
+            paymentSettingsJson: user.paymentSettings ? JSON.stringify(user.paymentSettings) : '',
+        };
+    }
+    async getAvailablePaymentMethods(userId) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            return { paymentMethods: ['cash', 'card', 'bank_transfer', 'momo', 'zalopay'] };
+        }
+        const settings = user.paymentSettings || { show_only_prepayment: false, show_both_options: true };
+        const paymentMethods = [];
+        if (settings.show_only_prepayment) {
+            if (user.prepaymentEnabled === 1) {
+                paymentMethods.push('prepayment');
+            }
+        }
+        else if (settings.show_both_options) {
+            if (user.prepaymentEnabled === 1) {
+                paymentMethods.push('prepayment');
+            }
+            if (user.cashOnDeliveryEnabled === 1) {
+                paymentMethods.push('cash_on_delivery');
+            }
+        }
+        if (paymentMethods.length === 0) {
+            paymentMethods.push('cash', 'card', 'bank_transfer', 'momo', 'zalopay');
+        }
+        return { paymentMethods };
+    }
+    async updateAccountPaymentSettings(userId, settings) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            throw new microservices_1.RpcException({
+                code: grpc_js_1.status.NOT_FOUND,
+                message: 'Account not found. Please create an account first.',
+            });
+        }
+        if (settings.prepayment_enabled !== undefined) {
+            user.prepaymentEnabled = settings.prepayment_enabled;
+        }
+        if (settings.cash_on_delivery_enabled !== undefined) {
+            user.cashOnDeliveryEnabled = settings.cash_on_delivery_enabled;
+        }
+        if (settings.payment_settings !== undefined) {
+            user.paymentSettings = settings.payment_settings;
+        }
+        await this.userRepository.save(user);
+        return this.getAccountPaymentSettings(userId);
     }
 };
 exports.ContactsService = ContactsService;

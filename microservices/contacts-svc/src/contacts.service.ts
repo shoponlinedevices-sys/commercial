@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
+import { status } from '@grpc/grpc-js';
 import { Inject } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { UserProfileEntity } from './user-profile.entity';
@@ -6,6 +8,15 @@ import { User } from './user.entity';
 import { DeliveryAddressEntity } from './delivery-address.entity';
 import { PaymentMethodEntity } from './payment-method.entity';
 import { HistoryLogEntity } from './history-log.entity';
+
+type AccountPaymentSettingsPatch = {
+  prepayment_enabled?: number;
+  cash_on_delivery_enabled?: number;
+  payment_settings?: {
+    show_only_prepayment?: boolean;
+    show_both_options?: boolean;
+  };
+};
 
 @Injectable()
 export class ContactsService {
@@ -316,5 +327,77 @@ export class ContactsService {
     paymentMethod.isDefault = true;
     await this.paymentMethodRepository.save(paymentMethod);
     return { success: true };
+  }
+
+  async getAccountPaymentSettings(userId: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      return {
+        prepaymentEnabled: 1,
+        cashOnDeliveryEnabled: 1,
+        paymentSettingsJson: JSON.stringify({
+          show_only_prepayment: false,
+          show_both_options: true,
+        }),
+      };
+    }
+
+    return {
+      prepaymentEnabled: user.prepaymentEnabled ?? 1,
+      cashOnDeliveryEnabled: user.cashOnDeliveryEnabled ?? 1,
+      paymentSettingsJson: user.paymentSettings ? JSON.stringify(user.paymentSettings) : '',
+    };
+  }
+
+  async getAvailablePaymentMethods(userId: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      return { paymentMethods: ['cash', 'card', 'bank_transfer', 'momo', 'zalopay'] };
+    }
+
+    const settings = user.paymentSettings || { show_only_prepayment: false, show_both_options: true };
+    const paymentMethods: string[] = [];
+
+    if (settings.show_only_prepayment) {
+      if (user.prepaymentEnabled === 1) {
+        paymentMethods.push('prepayment');
+      }
+    } else if (settings.show_both_options) {
+      if (user.prepaymentEnabled === 1) {
+        paymentMethods.push('prepayment');
+      }
+      if (user.cashOnDeliveryEnabled === 1) {
+        paymentMethods.push('cash_on_delivery');
+      }
+    }
+
+    if (paymentMethods.length === 0) {
+      paymentMethods.push('cash', 'card', 'bank_transfer', 'momo', 'zalopay');
+    }
+
+    return { paymentMethods };
+  }
+
+  async updateAccountPaymentSettings(userId: number, settings: AccountPaymentSettingsPatch) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new RpcException({
+        code: status.NOT_FOUND,
+        message: 'Account not found. Please create an account first.',
+      });
+    }
+
+    if (settings.prepayment_enabled !== undefined) {
+      user.prepaymentEnabled = settings.prepayment_enabled;
+    }
+    if (settings.cash_on_delivery_enabled !== undefined) {
+      user.cashOnDeliveryEnabled = settings.cash_on_delivery_enabled;
+    }
+    if (settings.payment_settings !== undefined) {
+      user.paymentSettings = settings.payment_settings;
+    }
+
+    await this.userRepository.save(user);
+    return this.getAccountPaymentSettings(userId);
   }
 }

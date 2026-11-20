@@ -24,6 +24,9 @@ service ContactsService {
   rpc UpdatePaymentMethod (UpdatePaymentMethodRequest) returns (UpdatePaymentMethodResponse);
   rpc DeletePaymentMethod (DeletePaymentMethodRequest) returns (DeletePaymentMethodResponse);
   rpc SetDefaultPaymentMethod (SetDefaultPaymentMethodRequest) returns (SetDefaultPaymentMethodResponse);
+  rpc GetAvailablePaymentMethods (GetAvailablePaymentMethodsRequest) returns (GetAvailablePaymentMethodsResponse);
+  rpc GetAccountPaymentSettings (GetAccountPaymentSettingsRequest) returns (GetAccountPaymentSettingsResponse);
+  rpc UpdateAccountPaymentSettings (UpdateAccountPaymentSettingsRequest) returns (UpdateAccountPaymentSettingsResponse);
 }
 
 // User Profile Messages
@@ -206,6 +209,35 @@ message SetDefaultPaymentMethodRequest {
 
 message SetDefaultPaymentMethodResponse {
   bool success = 1;
+}
+
+message GetAvailablePaymentMethodsRequest {
+  int32 userId = 1;
+}
+
+message GetAvailablePaymentMethodsResponse {
+  repeated string paymentMethods = 1;
+}
+
+message GetAccountPaymentSettingsRequest {
+  int32 userId = 1;
+}
+
+message GetAccountPaymentSettingsResponse {
+  int32 prepaymentEnabled = 1;
+  int32 cashOnDeliveryEnabled = 2;
+  string paymentSettingsJson = 3;
+}
+
+message UpdateAccountPaymentSettingsRequest {
+  int32 userId = 1;
+  string settingsJson = 2;
+}
+
+message UpdateAccountPaymentSettingsResponse {
+  int32 prepaymentEnabled = 1;
+  int32 cashOnDeliveryEnabled = 2;
+  string paymentSettingsJson = 3;
 }
 
 message PaymentMethod {

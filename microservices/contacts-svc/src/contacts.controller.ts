@@ -215,4 +215,20 @@ export class ContactsController {
   setDefaultPaymentMethodGrpc(data: { userId: number; paymentMethodId: number }) {
     return this.contactsService.setDefaultPaymentMethod(data.userId, data.paymentMethodId);
   }
+
+  @GrpcMethod('ContactsService', 'GetAvailablePaymentMethods')
+  getAvailablePaymentMethodsGrpc(data: { userId: number }) {
+    return this.contactsService.getAvailablePaymentMethods(data.userId);
+  }
+
+  @GrpcMethod('ContactsService', 'GetAccountPaymentSettings')
+  getAccountPaymentSettingsGrpc(data: { userId: number }) {
+    return this.contactsService.getAccountPaymentSettings(data.userId);
+  }
+
+  @GrpcMethod('ContactsService', 'UpdateAccountPaymentSettings')
+  updateAccountPaymentSettingsGrpc(data: { userId: number; settingsJson: string }) {
+    const settings = JSON.parse(data.settingsJson);
+    return this.contactsService.updateAccountPaymentSettings(data.userId, settings);
+  }
 }
