@@ -10,18 +10,15 @@ exports.PaymentMethodModule = void 0;
 const common_1 = require("@nestjs/common");
 const payment_method_controller_1 = require("./payment-method.controller");
 const payment_method_service_1 = require("../../application/payment-method/payment-method.service");
-const payment_method_repository_1 = require("../../infrastructure/database/repositories/payment-method.repository");
-const account_repository_1 = require("../../infrastructure/database/repositories/account.repository");
-const database_module_1 = require("../../infrastructure/database/database.module");
 const grpc_clients_module_1 = require("../../infrastructure/grpc/grpc-clients.module");
 let PaymentMethodModule = class PaymentMethodModule {
 };
 exports.PaymentMethodModule = PaymentMethodModule;
 exports.PaymentMethodModule = PaymentMethodModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule, grpc_clients_module_1.GrpcClientsModule],
+        imports: [grpc_clients_module_1.GrpcClientsModule],
         controllers: [payment_method_controller_1.PaymentMethodController],
-        providers: [payment_method_service_1.PaymentMethodService, payment_method_repository_1.PaymentMethodRepository, account_repository_1.AccountRepository],
+        providers: [payment_method_service_1.PaymentMethodService],
         exports: [payment_method_service_1.PaymentMethodService],
     })
 ], PaymentMethodModule);

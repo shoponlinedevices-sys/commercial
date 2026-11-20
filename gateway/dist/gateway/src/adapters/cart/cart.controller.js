@@ -60,6 +60,9 @@ let CartController = class CartController {
             throw error;
         }
     }
+    updateCartLineQuantity(id, quantity) {
+        return this.cartService.updateCartLineQuantity(parseInt(id, 10), quantity);
+    }
     removeFromCart(id) {
         console.log(`Attempting to delete cart line with id: ${id}`);
         return this.cartService.deleteCartLineById(parseInt(id, 10));
@@ -114,6 +117,17 @@ __decorate([
     __metadata("design:paramtypes", [cart_dto_1.AddToCartDto]),
     __metadata("design:returntype", Promise)
 ], CartController.prototype, "addToCart", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Put)('/lines/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Set cart line quantity' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Cart line quantity updated successfully' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)('quantity')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:returntype", void 0)
+], CartController.prototype, "updateCartLineQuantity", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Delete)('/lines/:id'),

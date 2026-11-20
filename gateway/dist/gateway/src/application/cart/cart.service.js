@@ -50,6 +50,9 @@ let CartService = class CartService {
         const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.addToCart({ userId, productId, quantity, image }));
         return response.cart;
     }
+    async updateCartLineQuantity(cartLineId, quantity) {
+        await (0, rxjs_1.firstValueFrom)(this.ordersService.updateCartLineQuantity({ cartLineId, quantity }));
+    }
     async deleteCartLineById(id) {
         await (0, rxjs_1.firstValueFrom)(this.ordersService.removeCartLine({ cartLineId: id }));
     }

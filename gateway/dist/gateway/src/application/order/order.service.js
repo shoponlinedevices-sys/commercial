@@ -171,13 +171,21 @@ let OrderService = class OrderService {
         return orders.orders;
     }
     async findAll(filters) {
-        return (0, rxjs_1.firstValueFrom)(this.orderService.getAllOrders(filters));
+        var _a;
+        const response = await (0, rxjs_1.firstValueFrom)(this.orderService.getAllOrders(filters));
+        return (_a = response.orders) !== null && _a !== void 0 ? _a : [];
     }
     async updateStatus(orderId, status, createdBy) {
-        const currentOrders = await (0, rxjs_1.firstValueFrom)(this.orderService.getAllOrders());
+        var _a;
+        const response = await (0, rxjs_1.firstValueFrom)(this.orderService.getAllOrders({}));
+        const currentOrders = (_a = response.orders) !== null && _a !== void 0 ? _a : [];
         const currentOrder = currentOrders.find((order) => order.id.toString() === orderId);
         const previousStatus = (currentOrder === null || currentOrder === void 0 ? void 0 : currentOrder.status) || 'pending';
-        const updated = await (0, rxjs_1.firstValueFrom)(this.orderService.updateOrderStatus({ id: orderId, status, createdBy }));
+        const updated = await (0, rxjs_1.firstValueFrom)(this.orderService.updateOrderStatus({
+            id: orderId,
+            status,
+            createdBy: createdBy === undefined ? undefined : String(createdBy),
+        }));
         try {
             await this.settleOrderInventoryForStatus(updated.order, status, createdBy);
         }

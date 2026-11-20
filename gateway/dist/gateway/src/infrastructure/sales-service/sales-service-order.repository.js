@@ -47,10 +47,16 @@ let SalesServiceOrderRepository = class SalesServiceOrderRepository {
         return (response.orders || []).map((order) => this.toOrder(order));
     }
     async findAll(filters) {
-        return await (0, rxjs_1.firstValueFrom)(this.ordersService.getAllOrders(filters));
+        var _a;
+        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.getAllOrders(filters !== null && filters !== void 0 ? filters : {}));
+        return ((_a = response.orders) !== null && _a !== void 0 ? _a : []).map((order) => this.toOrder(order));
     }
     async updateStatus(orderId, status, createdBy) {
-        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.updateOrderStatus({ id: orderId, status, createdBy: createdBy === undefined ? undefined : createdBy }));
+        const response = await (0, rxjs_1.firstValueFrom)(this.ordersService.updateOrderStatus({
+            id: orderId,
+            status,
+            createdBy: createdBy === undefined ? undefined : String(createdBy),
+        }));
         return this.toOrder(response.order);
     }
 };

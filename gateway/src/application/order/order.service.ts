@@ -192,16 +192,22 @@ export class OrderService implements OnModuleInit {
 
   async findAll(filters?: IGetAllOrdersRequest): Promise<Order[]> {
     // return this.orderRepository.findAll(filters);
-    return firstValueFrom(this.orderService.getAllOrders(filters));
+    const response = await firstValueFrom(this.orderService.getAllOrders(filters));
+    return response.orders ?? [];
   }
 
   async updateStatus(orderId: string, status: string, createdBy?: number): Promise<Order> {
     // const currentOrders = await this.orderRepository.findAll();
-    const currentOrders = await firstValueFrom(this.orderService.getAllOrders());
+    const response = await firstValueFrom(this.orderService.getAllOrders({}));
+    const currentOrders = response.orders ?? [];
     const currentOrder = currentOrders.find((order) => order.id.toString() === orderId);
     const previousStatus = currentOrder?.status || 'pending';
     // const updated = await this.orderRepository.updateStatus(orderId, status, createdBy);
-    const updated = await firstValueFrom(this.orderService.updateOrderStatus({ id: orderId, status, createdBy }));
+    const updated = await firstValueFrom(this.orderService.updateOrderStatus({
+      id: orderId,
+      status,
+      createdBy: createdBy === undefined ? undefined : String(createdBy),
+    }));
     try {
       await this.settleOrderInventoryForStatus(updated.order, status, createdBy);
     } catch (error) {

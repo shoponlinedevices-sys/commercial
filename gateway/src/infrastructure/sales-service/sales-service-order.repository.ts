@@ -48,11 +48,16 @@ export class SalesServiceOrderRepository implements OrderRepository, OnModuleIni
   }
 
   async findAll(filters?: IGetAllOrdersRequest): Promise<Order[]> {
-    return await firstValueFrom(this.ordersService.getAllOrders(filters));
+    const response = await firstValueFrom(this.ordersService.getAllOrders(filters ?? {}));
+    return (response.orders ?? []).map((order) => this.toOrder(order));
   }
 
   async updateStatus(orderId: string, status: string, createdBy?: number): Promise<Order> {
-    const response = await firstValueFrom(this.ordersService.updateOrderStatus({ id: orderId, status, createdBy: createdBy === undefined ? undefined : createdBy }));
+    const response = await firstValueFrom(this.ordersService.updateOrderStatus({
+      id: orderId,
+      status,
+      createdBy: createdBy === undefined ? undefined : String(createdBy),
+    }));
     return this.toOrder(response.order);
   }
 }

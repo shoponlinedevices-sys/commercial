@@ -38,6 +38,9 @@ let ContactsGrpcClient = class ContactsGrpcClient {
     updatePaymentMethod(data) { return (0, rxjs_1.firstValueFrom)(this.contactsService.updatePaymentMethod(data)); }
     deletePaymentMethod(data) { return (0, rxjs_1.firstValueFrom)(this.contactsService.deletePaymentMethod(data)); }
     setDefaultPaymentMethod(data) { return (0, rxjs_1.firstValueFrom)(this.contactsService.setDefaultPaymentMethod(data)); }
+    getAvailablePaymentMethods(data) { return (0, rxjs_1.firstValueFrom)(this.contactsService.getAvailablePaymentMethods(data)); }
+    getAccountPaymentSettings(data) { return (0, rxjs_1.firstValueFrom)(this.contactsService.getAccountPaymentSettings(data)); }
+    updateAccountPaymentSettings(data) { return (0, rxjs_1.firstValueFrom)(this.contactsService.updateAccountPaymentSettings(data)); }
 };
 exports.ContactsGrpcClient = ContactsGrpcClient;
 exports.ContactsGrpcClient = ContactsGrpcClient = __decorate([
