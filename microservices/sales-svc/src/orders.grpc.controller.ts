@@ -86,6 +86,11 @@ export class OrdersGrpcController {
     return { cart: this.serializeCart(cart) };
   }
 
+  @GrpcMethod('OrdersService', 'UpdateCartLineQuantity')
+  async updateCartLineQuantity(data: { cartLineId: number; quantity: number }) {
+    return this.orderService.updateCartLineQuantity(data.cartLineId, data.quantity);
+  }
+
   @GrpcMethod('OrdersService', 'GetCartLinesByUserId')
   async getCartLinesByUserId(data: { userId: number }) {
     return this.orderService.getCartLinesByUserId(data.userId);

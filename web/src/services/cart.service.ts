@@ -21,6 +21,10 @@ export const cartService = {
     return await apiClient.post<Cart>('/cart', cart, CART_BASE_URL);
   },
 
+  async updateCartLineQuantity(cartLineId: number, quantity: number): Promise<void> {
+    await apiClient.put(`/cart/lines/${cartLineId}`, { quantity }, CART_BASE_URL);
+  },
+
   async removeCartLine(cartLineId: number): Promise<void> {
     await apiClient.delete(`/cart/lines/${cartLineId}`, CART_BASE_URL);
   },

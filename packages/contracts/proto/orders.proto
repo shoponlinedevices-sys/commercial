@@ -15,6 +15,7 @@ service OrdersService {
   rpc GetAllCarts (GetAllCartsRequest) returns (GetAllCartsResponse);
   rpc GetCartByUserId (GetCartByUserIdRequest) returns (GetCartByUserIdResponse);
   rpc AddToCart (AddToCartRequest) returns (AddToCartResponse);
+  rpc UpdateCartLineQuantity (UpdateCartLineQuantityRequest) returns (UpdateCartLineQuantityResponse);
   rpc GetCartLinesByUserId (GetCartLinesByUserIdRequest) returns (GetCartLinesByUserIdResponse);
   rpc RemoveCartLine (RemoveCartLineRequest) returns (RemoveCartLineResponse);
   rpc ClearCartByUserId (ClearCartByUserIdRequest) returns (ClearCartByUserIdResponse);
@@ -128,6 +129,15 @@ message AddToCartRequest {
 
 message AddToCartResponse {
   Cart cart = 1;
+}
+
+message UpdateCartLineQuantityRequest {
+  int32 cartLineId = 1;
+  int32 quantity = 2;
+}
+
+message UpdateCartLineQuantityResponse {
+  bool success = 1;
 }
 
 message GetCartLinesByUserIdRequest {

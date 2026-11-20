@@ -128,6 +128,15 @@ export interface IAddToCartResponse {
   cart: ICart;
 }
 
+export interface IUpdateCartLineQuantityRequest {
+  cartLineId: number;
+  quantity: number;
+}
+
+export interface IUpdateCartLineQuantityResponse {
+  success: boolean;
+}
+
 export interface IGetCartLinesByUserIdRequest {
   userId: number;
 }

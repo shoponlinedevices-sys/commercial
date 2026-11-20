@@ -75,17 +75,14 @@ export default function CartPage() {
   };
 
   const updateQuantity = async (cartLine: CartLine, newQuantity: number) => {
-    if (newQuantity < 1) return;
+    if (newQuantity < 1 || !cartLine.id) return;
     try {
-      await cartService.addToCart({
-        userId: user!.id,
-        productId: cartLine.productId,
-        quantity: newQuantity,
-      });
+      await cartService.updateCartLineQuantity(cartLine.id, newQuantity);
       await loadCart();
       await refreshCartCount();
     } catch (error) {
       console.error('Error updating quantity:', error);
+      alert('Không thể cập nhật số lượng sản phẩm');
     }
   };
 

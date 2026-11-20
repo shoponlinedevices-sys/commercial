@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { And, DataSource, FindOptionsWhere, In, LessThan, MoreThanOrEqual } from 'typeorm';
 import { OrderEntity } from './order.entity';
@@ -337,6 +337,34 @@ export class OrderService {
     });
 
     return { cartLines };
+  }
+
+  async updateCartLineQuantity(cartLineId: number, quantity: number) {
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      throw new BadRequestException('quantity must be a positive integer');
+    }
+
+    const cartLine = await this.cartLineRepository.findOne({
+      where: { id: cartLineId },
+    });
+
+    if (!cartLine) {
+      throw new NotFoundException('Cart line not found');
+    }
+
+    cartLine.quantity = quantity;
+    await this.cartLineRepository.save(cartLine);
+
+    const cartLines = await this.cartLineRepository.find({
+      where: { cartId: cartLine.cartId },
+    });
+    const totalPrice = cartLines.reduce(
+      (sum, line) => sum + Number(line.unitPrice) * line.quantity,
+      0,
+    );
+    await this.cartRepository.update(cartLine.cartId, { totalPrice: totalPrice.toString() });
+
+    return { success: true };
   }
 
   async removeCartLine(cartLineId: number) {

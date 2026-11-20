@@ -50,6 +50,10 @@ export class CartService implements OnModuleInit {
     return response.cart;
   }
 
+  async updateCartLineQuantity(cartLineId: number, quantity: number): Promise<void> {
+    await firstValueFrom(this.ordersService.updateCartLineQuantity({ cartLineId, quantity }));
+  }
+
   async deleteCartLineById(id: number): Promise<void> {
     await firstValueFrom(this.ordersService.removeCartLine({ cartLineId: id }));
   }

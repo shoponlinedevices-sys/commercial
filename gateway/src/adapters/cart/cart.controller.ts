@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Body, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Delete, Put } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { Public } from '../../domain/identity/public.decorator';
 import { AddToCartDto } from './dto/cart.dto';
@@ -71,6 +71,17 @@ export class CartController {
       console.error('Controller: Error in addToCart:', error);
       throw error;
     }
+  }
+
+  @Public()
+  @Put('/lines/:id')
+  @ApiOperation({ summary: 'Set cart line quantity' })
+  @ApiResponse({ status: 200, description: 'Cart line quantity updated successfully' })
+  updateCartLineQuantity(
+    @Param('id') id: string,
+    @Body('quantity') quantity: number,
+  ) {
+    return this.cartService.updateCartLineQuantity(parseInt(id, 10), quantity);
   }
 
   @Public()
