@@ -77,6 +77,9 @@ let OrdersGrpcController = class OrdersGrpcController {
         const { cart } = await this.orderService.addToCart(data);
         return { cart: this.serializeCart(cart) };
     }
+    async updateCartLineQuantity(data) {
+        return this.orderService.updateCartLineQuantity(data.cartLineId, data.quantity);
+    }
     async getCartLinesByUserId(data) {
         return this.orderService.getCartLinesByUserId(data.userId);
     }
@@ -149,6 +152,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersGrpcController.prototype, "addToCart", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('OrdersService', 'UpdateCartLineQuantity'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersGrpcController.prototype, "updateCartLineQuantity", null);
 __decorate([
     (0, microservices_1.GrpcMethod)('OrdersService', 'GetCartLinesByUserId'),
     __metadata("design:type", Function),

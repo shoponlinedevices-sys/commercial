@@ -54,6 +54,9 @@ export declare class OrderService {
     getCartLinesByUserId(userId: number): Promise<{
         cartLines: CartLineEntity[];
     }>;
+    updateCartLineQuantity(cartLineId: number, quantity: number): Promise<{
+        success: boolean;
+    }>;
     removeCartLine(cartLineId: number): Promise<{
         success: boolean;
     }>;

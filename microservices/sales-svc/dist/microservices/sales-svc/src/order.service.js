@@ -282,6 +282,25 @@ let OrderService = class OrderService {
         });
         return { cartLines };
     }
+    async updateCartLineQuantity(cartLineId, quantity) {
+        if (!Number.isInteger(quantity) || quantity < 1) {
+            throw new common_1.BadRequestException('quantity must be a positive integer');
+        }
+        const cartLine = await this.cartLineRepository.findOne({
+            where: { id: cartLineId },
+        });
+        if (!cartLine) {
+            throw new common_1.NotFoundException('Cart line not found');
+        }
+        cartLine.quantity = quantity;
+        await this.cartLineRepository.save(cartLine);
+        const cartLines = await this.cartLineRepository.find({
+            where: { cartId: cartLine.cartId },
+        });
+        const totalPrice = cartLines.reduce((sum, line) => sum + Number(line.unitPrice) * line.quantity, 0);
+        await this.cartRepository.update(cartLine.cartId, { totalPrice: totalPrice.toString() });
+        return { success: true };
+    }
     async removeCartLine(cartLineId) {
         try {
             const cartLine = await this.cartLineRepository.findOne({

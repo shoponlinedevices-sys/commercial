@@ -115,6 +115,12 @@ export declare class OrdersGrpcController {
             }[];
         };
     }>;
+    updateCartLineQuantity(data: {
+        cartLineId: number;
+        quantity: number;
+    }): Promise<{
+        success: boolean;
+    }>;
     getCartLinesByUserId(data: {
         userId: number;
     }): Promise<{

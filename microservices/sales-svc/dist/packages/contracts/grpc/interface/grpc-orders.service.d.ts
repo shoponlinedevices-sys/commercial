@@ -13,6 +13,7 @@ export interface IGrpcOrdersService {
     }>;
     getCartByUserId(input?: OrdersModel.IGetCartByUserIdRequest, metadata?: Metadata): Observable<OrdersModel.IGetCartByUserIdResponse>;
     addToCart(input?: OrdersModel.IAddToCartRequest, metadata?: Metadata): Observable<OrdersModel.IAddToCartResponse>;
+    updateCartLineQuantity(input?: OrdersModel.IUpdateCartLineQuantityRequest, metadata?: Metadata): Observable<OrdersModel.IUpdateCartLineQuantityResponse>;
     getCartLinesByUserId(input?: OrdersModel.IGetCartLinesByUserIdRequest, metadata?: Metadata): Observable<OrdersModel.IGetCartLinesByUserIdResponse>;
     removeCartLine(input?: OrdersModel.IRemoveCartLineRequest, metadata?: Metadata): Observable<OrdersModel.IRemoveCartLineResponse>;
     clearCartByUserId(input?: OrdersModel.IClearCartByUserIdRequest, metadata?: Metadata): Observable<OrdersModel.IClearCartByUserIdResponse>;
