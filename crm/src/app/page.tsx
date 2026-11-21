@@ -359,7 +359,37 @@ export default function Dashboard() {
     setProfile(null);
   };
 
-  if (!token) return <div className="login-screen"><div className="login-panel"><div className="brand"><div className="brand-mark"><ShoppingBag size={19} /></div><span><b>CRM</b></span></div><p className="eyebrow">KẾT NỐI GATEWAY</p><h1>Đăng nhập CRM</h1><p className="subtitle">Dùng tài khoản đã có trên hệ thống để xem dữ liệu đơn hàng.</p><form onSubmit={login}><label>Tên đăng nhập<input name="username" required autoComplete="username" /></label><label>Mật khẩu<input name="password" type="password" required autoComplete="current-password" /></label>{loginError && <p className="form-error">{loginError}</p>}<button className="primary-button submit-button" type="submit">Đăng nhập</button></form></div></div>;
+  if (!token) return (
+    <main className="login-screen">
+      <section className="login-panel" aria-labelledby="login-title">
+        <div className="login-brand-row">
+          <div className="brand">
+            <div className="brand-mark"><ShoppingBag size={19} /></div>
+            <span><b>CRM</b></span>
+          </div>
+          <span className="login-gateway">KẾT NỐI GATEWAY</span>
+        </div>
+        <div className="login-heading">
+          <p className="eyebrow">CHÀO MỪNG BẠN</p>
+          <h1 id="login-title">Đăng nhập CRM</h1>
+          <p className="subtitle">Dùng tài khoản đã có trên hệ thống để xem dữ liệu đơn hàng.</p>
+        </div>
+        <form className="login-form" onSubmit={login}>
+          <label>
+            Tên đăng nhập
+            <input name="username" required autoComplete="username" placeholder="Nhập tên đăng nhập" />
+          </label>
+          <label>
+            Mật khẩu
+            <input name="password" type="password" required autoComplete="current-password" placeholder="Nhập mật khẩu" />
+          </label>
+          {loginError && <p className="form-error" role="alert">{loginError}</p>}
+          <button className="primary-button submit-button" type="submit">Đăng nhập</button>
+        </form>
+        <p className="login-footer">CRM · Nền tảng quản lý đơn hàng</p>
+      </section>
+    </main>
+  );
 
   return (
     <main className="app-shell">
