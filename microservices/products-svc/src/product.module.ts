@@ -8,14 +8,16 @@ import { InventoryEntity } from './inventory.entity';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
 import { AppModule } from './app.module';
 import { ProductGrpcController } from './product-grpc/product.grpc.controller';
+import { InventoryGrpcController } from './inventory-grpc/inventory.grpc.controller';
+import { OriginProductService } from './services/product.service';
 
 @Module({
   imports: [
     forwardRef(() => AppModule),
     TypeOrmModule.forFeature([ProductEntity, InventoryEntity, InventoryTransactionEntity]),
   ],
-  controllers: [ProductController, InventoryController, ProductGrpcController],
-  providers: [ProductService],
+  controllers: [ProductController, InventoryController, ProductGrpcController, InventoryGrpcController],
+  providers: [ProductService, OriginProductService],
   exports: [ProductService],
 })
 export class ProductModule {}

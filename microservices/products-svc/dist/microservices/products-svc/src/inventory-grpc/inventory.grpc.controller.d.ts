@@ -6,11 +6,7 @@ export declare class InventoryGrpcController {
     private readonly logger;
     constructor(productService: OriginProductService);
     private normalizeCreatedBy;
-    saleStock(body: {
-        input: IProductSaleStock;
-    }): Promise<ISaleInventory>;
-    returnInventory(body: {
-        input: IProductSaleStock;
-    }): Promise<ISaleInventory>;
+    saleStock(body: IProductSaleStock): Promise<ISaleInventory>;
+    returnInventory(body: IProductSaleStock): Promise<ISaleInventory>;
     summary(): Promise<IInventorySummary>;
 }

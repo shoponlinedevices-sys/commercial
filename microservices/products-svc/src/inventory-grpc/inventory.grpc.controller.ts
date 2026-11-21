@@ -1,5 +1,5 @@
-import { Body, Controller, Logger } from '@nestjs/common';
-import { GrpcMethod } from '@nestjs/microservices';
+import { Controller, Logger } from '@nestjs/common';
+import { GrpcMethod, Payload } from '@nestjs/microservices';
 import { OriginProductService } from 'src/services/product.service';
 import { IProductSaleStock, ISaleInventory } from '../../../../packages/contracts/model/product/product.model';
 import { IInventorySummary } from '../../../../packages/contracts/model/inventory/inventory.model';
@@ -32,17 +32,13 @@ export class InventoryGrpcController {
   }
 
   @GrpcMethod('InventoryService', 'SaleStock')
-   async saleStock(@Body() body: {
-     input: IProductSaleStock
-    }): Promise<ISaleInventory> {
-      return this.productService.saleInventory(this.normalizeCreatedBy({...body.input}));
+   async saleStock(@Payload() body: IProductSaleStock): Promise<ISaleInventory> {
+      return this.productService.saleInventory(this.normalizeCreatedBy(body));
     }
 
   @GrpcMethod('InventoryService', 'ReturnInventory')
-   async returnInventory(@Body() body: {
-     input: IProductSaleStock
-    }): Promise<ISaleInventory> {
-      return this.productService.returnInventory(this.normalizeCreatedBy({...body.input}));
+   async returnInventory(@Payload() body: IProductSaleStock): Promise<ISaleInventory> {
+      return this.productService.returnInventory(this.normalizeCreatedBy(body));
     }
 
   @GrpcMethod('InventoryService', 'Summary')

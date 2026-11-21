@@ -12,8 +12,11 @@ async function bootstrap() {
     const microservice = app.connectMicroservice({
         transport: microservices_1.Transport.GRPC,
         options: {
-            package: 'product',
-            protoPath: (0, path_1.join)(process.cwd(), '../../packages/contracts/proto/product.proto'),
+            package: ['product', 'inventory'],
+            protoPath: [
+                (0, path_1.join)(process.cwd(), '../../packages/contracts/proto/product.proto'),
+                (0, path_1.join)(process.cwd(), '../../packages/contracts/proto/inventory.proto'),
+            ],
             url: `0.0.0.0:${process.env.GRPC_PORT || 50053}`,
         },
     });
