@@ -18,4 +18,7 @@ export interface IGrpcContactsService {
     updatePaymentMethod(input?: ContactsModel.IUpdatePaymentMethodRequest, metadata?: Metadata): Observable<ContactsModel.IUpdatePaymentMethodResponse>;
     deletePaymentMethod(input?: ContactsModel.IDeletePaymentMethodRequest, metadata?: Metadata): Observable<ContactsModel.IDeletePaymentMethodResponse>;
     setDefaultPaymentMethod(input?: ContactsModel.ISetDefaultPaymentMethodRequest, metadata?: Metadata): Observable<ContactsModel.ISetDefaultPaymentMethodResponse>;
+    getAvailablePaymentMethods(input?: ContactsModel.IGetAvailablePaymentMethodsRequest, metadata?: Metadata): Observable<ContactsModel.IGetAvailablePaymentMethodsResponse>;
+    getAccountPaymentSettings(input?: ContactsModel.IGetAccountPaymentSettingsRequest, metadata?: Metadata): Observable<ContactsModel.IGetAccountPaymentSettingsResponse>;
+    updateAccountPaymentSettings(input?: ContactsModel.IUpdateAccountPaymentSettingsRequest, metadata?: Metadata): Observable<ContactsModel.IUpdateAccountPaymentSettingsResponse>;
 }

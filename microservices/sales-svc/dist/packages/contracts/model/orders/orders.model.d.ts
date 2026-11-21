@@ -31,6 +31,9 @@ export interface IGetAllOrdersRequest {
     to?: Date;
     statuses?: string[];
 }
+export interface IGetAllOrdersResponse {
+    orders: IOrder[];
+}
 export interface IGetOrderRequest {
     id: string;
 }
@@ -58,7 +61,7 @@ export interface ICreateOrderResponse {
 export interface IUpdateOrderStatusRequest {
     id: string;
     status: string;
-    createdBy?: number;
+    createdBy?: string;
 }
 export interface IUpdateOrderStatusResponse {
     order: IOrder;
