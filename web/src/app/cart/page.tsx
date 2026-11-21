@@ -130,7 +130,10 @@ export default function CartPage() {
       router.push('/orders');
     } catch (error) {
       console.error('Error creating order:', error);
-      alert('Không thể tạo đơn hàng');
+      const message = error instanceof Error && error.message
+        ? error.message
+        : 'Không thể tạo đơn hàng';
+      alert(message);
     } finally {
       orderingInProgress.current = false;
       setIsOrdering(false);

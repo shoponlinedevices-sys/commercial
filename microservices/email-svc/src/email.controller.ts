@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { GrpcMethod, GrpcService } from '@nestjs/microservices';
 import { EmailService } from './email.service';
+import { EmailEntity } from './email.entity';
 
 @Controller('emails')
 @GrpcService()
@@ -39,6 +40,32 @@ export class EmailController {
       data.username,
       data.temporaryPassword,
     );
+  }
+
+  @GrpcMethod('EmailService', 'GetEmailHistory')
+  async getEmailHistoryGrpc(data: { limit?: number }) {
+    const emails = await this.emailService.getEmailHistory(data.limit || 50);
+    return { emails: emails.map((email) => this.toGrpcEmail(email)) };
+  }
+
+  @GrpcMethod('EmailService', 'GetEmailsByRecipient')
+  async getEmailsByRecipientGrpc(data: { to: string; limit?: number }) {
+    const emails = await this.emailService.getEmailsByRecipient(data.to, data.limit || 50);
+    return { emails: emails.map((email) => this.toGrpcEmail(email)) };
+  }
+
+  @GrpcMethod('EmailService', 'GetEmailById')
+  async getEmailByIdGrpc(data: { id: number }) {
+    const email = await this.emailService.getEmailById(data.id);
+    return { email: email ? this.toGrpcEmail(email) : undefined };
+  }
+
+  private toGrpcEmail(email: EmailEntity) {
+    return {
+      ...email,
+      createdAt: email.createdAt?.toISOString() || '',
+      sentAt: email.sentAt?.toISOString() || '',
+    };
   }
 
   @Post()

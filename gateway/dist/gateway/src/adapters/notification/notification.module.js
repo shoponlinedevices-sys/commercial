@@ -10,13 +10,13 @@ exports.NotificationModule = void 0;
 const common_1 = require("@nestjs/common");
 const notification_controller_1 = require("./notification.controller");
 const notification_service_1 = require("../../application/notification/notification.service");
-const database_module_1 = require("../../infrastructure/database/database.module");
+const grpc_clients_module_1 = require("../../infrastructure/grpc/grpc-clients.module");
 let NotificationModule = class NotificationModule {
 };
 exports.NotificationModule = NotificationModule;
 exports.NotificationModule = NotificationModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule],
+        imports: [grpc_clients_module_1.GrpcClientsModule],
         controllers: [notification_controller_1.NotificationController],
         providers: [notification_service_1.NotificationService],
     })

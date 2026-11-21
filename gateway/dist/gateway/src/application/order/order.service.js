@@ -129,8 +129,9 @@ let OrderService = class OrderService {
         }
     }
     async createOrder(input) {
+        let reservedLines = [];
         try {
-            await this.reserveOrderLines(input.orderLines, input.createdBy);
+            reservedLines = await this.reserveOrderLines(input.orderLines, input.createdBy);
             const order = await (0, rxjs_1.firstValueFrom)(this.orderService.createOrder(input));
             if (input.fcmToken) {
                 try {
@@ -160,7 +161,7 @@ let OrderService = class OrderService {
             return order.order;
         }
         catch (error) {
-            await this.releaseOrderLines(input.orderLines, input.createdBy).catch((releaseError) => {
+            await this.releaseOrderLines(reservedLines, input.createdBy).catch((releaseError) => {
                 console.error('Failed to release reserved inventory after order creation failure:', releaseError);
             });
             throw error;

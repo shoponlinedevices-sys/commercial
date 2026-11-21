@@ -1,4 +1,5 @@
 import { EmailService } from './email.service';
+import { EmailEntity } from './email.entity';
 export declare class EmailController {
     private readonly emailService;
     constructor(emailService: EmailService);
@@ -35,6 +36,59 @@ export declare class EmailController {
         emailId: number;
         messageId?: undefined;
     }>;
+    getEmailHistoryGrpc(data: {
+        limit?: number;
+    }): Promise<{
+        emails: {
+            createdAt: string;
+            sentAt: string;
+            id: number;
+            to: string;
+            subject: string;
+            body: string;
+            template: string;
+            templateData: Record<string, any>;
+            status: string;
+            messageId: string;
+            error: string;
+        }[];
+    }>;
+    getEmailsByRecipientGrpc(data: {
+        to: string;
+        limit?: number;
+    }): Promise<{
+        emails: {
+            createdAt: string;
+            sentAt: string;
+            id: number;
+            to: string;
+            subject: string;
+            body: string;
+            template: string;
+            templateData: Record<string, any>;
+            status: string;
+            messageId: string;
+            error: string;
+        }[];
+    }>;
+    getEmailByIdGrpc(data: {
+        id: number;
+    }): Promise<{
+        email: {
+            createdAt: string;
+            sentAt: string;
+            id: number;
+            to: string;
+            subject: string;
+            body: string;
+            template: string;
+            templateData: Record<string, any>;
+            status: string;
+            messageId: string;
+            error: string;
+        };
+    }>;
+    private toGrpcEmail;
     sendEmailRest(body: {
         to: string;
         subject: string;
@@ -52,9 +106,9 @@ export declare class EmailController {
         emailId: number;
         messageId?: undefined;
     }>;
-    getEmailHistory(): Promise<import("./email.entity").EmailEntity[]>;
-    getEmailsByRecipient(to: string): Promise<import("./email.entity").EmailEntity[]>;
-    getEmailById(id: string): Promise<import("./email.entity").EmailEntity>;
+    getEmailHistory(): Promise<EmailEntity[]>;
+    getEmailsByRecipient(to: string): Promise<EmailEntity[]>;
+    getEmailById(id: string): Promise<EmailEntity>;
     sendOrderConfirmationEmailRest(body: {
         to: string;
         orderId: string;

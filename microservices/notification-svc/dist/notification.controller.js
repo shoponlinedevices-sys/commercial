@@ -30,6 +30,22 @@ let NotificationController = class NotificationController {
             metadata: data.metadata || {},
         });
     }
+    async getUserNotificationsGrpc(data) {
+        const notifications = await this.notificationService.getUserNotifications(data.userId);
+        return { notifications: notifications.map((notification) => this.toGrpcNotification(notification)) };
+    }
+    async markNotificationAsReadGrpc(data) {
+        const notification = await this.notificationService.markAsRead(data.id);
+        return { notification: notification ? this.toGrpcNotification(notification) : undefined };
+    }
+    toGrpcNotification(notification) {
+        return {
+            ...notification,
+            readAt: notification.readAt?.toISOString() || '',
+            createdAt: notification.createdAt.toISOString(),
+            updatedAt: notification.updatedAt.toISOString(),
+        };
+    }
     async getUserNotifications(userId) {
         return this.notificationService.getUserNotifications(userId);
     }
@@ -53,6 +69,18 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], NotificationController.prototype, "createNotificationGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('NotificationService', 'GetUserNotifications'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "getUserNotificationsGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('NotificationService', 'MarkNotificationAsRead'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "markNotificationAsReadGrpc", null);
 __decorate([
     (0, common_1.Get)('user/:userId'),
     __param(0, (0, common_1.Param)('userId')),

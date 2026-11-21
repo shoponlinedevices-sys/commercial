@@ -9,6 +9,47 @@ service EmailService {
       returns (SendEmailResponse);
   rpc SendPasswordResetEmail (SendPasswordResetEmailRequest)
       returns (SendEmailResponse);
+  rpc GetEmailHistory (GetEmailHistoryRequest)
+      returns (GetEmailHistoryResponse);
+  rpc GetEmailsByRecipient (GetEmailsByRecipientRequest)
+      returns (GetEmailHistoryResponse);
+  rpc GetEmailById (GetEmailByIdRequest)
+      returns (GetEmailByIdResponse);
+}
+
+message GetEmailHistoryRequest {
+  int32 limit = 1;
+}
+
+message GetEmailsByRecipientRequest {
+  string to = 1;
+  int32 limit = 2;
+}
+
+message GetEmailByIdRequest {
+  int32 id = 1;
+}
+
+message GetEmailHistoryResponse {
+  repeated EmailRecord emails = 1;
+}
+
+message GetEmailByIdResponse {
+  EmailRecord email = 1;
+}
+
+message EmailRecord {
+  int32 id = 1;
+  string to = 2;
+  string subject = 3;
+  string body = 4;
+  string template = 5;
+  map<string, string> templateData = 6;
+  string status = 7;
+  string messageId = 8;
+  string error = 9;
+  string createdAt = 10;
+  string sentAt = 11;
 }
 
 message SendEmailRequest {

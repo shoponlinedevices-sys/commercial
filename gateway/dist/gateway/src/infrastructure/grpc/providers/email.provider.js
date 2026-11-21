@@ -31,6 +31,18 @@ let EmailProvider = class EmailProvider {
     async sendPasswordResetEmail(data) {
         return (0, rxjs_1.firstValueFrom)(this.grpcEmailService.sendPasswordResetEmail(data));
     }
+    async getEmailHistory(data) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.grpcEmailService.getEmailHistory(data));
+        return response.emails;
+    }
+    async getEmailsByRecipient(data) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.grpcEmailService.getEmailsByRecipient(data));
+        return response.emails;
+    }
+    async getEmailById(data) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.grpcEmailService.getEmailById(data));
+        return response.email || null;
+    }
 };
 exports.EmailProvider = EmailProvider;
 exports.EmailProvider = EmailProvider = __decorate([

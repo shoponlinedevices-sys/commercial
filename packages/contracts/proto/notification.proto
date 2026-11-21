@@ -7,6 +7,39 @@ service NotificationService {
       returns (SendNotificationResponse);
   rpc CreateNotification (CreateNotificationRequest)
       returns (CreateNotificationResponse);
+  rpc GetUserNotifications (GetUserNotificationsRequest)
+      returns (GetUserNotificationsResponse);
+  rpc MarkNotificationAsRead (MarkNotificationAsReadRequest)
+      returns (MarkNotificationAsReadResponse);
+}
+
+message GetUserNotificationsRequest {
+  string userId = 1;
+}
+
+message GetUserNotificationsResponse {
+  repeated NotificationRecord notifications = 1;
+}
+
+message MarkNotificationAsReadRequest {
+  string id = 1;
+}
+
+message MarkNotificationAsReadResponse {
+  NotificationRecord notification = 1;
+}
+
+message NotificationRecord {
+  string id = 1;
+  string userId = 2;
+  string title = 3;
+  string message = 4;
+  string type = 5;
+  map<string, string> metadata = 6;
+  bool isRead = 7;
+  string readAt = 8;
+  string createdAt = 9;
+  string updatedAt = 10;
 }
 
 message SendNotificationRequest {

@@ -24,4 +24,19 @@ export class EmailProvider implements OnModuleInit {
   async sendPasswordResetEmail(data: any) {
     return firstValueFrom(this.grpcEmailService.sendPasswordResetEmail(data));
   }
+
+  async getEmailHistory(data: { limit?: number }) {
+    const response = await firstValueFrom(this.grpcEmailService.getEmailHistory(data));
+    return response.emails;
+  }
+
+  async getEmailsByRecipient(data: { to: string; limit?: number }) {
+    const response = await firstValueFrom(this.grpcEmailService.getEmailsByRecipient(data));
+    return response.emails;
+  }
+
+  async getEmailById(data: { id: number }) {
+    const response = await firstValueFrom(this.grpcEmailService.getEmailById(data));
+    return response.email || null;
+  }
 }

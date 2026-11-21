@@ -35,6 +35,25 @@ let EmailController = class EmailController {
     sendPasswordResetEmail(data) {
         return this.emailService.sendPasswordResetEmail(data.to, data.username, data.temporaryPassword);
     }
+    async getEmailHistoryGrpc(data) {
+        const emails = await this.emailService.getEmailHistory(data.limit || 50);
+        return { emails: emails.map((email) => this.toGrpcEmail(email)) };
+    }
+    async getEmailsByRecipientGrpc(data) {
+        const emails = await this.emailService.getEmailsByRecipient(data.to, data.limit || 50);
+        return { emails: emails.map((email) => this.toGrpcEmail(email)) };
+    }
+    async getEmailByIdGrpc(data) {
+        const email = await this.emailService.getEmailById(data.id);
+        return { email: email ? this.toGrpcEmail(email) : undefined };
+    }
+    toGrpcEmail(email) {
+        return {
+            ...email,
+            createdAt: email.createdAt?.toISOString() || '',
+            sentAt: email.sentAt?.toISOString() || '',
+        };
+    }
     async sendEmailRest(body) {
         return this.emailService.sendEmail(body.to, body.subject, body.body, body.template, body.templateData);
     }
@@ -79,6 +98,24 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], EmailController.prototype, "sendPasswordResetEmail", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('EmailService', 'GetEmailHistory'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmailController.prototype, "getEmailHistoryGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('EmailService', 'GetEmailsByRecipient'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmailController.prototype, "getEmailsByRecipientGrpc", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('EmailService', 'GetEmailById'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], EmailController.prototype, "getEmailByIdGrpc", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

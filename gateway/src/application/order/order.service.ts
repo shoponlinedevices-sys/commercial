@@ -144,8 +144,10 @@ export class OrderService implements OnModuleInit {
   }
 
   async createOrder(input: ICreateOrderRequest): Promise<Order> {
+    let reservedLines: Array<{ productId: number; quantity: number; referenceId: string }> = [];
+
     try {
-      await this.reserveOrderLines(input.orderLines, input.createdBy);
+      reservedLines = await this.reserveOrderLines(input.orderLines, input.createdBy);
       const order = await firstValueFrom(this.orderService.createOrder(input));
 
       if (input.fcmToken) {
@@ -175,7 +177,7 @@ export class OrderService implements OnModuleInit {
 
       return order.order;
     } catch (error) {
-      await this.releaseOrderLines(input.orderLines, input.createdBy).catch((releaseError) => {
+      await this.releaseOrderLines(reservedLines, input.createdBy).catch((releaseError) => {
         console.error('Failed to release reserved inventory after order creation failure:', releaseError);
       });
       throw error;

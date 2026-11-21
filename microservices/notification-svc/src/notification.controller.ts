@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { NotificationService } from './notification.service';
+import { NotificationEntity } from './notification.entity';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('notifications')
@@ -27,6 +28,27 @@ export class NotificationController {
       ...data,
       metadata: data.metadata || {},
     });
+  }
+
+  @GrpcMethod('NotificationService', 'GetUserNotifications')
+  async getUserNotificationsGrpc(data: { userId: string }) {
+    const notifications = await this.notificationService.getUserNotifications(data.userId);
+    return { notifications: notifications.map((notification) => this.toGrpcNotification(notification)) };
+  }
+
+  @GrpcMethod('NotificationService', 'MarkNotificationAsRead')
+  async markNotificationAsReadGrpc(data: { id: string }) {
+    const notification = await this.notificationService.markAsRead(data.id);
+    return { notification: notification ? this.toGrpcNotification(notification) : undefined };
+  }
+
+  private toGrpcNotification(notification: NotificationEntity) {
+    return {
+      ...notification,
+      readAt: notification.readAt?.toISOString() || '',
+      createdAt: notification.createdAt.toISOString(),
+      updatedAt: notification.updatedAt.toISOString(),
+    };
   }
 
   @Get('user/:userId')

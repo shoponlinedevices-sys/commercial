@@ -25,6 +25,14 @@ let NotificationProvider = class NotificationProvider {
     async sendPushNotificationToUser(data) {
         return (0, rxjs_1.firstValueFrom)(this.notificationService.sendNotification(data));
     }
+    async getUserNotifications(userId) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.notificationService.getUserNotifications({ userId }));
+        return response.notifications;
+    }
+    async markAsRead(id) {
+        const response = await (0, rxjs_1.firstValueFrom)(this.notificationService.markNotificationAsRead({ id }));
+        return response.notification;
+    }
 };
 exports.NotificationProvider = NotificationProvider;
 exports.NotificationProvider = NotificationProvider = __decorate([

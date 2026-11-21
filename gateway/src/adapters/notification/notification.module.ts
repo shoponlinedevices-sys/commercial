@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from '../../application/notification/notification.service';
-import { DatabaseModule } from '../../infrastructure/database/database.module';
+import { GrpcClientsModule } from '../../infrastructure/grpc/grpc-clients.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [GrpcClientsModule],
   controllers: [NotificationController],
   providers: [NotificationService],
 })

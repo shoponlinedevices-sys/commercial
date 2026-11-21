@@ -20,10 +20,10 @@ let NotificationController = class NotificationController {
         this.notificationService = notificationService;
     }
     async getUserNotifications(userId) {
-        return this.notificationService.getUserNotifications(parseInt(userId, 10));
+        return this.notificationService.getUserNotifications(userId);
     }
     async markAsRead(id) {
-        return this.notificationService.markAsRead(parseInt(id, 10));
+        return this.notificationService.markAsRead(id);
     }
 };
 exports.NotificationController = NotificationController;
