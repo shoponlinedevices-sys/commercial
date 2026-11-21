@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import * as ContactsModel from "../../model/contacts/contacts.model";
 
 export interface IGrpcContactsService {
+  getHistoryLogs(input?: { limit: number }): Observable<{ logs: any[] }>;
   // User Profile
   getUserProfile(input?: ContactsModel.IGetUserProfileRequest, metadata?: Metadata): Observable<ContactsModel.IGetUserProfileResponse>;
   updateUserProfile(input?: ContactsModel.IUpdateUserProfileRequest, metadata?: Metadata): Observable<ContactsModel.IUpdateUserProfileResponse>;

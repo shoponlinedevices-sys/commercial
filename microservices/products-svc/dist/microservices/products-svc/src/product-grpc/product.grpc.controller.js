@@ -17,6 +17,19 @@ let ProductGrpcController = class ProductGrpcController {
     constructor(productService) {
         this.productService = productService;
     }
+    async getHistoryLogsGrpc(data) {
+        const logs = await this.productService.getHistoryLogs(Number(data.limit) || 200);
+        return { logs: logs.map((log) => ({
+                id: String(log.id),
+                action: log.action,
+                entityType: log.entityType,
+                entityId: log.entityId,
+                source: log.source,
+                createdBy: log.createdBy,
+                metadata: typeof log.metadata === 'string' ? log.metadata : JSON.stringify(log.metadata || {}),
+                createdAt: log.createdAt instanceof Date ? log.createdAt.toISOString() : String(log.createdAt || ''),
+            })) };
+    }
     async getProducts(query) {
         const result = await this.productService.getProducts(query);
         return result;
@@ -40,6 +53,12 @@ let ProductGrpcController = class ProductGrpcController {
     }
 };
 exports.ProductGrpcController = ProductGrpcController;
+__decorate([
+    (0, microservices_1.GrpcMethod)('ProductService', 'GetHistoryLogs'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ProductGrpcController.prototype, "getHistoryLogsGrpc", null);
 __decorate([
     (0, microservices_1.GrpcMethod)('ProductService', 'GetProducts'),
     __metadata("design:type", Function),

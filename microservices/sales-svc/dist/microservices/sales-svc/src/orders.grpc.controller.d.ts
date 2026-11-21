@@ -2,6 +2,21 @@ import { OrderService } from './order.service';
 export declare class OrdersGrpcController {
     private readonly orderService;
     constructor(orderService: OrderService);
+    private serializeHistory;
+    getHistoryLogsGrpc(data: {
+        limit?: number;
+    }): Promise<{
+        logs: {
+            id: string;
+            action: any;
+            entityType: any;
+            entityId: any;
+            source: any;
+            createdBy: any;
+            metadata: any;
+            createdAt: any;
+        }[];
+    }>;
     private serializeCart;
     getHistoryLogs(limit?: string): Promise<import("./history-log.entity").HistoryLogEntity[]>;
     getUserOrders(data: {

@@ -7,6 +7,24 @@ import { CartEntity } from './cart.entity';
 export class OrdersGrpcController {
   constructor(private readonly orderService: OrderService) {}
 
+  private serializeHistory(logs: any[]) {
+    return { logs: (logs || []).map((log) => ({
+      id: String(log.id),
+      action: log.action,
+      entityType: log.entityType,
+      entityId: log.entityId,
+      source: log.source,
+      createdBy: log.createdBy,
+      metadata: typeof log.metadata === 'string' ? log.metadata : JSON.stringify(log.metadata || {}),
+      createdAt: log.createdAt instanceof Date ? log.createdAt.toISOString() : String(log.createdAt || ''),
+    })) };
+  }
+
+  @GrpcMethod('OrdersService', 'GetHistoryLogs')
+  async getHistoryLogsGrpc(data: { limit?: number }) {
+    return this.serializeHistory(await this.orderService.getHistoryLogs(Number(data.limit) || 200));
+  }
+
   private serializeCart(cart: CartEntity | null) {
     if (!cart) {
       return null;

@@ -20,6 +20,21 @@ let OrdersGrpcController = class OrdersGrpcController {
     constructor(orderService) {
         this.orderService = orderService;
     }
+    serializeHistory(logs) {
+        return { logs: (logs || []).map((log) => ({
+                id: String(log.id),
+                action: log.action,
+                entityType: log.entityType,
+                entityId: log.entityId,
+                source: log.source,
+                createdBy: log.createdBy,
+                metadata: typeof log.metadata === 'string' ? log.metadata : JSON.stringify(log.metadata || {}),
+                createdAt: log.createdAt instanceof Date ? log.createdAt.toISOString() : String(log.createdAt || ''),
+            })) };
+    }
+    async getHistoryLogsGrpc(data) {
+        return this.serializeHistory(await this.orderService.getHistoryLogs(Number(data.limit) || 200));
+    }
     serializeCart(cart) {
         if (!cart) {
             return null;
@@ -91,6 +106,12 @@ let OrdersGrpcController = class OrdersGrpcController {
     }
 };
 exports.OrdersGrpcController = OrdersGrpcController;
+__decorate([
+    (0, microservices_1.GrpcMethod)('OrdersService', 'GetHistoryLogs'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersGrpcController.prototype, "getHistoryLogsGrpc", null);
 __decorate([
     (0, common_1.Get)('history-logs'),
     __param(0, (0, common_1.Query)('limit')),

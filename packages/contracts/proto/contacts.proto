@@ -3,6 +3,7 @@ syntax = "proto3";
 package contacts;
 
 service ContactsService {
+  rpc GetHistoryLogs (GetHistoryLogsRequest) returns (GetHistoryLogsResponse);
   // User Profile
   rpc GetUserProfile (GetUserProfileRequest) returns (GetUserProfileResponse);
   rpc UpdateUserProfile (UpdateUserProfileRequest) returns (UpdateUserProfileResponse);
@@ -248,4 +249,23 @@ message PaymentMethod {
   string accountNumber = 5;
   string accountName = 6;
   bool isDefault = 7;
+}
+
+message GetHistoryLogsRequest {
+  int32 limit = 1;
+}
+
+message HistoryLog {
+  string id = 1;
+  string action = 2;
+  string entityType = 3;
+  string entityId = 4;
+  string source = 5;
+  string createdBy = 6;
+  string metadata = 7;
+  string createdAt = 8;
+}
+
+message GetHistoryLogsResponse {
+  repeated HistoryLog logs = 1;
 }

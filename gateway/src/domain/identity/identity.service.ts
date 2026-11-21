@@ -14,6 +14,8 @@ export type UserInfo = {
 export interface JwtPayload {
   sub: number;
   username: string;
+  role?: string;
+  status?: number;
 }
 
 export type AuthTokens = {

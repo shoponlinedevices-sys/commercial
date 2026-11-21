@@ -2,24 +2,16 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AccountEntity } from '../../infrastructure/database/entities/account.entity';
-import { AccountRepository } from '../../infrastructure/database/repositories/account.repository';
-
-type AccountLookup = Pick<AccountRepository, 'findById'>;
-
 interface AuthenticatedRequest {
-  user?: { id?: number | string };
+  user?: { id?: number | string; role?: string; status?: number };
 }
 
 @Injectable()
 export class ViewEventsAdminGuard implements CanActivate {
-  constructor(
-    @Inject(AccountRepository) private readonly accounts: AccountLookup,
-  ) {}
+  constructor() {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
@@ -34,11 +26,11 @@ export class ViewEventsAdminGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    const account: AccountEntity | null = await this.accounts.findById(accountId);
-    if (!account || Number(account.status) !== 1) {
+    const status = request.user?.status;
+    if (status !== undefined && Number(status) !== 1) {
       throw new UnauthorizedException('Account is not active');
     }
-    if (account.role !== 'admin') {
+    if (request.user?.role !== 'admin') {
       throw new ForbiddenException('Administrator access is required for view analytics');
     }
     return true;

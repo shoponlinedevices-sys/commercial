@@ -4,6 +4,7 @@ import { EmailProvider } from './providers/email.provider';
 import { NotificationProvider } from './providers/notification.provider';
 import { ContactsGrpcClient } from './contacts-grpc.client';
 import { contractsProtoPath } from './grpc-path';
+import { InventoryGrpcClient } from './inventory-grpc.client';
 
 @Global()
 @Module({
@@ -93,7 +94,7 @@ import { contractsProtoPath } from './grpc-path';
       },
     ]),
   ],
-  providers: [ContactsGrpcClient, NotificationProvider, EmailProvider],
-  exports: [ClientsModule, ContactsGrpcClient, NotificationProvider, EmailProvider],
+  providers: [ContactsGrpcClient, NotificationProvider, EmailProvider, InventoryGrpcClient],
+  exports: [ClientsModule, ContactsGrpcClient, NotificationProvider, EmailProvider, InventoryGrpcClient],
 })
 export class GrpcClientsModule {}

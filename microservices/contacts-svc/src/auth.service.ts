@@ -57,7 +57,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { username: user.username, sub: user.id };
+    const payload = { username: user.username, sub: user.id, role: user.role || 'user', status: Number(user.status ?? 1) };
     return {
       access_token: this.jwtService.sign(payload, { expiresIn: SESSION_TOKEN_TTL }),
       refresh_token: this.jwtService.sign(payload, { expiresIn: SESSION_TOKEN_TTL }),
@@ -65,6 +65,8 @@ export class AuthService {
         id: user.id,
         username: user.username,
         email: user.email,
+        role: user.role,
+        status: user.status,
       },
     };
   }
@@ -99,7 +101,7 @@ export class AuthService {
       if (!user) {
         throw new UnauthorizedException('Invalid refresh token');
       }
-      const newPayload = { username: user.username, sub: user.id };
+      const newPayload = { username: user.username, sub: user.id, role: user.role || 'user', status: Number(user.status ?? 1) };
       return {
         access_token: this.jwtService.sign(newPayload, { expiresIn: SESSION_TOKEN_TTL }),
       };

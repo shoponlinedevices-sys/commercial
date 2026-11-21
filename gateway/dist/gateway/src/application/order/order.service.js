@@ -16,28 +16,30 @@ exports.OrderService = void 0;
 const common_1 = require("@nestjs/common");
 const rxjs_1 = require("rxjs");
 const order_repository_1 = require("../../domain/order/order.repository");
-const PRODUCTS_SERVICE_URL = process.env.PRODUCTS_SERVICE_URL || 'http://localhost:3003';
+const inventory_grpc_client_1 = require("../../infrastructure/grpc/inventory-grpc.client");
 let OrderService = class OrderService {
-    constructor(orderRepository, notificationClient, orderClient) {
+    constructor(orderRepository, notificationClient, orderClient, inventoryClient) {
         this.orderRepository = orderRepository;
         this.notificationClient = notificationClient;
         this.orderClient = orderClient;
+        this.inventoryClient = inventoryClient;
     }
     onModuleInit() {
         this.notificationService = this.notificationClient.getService('NotificationService');
         this.orderService = this.orderClient.getService('OrdersService');
     }
     async callInventory(action, payload) {
-        const response = await fetch(`${PRODUCTS_SERVICE_URL}/inventory/${action}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-        const data = await response.json().catch(() => null);
-        if (!response.ok) {
-            throw new Error((data === null || data === void 0 ? void 0 : data.message) || (data === null || data === void 0 ? void 0 : data.error) || `Inventory ${action} request failed`);
+        const stock = payload;
+        switch (action) {
+            case 'reserve':
+                return await this.inventoryClient.reserveStock(stock);
+            case 'release':
+                return await this.inventoryClient.releaseStock(stock);
+            case 'sale':
+                return await this.inventoryClient.saleStock(stock);
+            case 'return':
+                return await this.inventoryClient.returnInventory(stock);
         }
-        return data;
     }
     async reserveOrderLines(cartLines, createdBy) {
         var _a;
@@ -205,6 +207,6 @@ exports.OrderService = OrderService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, common_1.Inject)('GRPC_NOTIFICATIONS_SERVICE')),
     __param(2, (0, common_1.Inject)('GRPC_ORDERS_SERVICE')),
-    __metadata("design:paramtypes", [order_repository_1.OrderRepository, Object, Object])
+    __metadata("design:paramtypes", [order_repository_1.OrderRepository, Object, Object, inventory_grpc_client_1.InventoryGrpcClient])
 ], OrderService);
 //# sourceMappingURL=order.service.js.map

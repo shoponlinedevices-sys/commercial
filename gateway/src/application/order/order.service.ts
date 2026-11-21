@@ -5,13 +5,13 @@ import { OrderRepository } from '../../domain/order/order.repository';
 import { Order } from '../../domain/order/order.entity';
 import { IGrpcOrdersService } from '../../../../packages/contracts/grpc/interface/grpc-orders.service';
 import { ICreateOrderRequest, IGetAllOrdersRequest } from '../../../../packages/contracts/model/orders/orders.model';
+import { InventoryGrpcClient } from '../../infrastructure/grpc/inventory-grpc.client';
+import { IProductSaleStock } from '../../../../packages/contracts/model/product/product.model';
 
 interface NotificationGrpcService {
   sendNotification(data: { token: string; title: string; body: string; data: Record<string, string> }): any;
   createNotification(data: { userId: string; title: string; message: string; type: string; metadata: Record<string, string> }): any;
 }
-
-const PRODUCTS_SERVICE_URL = process.env.PRODUCTS_SERVICE_URL || 'http://localhost:3003';
 
 @Injectable()
 export class OrderService implements OnModuleInit {
@@ -22,6 +22,7 @@ export class OrderService implements OnModuleInit {
     private readonly orderRepository: OrderRepository,
     @Inject('GRPC_NOTIFICATIONS_SERVICE') private readonly notificationClient: ClientGrpc,
     @Inject('GRPC_ORDERS_SERVICE') private readonly orderClient: ClientGrpc,
+    private readonly inventoryClient: InventoryGrpcClient,
   ) {}
 
   onModuleInit() {
@@ -30,18 +31,17 @@ export class OrderService implements OnModuleInit {
   }
 
   private async callInventory<T>(action: 'reserve' | 'release' | 'sale' | 'return', payload: Record<string, any>): Promise<T> {
-    const response = await fetch(`${PRODUCTS_SERVICE_URL}/inventory/${action}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json().catch(() => null);
-    if (!response.ok) {
-      throw new Error(data?.message || data?.error || `Inventory ${action} request failed`);
+    const stock = payload as IProductSaleStock;
+    switch (action) {
+      case 'reserve':
+        return await this.inventoryClient.reserveStock(stock) as T;
+      case 'release':
+        return await this.inventoryClient.releaseStock(stock) as T;
+      case 'sale':
+        return await this.inventoryClient.saleStock(stock) as T;
+      case 'return':
+        return await this.inventoryClient.returnInventory(stock) as T;
     }
-
-    return data as T;
   }
 
   private async reserveOrderLines(cartLines: any[], createdBy?: number) {

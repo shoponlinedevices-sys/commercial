@@ -6,6 +6,13 @@ service InventoryService {
   rpc SaleStock (ProductSaleStock) returns (SaleInventory);
   rpc ReturnInventory (ProductSaleStock) returns (SaleInventory);
   rpc Summary (InventorySummaryRequest) returns (InventorySummary);
+  rpc GetItems (GetInventoryItemsRequest) returns (GetInventoryItemsResponse);
+  rpc GetItem (GetInventoryItemRequest) returns (GetInventoryItemResponse);
+  rpc GetTransactions (GetInventoryTransactionsRequest) returns (GetInventoryTransactionsResponse);
+  rpc ImportStock (ImportInventoryRequest) returns (SaleInventory);
+  rpc ReserveStock (ProductSaleStock) returns (SaleInventory);
+  rpc ReleaseStock (ProductSaleStock) returns (SaleInventory);
+  rpc AdjustStock (AdjustInventoryRequest) returns (SaleInventory);
 }
 
 message Product {
@@ -71,4 +78,88 @@ message InventorySummary {
   int32 outOfStockItems = 4;
   int32 inventoryValue = 5;
   bool hasCostData = 6;
+}
+
+message GetInventoryItemsRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  string search = 3;
+  string category = 4;
+  string status = 5;
+}
+
+message InventoryListItem {
+  int64 id = 1;
+  int64 productId = 2;
+  string productName = 3;
+  string sku = 4;
+  string category = 5;
+  int32 quantityOnHand = 6;
+  int32 quantityReserved = 7;
+  int32 quantityAvailable = 8;
+  int32 reorderLevel = 9;
+  double unitPrice = 10;
+  string updatedAt = 11;
+  string status = 12;
+}
+
+message GetInventoryItemsResponse {
+  repeated InventoryListItem items = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message GetInventoryItemRequest {
+  int64 productId = 1;
+}
+
+message GetInventoryItemResponse {
+  InventoryListItem item = 1;
+}
+
+message GetInventoryTransactionsRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  int64 productId = 3;
+  string type = 4;
+}
+
+message InventoryTransactionListItem {
+  int64 id = 1;
+  int64 productId = 2;
+  string productName = 3;
+  string transactionType = 4;
+  int32 quantity = 5;
+  string referenceType = 6;
+  string referenceId = 7;
+  int32 quantityBefore = 8;
+  int32 quantityAfter = 9;
+  int64 createdBy = 10;
+  string createdAt = 11;
+  string note = 12;
+}
+
+message GetInventoryTransactionsResponse {
+  repeated InventoryTransactionListItem items = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message ImportInventoryRequest {
+  int64 productId = 1;
+  int32 quantity = 2;
+  double unitCost = 3;
+  string reference = 4;
+  string note = 5;
+  int64 createdBy = 6;
+}
+
+message AdjustInventoryRequest {
+  int64 productId = 1;
+  int32 quantityAfter = 2;
+  string reason = 3;
+  string note = 4;
+  int64 createdBy = 5;
 }

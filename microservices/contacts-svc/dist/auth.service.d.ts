@@ -15,6 +15,8 @@ export declare class AuthService {
             id: any;
             username: any;
             email: any;
+            role: any;
+            status: any;
         };
     }>;
     register(username: string, password: string, createdBy?: string): Promise<{

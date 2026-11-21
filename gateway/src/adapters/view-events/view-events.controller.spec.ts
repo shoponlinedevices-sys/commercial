@@ -27,32 +27,17 @@ test('public event recording permits requests without a bearer token', () => {
   assert.equal(guard.canActivate(context), true);
 });
 
-test('administrator guard validates account status and role and propagates lookup failures', async () => {
-  const context = (id: number) => ({
-    switchToHttp: () => ({ getRequest: () => ({ user: { id } }) }),
+test('administrator guard validates account status and role from JWT claims', async () => {
+  const context = (id: number, role = 'admin', status = 1) => ({
+    switchToHttp: () => ({ getRequest: () => ({ user: { id, role, status } }) }),
   }) as ExecutionContext;
-  const adminGuard = new ViewEventsAdminGuard({
-    findById: async () => ({ role: 'admin', status: 1 }),
-  });
-  const userGuard = new ViewEventsAdminGuard({
-    findById: async () => ({ role: 'user', status: 1 }),
-  });
-  const inactiveGuard = new ViewEventsAdminGuard({
-    findById: async () => ({ role: 'admin', status: 0 }),
-  });
-  const missingAccountGuard = new ViewEventsAdminGuard({
-    findById: async () => null,
-  });
-  const databaseError = new Error('Database unavailable');
-  const failedLookupGuard = new ViewEventsAdminGuard({
-    findById: async () => { throw databaseError; },
-  });
+  const adminGuard = new ViewEventsAdminGuard();
+  const userGuard = new ViewEventsAdminGuard();
+  const inactiveGuard = new ViewEventsAdminGuard();
 
   assert.equal(await adminGuard.canActivate(context(1)), true);
-  await assert.rejects(userGuard.canActivate(context(2)), /Administrator access is required/);
-  await assert.rejects(inactiveGuard.canActivate(context(3)), /Account is not active/);
-  await assert.rejects(missingAccountGuard.canActivate(context(4)), /Account is not active/);
-  await assert.rejects(failedLookupGuard.canActivate(context(5)), databaseError);
+  await assert.rejects(userGuard.canActivate(context(2, 'user')), /Administrator access is required/);
+  await assert.rejects(inactiveGuard.canActivate(context(3, 'admin', 0)), /Account is not active/);
 });
 
 test('recording rejects client-supplied user identity', async () => {

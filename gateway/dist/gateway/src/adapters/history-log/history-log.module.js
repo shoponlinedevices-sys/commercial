@@ -10,11 +10,13 @@ exports.HistoryLogModule = void 0;
 const common_1 = require("@nestjs/common");
 const history_log_controller_1 = require("./history-log.controller");
 const history_log_service_1 = require("./history-log.service");
+const grpc_clients_module_1 = require("../../infrastructure/grpc/grpc-clients.module");
 let HistoryLogModule = class HistoryLogModule {
 };
 exports.HistoryLogModule = HistoryLogModule;
 exports.HistoryLogModule = HistoryLogModule = __decorate([
     (0, common_1.Module)({
+        imports: [grpc_clients_module_1.GrpcClientsModule],
         controllers: [history_log_controller_1.HistoryLogController],
         providers: [history_log_service_1.HistoryLogService],
     })

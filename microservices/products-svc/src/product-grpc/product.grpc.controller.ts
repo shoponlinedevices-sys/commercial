@@ -10,6 +10,21 @@ export class ProductGrpcController {
     private readonly productService: ProductService,
   ) {}
 
+  @GrpcMethod('ProductService', 'GetHistoryLogs')
+  async getHistoryLogsGrpc(data: { limit?: number }) {
+    const logs = await this.productService.getHistoryLogs(Number(data.limit) || 200);
+    return { logs: logs.map((log: any) => ({
+      id: String(log.id),
+      action: log.action,
+      entityType: log.entityType,
+      entityId: log.entityId,
+      source: log.source,
+      createdBy: log.createdBy,
+      metadata: typeof log.metadata === 'string' ? log.metadata : JSON.stringify(log.metadata || {}),
+      createdAt: log.createdAt instanceof Date ? log.createdAt.toISOString() : String(log.createdAt || ''),
+    })) };
+  }
+
   @GrpcMethod('ProductService', 'GetProducts')
   async getProducts(query: any) {
     const result =

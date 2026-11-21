@@ -6,6 +6,21 @@ import { ContactsService } from './contacts.service';
 export class ContactsController {
   constructor(private readonly contactsService: ContactsService) {}
 
+  @GrpcMethod('ContactsService', 'GetHistoryLogs')
+  async getHistoryLogsGrpc(data: { limit?: number }) {
+    const logs = await this.contactsService.getHistoryLogs(Number(data.limit) || 200);
+    return { logs: logs.map((log: any) => ({
+      id: String(log.id),
+      action: log.action,
+      entityType: log.entityType,
+      entityId: log.entityId,
+      source: log.source,
+      createdBy: log.createdBy,
+      metadata: typeof log.metadata === 'string' ? log.metadata : JSON.stringify(log.metadata || {}),
+      createdAt: log.createdAt instanceof Date ? log.createdAt.toISOString() : String(log.createdAt || ''),
+    })) };
+  }
+
   @Get('history-logs')
   async getHistoryLogs(@Query('limit') limit?: string) {
     return this.contactsService.getHistoryLogs(Number(limit) || 200);

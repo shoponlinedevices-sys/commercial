@@ -13,6 +13,7 @@ const email_provider_1 = require("./providers/email.provider");
 const notification_provider_1 = require("./providers/notification.provider");
 const contacts_grpc_client_1 = require("./contacts-grpc.client");
 const grpc_path_1 = require("./grpc-path");
+const inventory_grpc_client_1 = require("./inventory-grpc.client");
 let GrpcClientsModule = class GrpcClientsModule {
 };
 exports.GrpcClientsModule = GrpcClientsModule;
@@ -105,8 +106,8 @@ exports.GrpcClientsModule = GrpcClientsModule = __decorate([
                 },
             ]),
         ],
-        providers: [contacts_grpc_client_1.ContactsGrpcClient, notification_provider_1.NotificationProvider, email_provider_1.EmailProvider],
-        exports: [microservices_1.ClientsModule, contacts_grpc_client_1.ContactsGrpcClient, notification_provider_1.NotificationProvider, email_provider_1.EmailProvider],
+        providers: [contacts_grpc_client_1.ContactsGrpcClient, notification_provider_1.NotificationProvider, email_provider_1.EmailProvider, inventory_grpc_client_1.InventoryGrpcClient],
+        exports: [microservices_1.ClientsModule, contacts_grpc_client_1.ContactsGrpcClient, notification_provider_1.NotificationProvider, email_provider_1.EmailProvider, inventory_grpc_client_1.InventoryGrpcClient],
     })
 ], GrpcClientsModule);
 //# sourceMappingURL=grpc-clients.module.js.map

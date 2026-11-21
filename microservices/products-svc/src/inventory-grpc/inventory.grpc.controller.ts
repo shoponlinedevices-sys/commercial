@@ -45,4 +45,49 @@ export class InventoryGrpcController {
    async summary(): Promise<IInventorySummary> {
       return this.productService.getInventorySummary();
     }
+
+  @GrpcMethod('InventoryService', 'GetItems')
+  async getItems(@Payload() data: any) {
+     return this.productService.getInventoryList(data);
+  }
+
+  @GrpcMethod('InventoryService', 'GetItem')
+  async getItem(@Payload() data: { productId: number }) {
+     const detail = await this.productService.getInventoryDetail(Number(data.productId));
+     if (!detail) {
+       return { item: null };
+     }
+     const item = (detail as any).item ?? detail as any;
+     return { item: { ...item, productId: item.productId, productName: item.productName ?? item.product?.name ?? '', sku: item.sku ?? item.product?.sku ?? '', quantityAvailable: item.quantityAvailable } };
+  }
+
+  @GrpcMethod('InventoryService', 'GetTransactions')
+  async getTransactions(@Payload() data: any) {
+     return this.productService.getInventoryTransactions({
+       page: Number(data.page) || 1,
+       limit: Number(data.limit) || 20,
+       productId: Number(data.productId) || undefined,
+       type: data.type || undefined,
+     });
+  }
+
+  @GrpcMethod('InventoryService', 'ImportStock')
+  async importStock(@Payload() data: any) {
+     return this.productService.importInventory(this.normalizeCreatedBy(data));
+  }
+
+  @GrpcMethod('InventoryService', 'ReserveStock')
+  async reserveStock(@Payload() data: IProductSaleStock) {
+     return this.productService.reserveInventory(this.normalizeCreatedBy(data));
+  }
+
+  @GrpcMethod('InventoryService', 'ReleaseStock')
+  async releaseStock(@Payload() data: IProductSaleStock) {
+     return this.productService.releaseInventory(this.normalizeCreatedBy(data));
+  }
+
+  @GrpcMethod('InventoryService', 'AdjustStock')
+  async adjustStock(@Payload() data: any) {
+     return this.productService.adjustInventory(this.normalizeCreatedBy(data));
+  }
 }

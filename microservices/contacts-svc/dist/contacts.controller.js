@@ -20,6 +20,19 @@ let ContactsController = class ContactsController {
     constructor(contactsService) {
         this.contactsService = contactsService;
     }
+    async getHistoryLogsGrpc(data) {
+        const logs = await this.contactsService.getHistoryLogs(Number(data.limit) || 200);
+        return { logs: logs.map((log) => ({
+                id: String(log.id),
+                action: log.action,
+                entityType: log.entityType,
+                entityId: log.entityId,
+                source: log.source,
+                createdBy: log.createdBy,
+                metadata: typeof log.metadata === 'string' ? log.metadata : JSON.stringify(log.metadata || {}),
+                createdAt: log.createdAt instanceof Date ? log.createdAt.toISOString() : String(log.createdAt || ''),
+            })) };
+    }
     async getHistoryLogs(limit) {
         return this.contactsService.getHistoryLogs(Number(limit) || 200);
     }
@@ -146,6 +159,12 @@ let ContactsController = class ContactsController {
     }
 };
 exports.ContactsController = ContactsController;
+__decorate([
+    (0, microservices_1.GrpcMethod)('ContactsService', 'GetHistoryLogs'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ContactsController.prototype, "getHistoryLogsGrpc", null);
 __decorate([
     (0, common_1.Get)('history-logs'),
     __param(0, (0, common_1.Query)('limit')),

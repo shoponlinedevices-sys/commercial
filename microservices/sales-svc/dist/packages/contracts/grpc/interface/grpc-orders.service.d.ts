@@ -2,6 +2,11 @@ import { Metadata } from "@grpc/grpc-js";
 import { Observable } from "rxjs";
 import * as OrdersModel from "../../model/orders/orders.model";
 export interface IGrpcOrdersService {
+    getHistoryLogs(input?: {
+        limit: number;
+    }): Observable<{
+        logs: any[];
+    }>;
     getUserOrders(input?: OrdersModel.IGetUserOrdersRequest, metadata?: Metadata): Observable<OrdersModel.IGetUserOrdersResponse>;
     getAllOrders(input?: OrdersModel.IGetAllOrdersRequest, metadata?: Metadata): Observable<OrdersModel.IGetAllOrdersResponse>;
     getOrder(input?: OrdersModel.IGetOrderRequest, metadata?: Metadata): Observable<OrdersModel.IGetOrderResponse>;

@@ -12,6 +12,8 @@ export declare class AuthController {
             id: any;
             username: any;
             email: any;
+            role: any;
+            status: any;
         };
     }>;
     register(body: {
@@ -62,6 +64,8 @@ export declare class AuthController {
             id: any;
             username: any;
             email: any;
+            role: any;
+            status: any;
         };
     }>;
     registerGrpc(data: {

@@ -4,6 +4,20 @@ import { Id } from '../../../../packages/contracts/model/common/common.model';
 export declare class ProductGrpcController {
     private readonly productService;
     constructor(productService: ProductService);
+    getHistoryLogsGrpc(data: {
+        limit?: number;
+    }): Promise<{
+        logs: {
+            id: string;
+            action: any;
+            entityType: any;
+            entityId: any;
+            source: any;
+            createdBy: any;
+            metadata: any;
+            createdAt: any;
+        }[];
+    }>;
     getProducts(query: any): Promise<{
         products: (import("../product.entity").ProductEntity & {
             quantityAvailable: number;

@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { ClientGrpc } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 export type HistoryLog = {
   id: string | number;
@@ -12,21 +14,38 @@ export type HistoryLog = {
 };
 
 @Injectable()
-export class HistoryLogService {
-  async findAll(limit = 200): Promise<HistoryLog[]> {
-    const serviceUrls = [
-      process.env.SALES_SERVICE_URL || 'http://localhost:3001',
-      process.env.PRODUCTS_SERVICE_URL || 'http://localhost:3003',
-      process.env.CONTACTS_SERVICE_URL || 'http://localhost:3004',
-    ];
+export class HistoryLogService implements OnModuleInit {
+  private sales: any;
+  private products: any;
+  private contacts: any;
 
-    const responses = await Promise.all(serviceUrls.map(async (url) => {
+  constructor(
+    @Inject('GRPC_ORDERS_SERVICE') private readonly salesClient: ClientGrpc,
+    @Inject('GRPC_PRODUCTS_SERVICE') private readonly productsClient: ClientGrpc,
+    @Inject('GRPC_CONTACTS_SERVICE') private readonly contactsClient: ClientGrpc,
+  ) {}
+
+  onModuleInit() {
+    this.sales = this.salesClient.getService<any>('OrdersService');
+    this.products = this.productsClient.getService<any>('ProductService');
+    this.contacts = this.contactsClient.getService<any>('ContactsService');
+  }
+
+  async findAll(limit = 200): Promise<HistoryLog[]> {
+    const responses = await Promise.all([
+      this.sales?.getHistoryLogs({ limit }),
+      this.products?.getHistoryLogs({ limit }),
+      this.contacts?.getHistoryLogs({ limit }),
+    ].map(async (call) => {
       try {
-        const response = await fetch(`${url}/history-logs?limit=${limit}`);
-        if (!response.ok) return [];
-        return await response.json() as HistoryLog[];
+        if (!call) return [];
+        const response = await firstValueFrom(call) as any;
+        return (response?.logs || []).map((log: any) => ({
+          ...log,
+          metadata: log.metadata ? JSON.parse(log.metadata) : undefined,
+        })) as HistoryLog[];
       } catch (error) {
-        console.error(`[HistoryLogService] Failed to read ${url}:`, error);
+        console.error('[HistoryLogService] Failed to read history via gRPC:', error);
         return [];
       }
     }));

@@ -3,6 +3,7 @@ syntax = "proto3";
 package product;
 
 service ProductService {
+  rpc GetHistoryLogs (GetHistoryLogsRequest) returns (GetHistoryLogsResponse);
   rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
   rpc GetProductsGroupedByCategory (GetProductsGroupedByCategoryRequest) returns (GetProductsGroupedByCategoryResponse);
   rpc GetProduct (GetProductRequest) returns (GetProductResponse);
@@ -127,4 +128,23 @@ message InventoryTransaction {
 message SaleInventory {
   ProductSaleStockResult item = 1;
   InventoryTransaction transaction = 2;
+}
+
+message GetHistoryLogsRequest {
+  int32 limit = 1;
+}
+
+message HistoryLog {
+  string id = 1;
+  string action = 2;
+  string entityType = 3;
+  string entityId = 4;
+  string source = 5;
+  string createdBy = 6;
+  string metadata = 7;
+  string createdAt = 8;
+}
+
+message GetHistoryLogsResponse {
+  repeated HistoryLog logs = 1;
 }
