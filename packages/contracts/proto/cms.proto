@@ -7,6 +7,8 @@ service CmsService {
   rpc ListViewEvents (ListViewEventsRequest) returns (ListViewEventsResponse);
   rpc GetViewEventStats (ViewEventStatsRequest) returns (ViewEventStatsResponse);
   rpc ListViewEventEntityTotals (ViewEventEntityTotalsRequest) returns (ViewEventEntityTotalsResponse);
+  rpc RecordPresenceHeartbeat (PresenceHeartbeatRequest) returns (PresenceHeartbeatResponse);
+  rpc GetOnlinePresence (OnlinePresenceRequest) returns (OnlinePresenceResponse);
 }
 
 message RecordViewEventRequest {
@@ -95,4 +97,18 @@ message ViewEventEntityTotalsResponse {
   string total = 2;
   int32 page = 3;
   int32 limit = 4;
+}
+
+message PresenceHeartbeatRequest {
+  string visitorId = 1;
+}
+
+message PresenceHeartbeatResponse {
+  bool recorded = 1;
+}
+
+message OnlinePresenceRequest {}
+
+message OnlinePresenceResponse {
+  int32 activeVisitors = 1;
 }

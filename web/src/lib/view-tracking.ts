@@ -61,3 +61,24 @@ export function recordViewEvent(entityType: TrackedEntityType, entityId: number 
     console.warn('View event could not be recorded');
   });
 }
+
+export function recordPresenceHeartbeat() {
+  if (typeof window === 'undefined' || document.visibilityState !== 'visible') return;
+
+  const body = { visitorId: getOrCreateId(window.localStorage, VISITOR_ID_KEY) };
+  const token = window.localStorage.getItem('access_token');
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  void fetch(`${GATEWAY_URL}/view-events/presence/heartbeat`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+    keepalive: true,
+    cache: 'no-store',
+  }).then((response) => {
+    if (!response.ok) console.warn('Online presence could not be recorded');
+  }).catch(() => {
+    console.warn('Online presence could not be recorded');
+  });
+}

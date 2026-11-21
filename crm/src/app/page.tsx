@@ -55,6 +55,9 @@ export default function Dashboard() {
   const [inventorySubmitting, setInventorySubmitting] = useState(false);
   const [historyLogs, setHistoryLogs] = useState<HistoryLog[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [onlineVisitors, setOnlineVisitors] = useState<number | null>(null);
+  const [onlinePresenceError, setOnlinePresenceError] = useState('');
+  const [onlinePresenceCheckedAt, setOnlinePresenceCheckedAt] = useState('');
   const [historyQuery, setHistoryQuery] = useState('');
   const [historyAction, setHistoryAction] = useState('Tất cả');
   const [historySource, setHistorySource] = useState('Tất cả');
@@ -148,6 +151,28 @@ export default function Dashboard() {
     setHistoryLoading(true);
     crmApi.getHistoryLogs(token).then(setHistoryLogs).catch((requestError: Error) => setError(requestError.message)).finally(() => setHistoryLoading(false));
   }, [token]);
+
+  useEffect(() => {
+    if (!token || currentPage !== 'dashboard') return;
+    let active = true;
+    const refreshOnlinePresence = () => {
+      crmApi.getOnlinePresence(token).then((presence) => {
+        if (!active) return;
+        setOnlineVisitors(presence.activeVisitors);
+        setOnlinePresenceCheckedAt(new Date().toLocaleTimeString('vi-VN'));
+        setOnlinePresenceError('');
+      }).catch((requestError: Error) => {
+        if (!active) return;
+        setOnlinePresenceError(requestError.message);
+      });
+    };
+    refreshOnlinePresence();
+    const intervalId = window.setInterval(refreshOnlinePresence, 15_000);
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+    };
+  }, [token, currentPage]);
 
   const filteredOrders = useMemo(() => orders.filter((order) => {
     const matchesQuery = `${order.id} ${order.customer} ${order.email}`.toLowerCase().includes(query.toLowerCase());
@@ -416,7 +441,7 @@ export default function Dashboard() {
           {currentPage === 'dashboard' && (
             <>
               <div className="intro"><div><p className="eyebrow">{new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase()}</p><h1>Chào buổi sáng, {user?.username || 'Thảo'} <span>✦</span></h1><p className="subtitle">Đây là những gì đang diễn ra với cửa hàng hôm nay.</p></div><button className="primary-button" onClick={() => setShowForm(true)}><Plus size={18} /> Tạo đơn hàng</button></div>
-              <div className="stats-grid"><Stat icon={<TrendingUp size={19} />} label="Doanh thu tháng này" value={formatVnd(stats.revenue)} trend={stats.revenue > 0 ? stats.monthlyRevenueOrders + ' đơn đã giao' : '—'} hint="đơn đã giao hoặc hoàn thành" tone="orange" /><Stat icon={<ClipboardList size={19} />} label="Tổng đơn hàng" value={String(stats.totalOrders)} trend={stats.totalOrders > 0 ? '+' + stats.monthlyRevenueOrders : '0'} hint="từ dữ liệu thực" tone="blue" /><Stat icon={<Clock3 size={19} />} label="Chờ xử lý" value={String(stats.pending).padStart(2, '0')} trend={stats.pending > 0 ? 'Cần chú ý' : 'Không có'} hint={stats.pending > 0 ? 'đơn hàng mới' : 'tất cả đã xử lý'} tone={stats.pending > 0 ? 'yellow' : 'green'} /><Stat icon={<Users size={19} />} label="Khách hàng riêng biệt" value={String(new Set(orders.map(o => o.customer)).size)} trend={stats.totalOrders > 0 ? 'Có dữ liệu' : '—'} hint="từ đơn hàng" tone="green" /></div>
+              <div className="stats-grid"><Stat icon={<TrendingUp size={19} />} label="Doanh thu tháng này" value={formatVnd(stats.revenue)} trend={stats.revenue > 0 ? stats.monthlyRevenueOrders + ' đơn đã giao' : '—'} hint="đơn đã giao hoặc hoàn thành" tone="orange" /><Stat icon={<ClipboardList size={19} />} label="Tổng đơn hàng" value={String(stats.totalOrders)} trend={stats.totalOrders > 0 ? '+' + stats.monthlyRevenueOrders : '0'} hint="từ dữ liệu thực" tone="blue" /><Stat icon={<Clock3 size={19} />} label="Chờ xử lý" value={String(stats.pending).padStart(2, '0')} trend={stats.pending > 0 ? 'Cần chú ý' : 'Không có'} hint={stats.pending > 0 ? 'đơn hàng mới' : 'tất cả đã xử lý'} tone={stats.pending > 0 ? 'yellow' : 'green'} /><Stat icon={<Users size={19} />} label="Khách hàng riêng biệt" value={String(new Set(orders.map(o => o.customer)).size)} trend={stats.totalOrders > 0 ? 'Có dữ liệu' : '—'} hint="từ đơn hàng" tone="green" /><Stat icon={<Users size={19} />} label="Đang online" value={onlineVisitors === null ? '—' : onlineVisitors.toLocaleString('vi-VN')} trend={onlinePresenceError ? 'Không khả dụng' : onlineVisitors === null ? 'Đang tải' : 'Trực tiếp'} hint={onlinePresenceError || (onlinePresenceCheckedAt ? `Cập nhật ${onlinePresenceCheckedAt}` : 'Trình duyệt hoạt động trong 2 phút')} tone="green" /></div>
             </>
           )}
 

@@ -8,6 +8,7 @@ import {
   ViewEntityType,
   validateRecordViewEvent,
   validatePositiveInteger,
+  validatePresenceVisitorId,
   validateStatsFilters,
   validateViewEventFilters,
 } from './view-event.validation';
@@ -53,6 +54,32 @@ const ENTITY_NAME = "COALESCE(p.name, c.name, b.name, CONCAT(e.entity_type, ' #'
 @Injectable()
 export class CmsService {
   constructor(private readonly dataSource: DataSource) {}
+
+  async recordPresenceHeartbeat(visitorId: string) {
+    const validatedVisitorId = validatePresenceVisitorId(visitorId);
+    await this.dataSource.query(
+      `INSERT INTO tbl_online_presence (visitor_id, last_seen)
+       VALUES (?, CURRENT_TIMESTAMP)
+       ON DUPLICATE KEY UPDATE last_seen = CURRENT_TIMESTAMP`,
+      [validatedVisitorId],
+    );
+    return { recorded: true };
+  }
+
+  async getOnlinePresence() {
+    await this.dataSource.query(
+      `DELETE FROM tbl_online_presence
+       WHERE last_seen < NOW() - INTERVAL 1 DAY
+       ORDER BY last_seen
+       LIMIT 1000`,
+    );
+    const rows: Array<{ activeVisitors: string | number }> = await this.dataSource.query(
+      `SELECT COUNT(*) AS activeVisitors
+       FROM tbl_online_presence
+       WHERE last_seen >= NOW() - INTERVAL 2 MINUTE`,
+    );
+    return { activeVisitors: Number(rows[0]?.activeVisitors ?? 0) };
+  }
 
   async recordViewEvent(input: Parameters<typeof validateRecordViewEvent>[0]) {
     const event: RecordViewEventInput = validateRecordViewEvent(input);

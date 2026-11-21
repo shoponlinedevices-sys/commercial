@@ -42,6 +42,13 @@ export function validateUnsignedId(value: string, fieldName: string): string {
   return value;
 }
 
+export function validatePresenceVisitorId(value: string): string {
+  if (!UUID_PATTERN.test(value)) {
+    throw invalid('visitorId must be a UUID');
+  }
+  return value;
+}
+
 function validateOptionalString(value: string, fieldName: string, maxLength: number): string | undefined {
   if (!value) return undefined;
   if (value.length > maxLength || /[\u0000-\u001f\u007f]/.test(value)) {

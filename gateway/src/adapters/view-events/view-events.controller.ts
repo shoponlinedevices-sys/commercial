@@ -30,6 +30,8 @@ interface CmsGrpcService {
   listViewEvents(request: ListViewEventsRequest): Observable<ListViewEventsResponse>;
   getViewEventStats(request: ViewEventStatsRequest): Observable<ViewEventStatsResponse>;
   listViewEventEntityTotals(request: ViewEventEntityTotalsRequest): Observable<ViewEventEntityTotalsResponse>;
+  recordPresenceHeartbeat(request: { visitorId: string }): Observable<{ recorded: boolean }>;
+  getOnlinePresence(request: Record<string, never>): Observable<{ activeVisitors: number }>;
 }
 
 interface RecordViewEventRequest {
@@ -139,6 +141,35 @@ export class ViewEventsController implements OnModuleInit {
       referrerUrl: this.bodyString(body, 'referrerUrl'),
     };
     return this.execute(() => this.cms.recordViewEvent(payload));
+  }
+
+  @Post('/presence/heartbeat')
+  @Public()
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiOperation({ summary: 'Record a public website presence heartbeat' })
+  @ApiBody({
+    required: true,
+    schema: {
+      type: 'object',
+      required: ['visitorId'],
+      properties: { visitorId: { type: 'string', format: 'uuid' } },
+    },
+  })
+  async recordPresenceHeartbeat(@Body() body: Record<string, unknown> | undefined) {
+    const visitorId = this.bodyString(body, 'visitorId');
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(visitorId)) {
+      throw new BadRequestException('visitorId must be a UUID');
+    }
+    return this.execute(() => this.cms.recordPresenceHeartbeat({ visitorId }));
+  }
+
+  @Get('/presence/online')
+  @UseGuards(JwtAuthGuard, ViewEventsAdminGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get the number of active website visitors (administrator authentication required)' })
+  @ApiResponse({ status: 200, description: 'Number of active website visitors' })
+  async onlinePresence() {
+    return this.execute(() => this.cms.getOnlinePresence({}));
   }
 
   @Get()

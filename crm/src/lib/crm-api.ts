@@ -213,6 +213,9 @@ export const crmApi = {
     });
     return request<{ items: ViewEvent[]; total: string; page: number; limit: number }>(`/view-events?${params}`, {}, token);
   },
+  getOnlinePresence(token: string) {
+    return request<{ activeVisitors: number }>('/view-events/presence/online', {}, token);
+  },
   async getViewEventStats(filters: Pick<ViewEventFilters, 'entityType' | 'from' | 'to'>, token: string) {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {

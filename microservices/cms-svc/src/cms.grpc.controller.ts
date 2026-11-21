@@ -50,4 +50,14 @@ export class CmsGrpcController {
   }) {
     return this.cmsService.listViewEventEntityTotals(request);
   }
+
+  @GrpcMethod('CmsService', 'RecordPresenceHeartbeat')
+  recordPresenceHeartbeat(request: { visitorId: string }) {
+    return this.cmsService.recordPresenceHeartbeat(request.visitorId);
+  }
+
+  @GrpcMethod('CmsService', 'GetOnlinePresence')
+  getOnlinePresence() {
+    return this.cmsService.getOnlinePresence();
+  }
 }

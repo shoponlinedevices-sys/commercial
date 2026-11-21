@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { CartProvider } from "@/context/CartContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import Footer from "@/components/Footer";
+import PresenceTracker from "@/components/PresenceTracker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,6 +37,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <AuthProvider>
+            <PresenceTracker />
             <CartProvider>
               <NotificationProvider>
                 <Suspense fallback={null}>

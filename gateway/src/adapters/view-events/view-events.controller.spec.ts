@@ -8,7 +8,7 @@ import { ViewEventsAdminGuard } from './view-events-admin.guard';
 import { ViewEventsController } from './view-events.controller';
 
 test('analytics routes require JWT authentication and the administrator guard', () => {
-  for (const method of ['list', 'stats', 'entityTotals']) {
+  for (const method of ['list', 'stats', 'entityTotals', 'onlinePresence']) {
     const guards = Reflect.getMetadata(
       GUARDS_METADATA,
       ViewEventsController.prototype[method as keyof ViewEventsController],
@@ -16,6 +16,15 @@ test('analytics routes require JWT authentication and the administrator guard', 
     assert.ok(guards.includes(JwtAuthGuard), `${method} route should require JWT auth`);
     assert.ok(guards.includes(ViewEventsAdminGuard), `${method} route should require administrator role`);
   }
+});
+
+test('public heartbeat validates the visitor identifier', async () => {
+  const controller = new ViewEventsController({} as never);
+
+  await assert.rejects(
+    controller.recordPresenceHeartbeat({ visitorId: 'not-a-uuid' }),
+    /visitorId must be a UUID/,
+  );
 });
 
 test('public event recording permits requests without a bearer token', () => {

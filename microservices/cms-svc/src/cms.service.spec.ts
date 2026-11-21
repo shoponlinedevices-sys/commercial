@@ -16,6 +16,37 @@ function createCmsService(handler: QueryHandler, calls: QueryCall[] = []) {
   return new CmsService(dataSource);
 }
 
+test('records valid presence heartbeats with an upsert', async () => {
+  const calls: QueryCall[] = [];
+  const service = createCmsService(async () => [], calls);
+  const visitorId = '8c8419ad-7a80-42a9-a87f-8bbdf0a415fd';
+
+  assert.deepEqual(await service.recordPresenceHeartbeat(visitorId), { recorded: true });
+  assert.match(calls[0].sql, /INSERT INTO tbl_online_presence/);
+  assert.match(calls[0].sql, /ON DUPLICATE KEY UPDATE last_seen = CURRENT_TIMESTAMP/);
+  assert.deepEqual(calls[0].parameters, [visitorId]);
+});
+
+test('rejects invalid presence visitor identifiers before writing', async () => {
+  const calls: QueryCall[] = [];
+  const service = createCmsService(async () => [], calls);
+
+  await assert.rejects(service.recordPresenceHeartbeat('invalid'), /visitorId must be a UUID/);
+  assert.equal(calls.length, 0);
+});
+
+test('counts only recent active visitors and prunes old presence records', async () => {
+  const calls: QueryCall[] = [];
+  const service = createCmsService(async (sql) => {
+    if (sql.includes('COUNT(*) AS activeVisitors')) return [{ activeVisitors: '4' }];
+    return [];
+  }, calls);
+
+  assert.deepEqual(await service.getOnlinePresence(), { activeVisitors: 4 });
+  assert.match(calls[0].sql, /last_seen < NOW\(\) - INTERVAL 1 DAY/);
+  assert.match(calls[1].sql, /last_seen >= NOW\(\) - INTERVAL 2 MINUTE/);
+});
+
 test('records an existing entity using parameterized values', async () => {
   const calls: QueryCall[] = [];
   const service = createCmsService(async (sql) => {
