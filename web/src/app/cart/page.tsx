@@ -78,7 +78,14 @@ export default function CartPage() {
     if (newQuantity < 1 || !cartLine.id) return;
     try {
       await cartService.updateCartLineQuantity(cartLine.id, newQuantity);
-      await loadCart();
+      setCart((currentCart) => currentCart
+        ? {
+            ...currentCart,
+            cartLines: (currentCart.cartLines ?? []).map((line) =>
+              line.id === cartLine.id ? { ...line, quantity: newQuantity } : line,
+            ),
+          }
+        : currentCart);
       await refreshCartCount();
     } catch (error) {
       console.error('Error updating quantity:', error);
