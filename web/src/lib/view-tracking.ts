@@ -2,25 +2,8 @@ import { GATEWAY_URL } from './api-config';
 
 export type TrackedEntityType = 'category' | 'brand' | 'product';
 
-const CONSENT_KEY = 'commercial_view_tracking_consent';
 const VISITOR_ID_KEY = 'commercial_view_tracking_visitor_id';
 const SESSION_ID_KEY = 'commercial_view_tracking_session_id';
-
-export function getViewTrackingConsent(): 'granted' | 'declined' | null {
-  if (typeof window === 'undefined') return null;
-  const value = window.localStorage.getItem(CONSENT_KEY);
-  return value === 'granted' || value === 'declined' ? value : null;
-}
-
-export function setViewTrackingConsent(consent: 'granted' | 'declined') {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(CONSENT_KEY, consent);
-  if (consent === 'declined') {
-    window.localStorage.removeItem(VISITOR_ID_KEY);
-    window.sessionStorage.removeItem(SESSION_ID_KEY);
-  }
-  window.dispatchEvent(new Event('commercial-view-tracking-consent'));
-}
 
 function createId(): string {
   if (typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
@@ -50,7 +33,7 @@ function safePageUrl(value: string): string {
 }
 
 export function recordViewEvent(entityType: TrackedEntityType, entityId: number | string) {
-  if (typeof window === 'undefined' || getViewTrackingConsent() !== 'granted') return;
+  if (typeof window === 'undefined') return;
   const normalizedId = String(entityId);
   if (!/^[1-9]\d{0,19}$/.test(normalizedId)) return;
 

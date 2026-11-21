@@ -49,14 +49,6 @@ export default function ProductDetailPage() {
     void loadProduct();
   }, [loadProduct]);
 
-  useEffect(() => {
-    const recordCurrentView = () => {
-      if (product) recordViewEvent('product', product.id);
-    };
-    window.addEventListener('commercial-view-tracking-consent', recordCurrentView);
-    return () => window.removeEventListener('commercial-view-tracking-consent', recordCurrentView);
-  }, [product]);
-
   const addToCart = async () => {
     if (!product || isAddingToCart) return;
     if (!isAuthenticated) {

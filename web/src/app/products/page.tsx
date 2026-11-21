@@ -66,18 +66,6 @@ export default function ProductsPage() {
     }
   }, [loading, productCategories, selectedCategory]);
 
-  useEffect(() => {
-    const recordSelectedCategory = () => {
-      if (loading || !selectedCategory) return;
-      const category = productCategories.find((item) =>
-        item.name === selectedCategory || getCategoryDisplayName(item.name) === selectedCategory,
-      );
-      if (category) recordViewEvent('category', category.id);
-    };
-    window.addEventListener('commercial-view-tracking-consent', recordSelectedCategory);
-    return () => window.removeEventListener('commercial-view-tracking-consent', recordSelectedCategory);
-  }, [loading, productCategories, selectedCategory]);
-
   const normalizedSearch = searchQuery.toLowerCase();
   const filteredCategories = productCategories
     .map((category) => ({
