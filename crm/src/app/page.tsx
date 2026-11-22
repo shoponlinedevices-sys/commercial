@@ -42,7 +42,7 @@ export default function Dashboard() {
   const [savingProduct, setSavingProduct] = useState(false);
   const [notice, setNotice] = useState('');
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<{ id: number; username: string } | null>(null);
+  const [user, setUser] = useState<{ id: number; username: string; role?: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -205,7 +205,7 @@ export default function Dashboard() {
   }, [orders, monthlyRevenueOrders]);
 
   const customers = useMemo(() => Array.from(new Map(orders.map((order) => [order.customer, order])).values()), [orders]);
-  const canManageProductCosts = profile?.role === 'admin';
+  const canManageProductCosts = user?.role === 'admin';
   const visibleCustomers = useMemo(
     () => customers.filter((customer) => !customerFocusUserId || String(customer.userId) === customerFocusUserId),
     [customers, customerFocusUserId],

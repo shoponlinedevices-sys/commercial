@@ -193,7 +193,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}, token?: s
 
 export const crmApi = {
   login(username: string, password: string) {
-    return request<{ access_token: string; refresh_token: string; user: { id: number; username: string; email?: string } }>('/auth/login', {
+    return request<{ access_token: string; refresh_token: string; user: { id: number; username: string; email?: string; role?: string } }>('/auth/login', {
       method: 'POST', body: JSON.stringify({ username, password }),
     });
   },
