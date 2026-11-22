@@ -3,15 +3,17 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Bell, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardList, Clock3, LayoutDashboard,
-  Eye, History, Menu, PackageCheck, Plus, Search, Settings, ShoppingBag, TrendingUp, Users, X,
+  Eye, History, Menu, PackageCheck, Plus, Search, Settings, ShoppingBag, TrendingUp, Users, X, Building2, CircleDollarSign,
 } from 'lucide-react';
 import { crmApi, FeatureSetting, GatewayOrder, GatewayProduct, HistoryLog, InventoryItem, InventorySummary, UserProfile } from '@/lib/crm-api';
 import ViewEventsPanel from '@/components/ViewEventsPanel';
 import OnlinePresenceHistoryPanel from '@/components/OnlinePresenceHistoryPanel';
+import SuppliersPanel from '@/components/SuppliersPanel';
+import ProductCostsPanel from '@/components/ProductCostsPanel';
 
 type Status = 'Mới' | 'Đang xử lý' | 'Đã giao' | 'Đã hủy';
 type Order = { id: string; userId: string | number; customer: string; email: string; items: number; total: number; status: Status; createdAt: string; date: string; initials: string; tone: string };
-type PageType = 'dashboard' | 'orders' | 'customers' | 'products' | 'inventory' | 'view-events' | 'logs' | 'settings' | 'help';
+type PageType = 'dashboard' | 'orders' | 'customers' | 'products' | 'inventory' | 'suppliers' | 'product-costs' | 'view-events' | 'logs' | 'settings' | 'help';
 
 const formatVnd = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
 const statusToLabel: Record<string, Status> = { pending: 'Mới', processing: 'Đang xử lý', completed: 'Đã giao', delivered: 'Đã giao', cancelled: 'Đã hủy' };
@@ -45,6 +47,7 @@ export default function Dashboard() {
   const [error, setError] = useState('');
   const [loginError, setLoginError] = useState('');
   const [products, setProducts] = useState<GatewayProduct[]>([]);
+  const [costsProductId, setCostsProductId] = useState<number | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [featureSettings, setFeatureSettings] = useState<FeatureSetting[]>([]);
   const [inventorySummary, setInventorySummary] = useState<InventorySummary>({ totalProducts: 0, totalOnHand: 0, lowStockItems: 0, outOfStockItems: 0, inventoryValue: 0, hasCostData: false });
@@ -202,6 +205,7 @@ export default function Dashboard() {
   }, [orders, monthlyRevenueOrders]);
 
   const customers = useMemo(() => Array.from(new Map(orders.map((order) => [order.customer, order])).values()), [orders]);
+  const canManageProductCosts = profile?.role === 'admin';
   const visibleCustomers = useMemo(
     () => customers.filter((customer) => !customerFocusUserId || String(customer.userId) === customerFocusUserId),
     [customers, customerFocusUserId],
@@ -217,6 +221,10 @@ export default function Dashboard() {
   const openCustomer = (userId: string) => {
     setCustomerFocusUserId(userId);
     navigate('customers');
+  };
+  const openProductCostHistory = (productId?: number) => {
+    setCostsProductId(productId ?? null);
+    navigate('product-costs');
   };
 
   const saveProfile = async (event: FormEvent<HTMLFormElement>) => {
@@ -427,6 +435,8 @@ export default function Dashboard() {
           <button onClick={() => navigate('orders')} className={`nav-item ${currentPage === 'orders' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><ClipboardList size={18} /> Đơn hàng <span className="nav-count">{orders.length}</span></button>
           <button onClick={() => navigate('customers')} className={`nav-item ${currentPage === 'customers' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Users size={18} /> Khách hàng</button>
           <button onClick={() => navigate('products')} className={`nav-item ${currentPage === 'products' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><PackageCheck size={18} /> Sản phẩm</button>
+          {canManageProductCosts && <button onClick={() => navigate('suppliers')} className={`nav-item ${currentPage === 'suppliers' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Building2 size={18} /> Nhà cung cấp</button>}
+          {canManageProductCosts && <button onClick={() => openProductCostHistory()} className={`nav-item ${currentPage === 'product-costs' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><CircleDollarSign size={18} /> Giá nhập</button>}
           <button onClick={() => navigate('inventory')} className={`nav-item ${currentPage === 'inventory' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><ClipboardList size={18} /> Tồn kho</button>
           <button onClick={() => navigate('view-events')} className={`nav-item ${currentPage === 'view-events' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><Eye size={18} /> Lượt xem</button>
           <button onClick={() => navigate('logs')} className={`nav-item ${currentPage === 'logs' ? 'active' : ''}`} style={{ border: 'none', background: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}><History size={18} /> Nhật ký <span className="nav-count">{historyLogs.length}</span></button>
@@ -436,7 +446,7 @@ export default function Dashboard() {
       </aside>
 
       <section className="content">
-        <header className="topbar"><button className="mobile-menu" aria-label="Mở menu" onClick={() => setMobileMenuOpen((open) => !open)}><Menu size={20} /></button><div className="breadcrumbs"><span>Tổng quan</span><b>/</b><strong>{currentPage === 'dashboard' && 'Đơn hàng'}{currentPage === 'orders' && 'Đơn hàng'}{currentPage === 'customers' && 'Khách hàng'}{currentPage === 'products' && 'Sản phẩm'}{currentPage === 'inventory' && 'Tồn kho'}{currentPage === 'view-events' && 'Lượt xem'}{currentPage === 'logs' && 'Nhật ký hoạt động'}{currentPage === 'settings' && 'Cài đặt'}{currentPage === 'help' && 'Trợ giúp'}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Thông báo" onClick={() => setNotice('Bạn không có thông báo mới')}><Bell size={19} /><i /></button><div className="avatar avatar-dark top-avatar">{user?.username?.slice(0, 2).toUpperCase() || 'TH'}</div></div></header>
+        <header className="topbar"><button className="mobile-menu" aria-label="Mở menu" onClick={() => setMobileMenuOpen((open) => !open)}><Menu size={20} /></button><div className="breadcrumbs"><span>Tổng quan</span><b>/</b><strong>{currentPage === 'dashboard' && 'Đơn hàng'}{currentPage === 'orders' && 'Đơn hàng'}{currentPage === 'customers' && 'Khách hàng'}{currentPage === 'products' && 'Sản phẩm'}{currentPage === 'inventory' && 'Tồn kho'}{currentPage === 'suppliers' && 'Nhà cung cấp'}{currentPage === 'product-costs' && 'Quản lý giá nhập'}{currentPage === 'view-events' && 'Lượt xem'}{currentPage === 'logs' && 'Nhật ký hoạt động'}{currentPage === 'settings' && 'Cài đặt'}{currentPage === 'help' && 'Trợ giúp'}</strong></div><div className="topbar-actions"><button className="icon-button" aria-label="Thông báo" onClick={() => setNotice('Bạn không có thông báo mới')}><Bell size={19} /><i /></button><div className="avatar avatar-dark top-avatar">{user?.username?.slice(0, 2).toUpperCase() || 'TH'}</div></div></header>
         <div className="main-content">
 
           {currentPage === 'dashboard' && (
@@ -465,10 +475,12 @@ export default function Dashboard() {
           {currentPage === 'products' && (
             <section className="orders-section">
               <div className="section-heading"><div><h2>Quản lý sản phẩm</h2><p>{products.length} sản phẩm từ Product Service</p></div><div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}><button className="text-button" onClick={() => navigate('orders')}>Tạo đơn hàng <span>→</span></button><button className="primary-button" onClick={() => setShowProductForm(true)}><Plus size={18} /> Thêm sản phẩm</button></div></div>
-              <div className="table-wrap"><table><thead><tr><th>SẢN PHẨM</th><th>SKU</th><th>ĐƠN VỊ</th><th>GIÁ</th><th>NHÃN</th></tr></thead><tbody>{products.length === 0 ? <tr><td colSpan={5} style={{ textAlign: 'center', padding: '32px' }}>Chưa tải được sản phẩm hoặc kho đang trống.</td></tr> : products.map((product) => <tr key={product.id}><td><strong>{product.name}</strong><small style={{ display: 'block', color: '#9aa4a1', marginTop: '4px' }}>{product.description || 'Không có mô tả'}</small></td><td>{product.sku || `SP-${product.id}`}</td><td>{product.unit || '—'}</td><td><strong>{formatVnd(Number(product.price))}</strong></td><td>{product.badge || '—'}</td></tr>)}</tbody></table></div>
+              <div className="table-wrap"><table><thead><tr><th>SẢN PHẨM</th><th>SKU</th><th>ĐƠN VỊ</th><th>GIÁ</th><th>NHÃN</th>{canManageProductCosts && <th>GIÁ NHẬP</th>}</tr></thead><tbody>{products.length === 0 ? <tr><td colSpan={canManageProductCosts ? 6 : 5} style={{ textAlign: 'center', padding: '32px' }}>Chưa tải được sản phẩm hoặc kho đang trống.</td></tr> : products.map((product) => <tr key={product.id}><td><strong>{product.name}</strong><small style={{ display: 'block', color: '#9aa4a1', marginTop: '4px' }}>{product.description || 'Không có mô tả'}</small></td><td>{product.sku || `SP-${product.id}`}</td><td>{product.unit || '—'}</td><td><strong>{formatVnd(Number(product.price))}</strong></td><td>{product.badge || '—'}</td>{canManageProductCosts && <td><button className="text-button" onClick={() => openProductCostHistory(product.id)}>Lịch sử giá nhập →</button></td>}</tr>)}</tbody></table></div>
             </section>
           )}
 
+          {canManageProductCosts && currentPage === 'suppliers' && token && <SuppliersPanel token={token} />}
+          {canManageProductCosts && currentPage === 'product-costs' && token && <ProductCostsPanel token={token} products={products} initialProductId={costsProductId} />}
           {currentPage === 'view-events' && token && <ViewEventsPanel token={token} onOpenCustomer={openCustomer} />}
 
           {currentPage === 'inventory' && (

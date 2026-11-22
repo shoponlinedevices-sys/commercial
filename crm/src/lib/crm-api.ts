@@ -24,6 +24,42 @@ export type GatewayProduct = {
   category?: number | string;
 };
 
+export type Supplier = {
+  id: number;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  taxCode: string | null;
+  note: string | null;
+  status: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ProductCost = {
+  id: string;
+  productId: number;
+  productName: string;
+  sku?: string;
+  salePrice: number;
+  supplierId: number | null;
+  supplierName: string | null;
+  importPrice: number;
+  quantity: number;
+  shippingFee: number;
+  otherFee: number;
+  totalGoods: number;
+  totalFees: number;
+  totalValue: number;
+  unitCost: number;
+  expectedProfit: number;
+  profitMarginPercent: number | null;
+  importDate: string;
+  note: string | null;
+  createdAt: string;
+};
+
 export type UserProfile = {
   id: number;
   username: string;
@@ -170,6 +206,46 @@ export const crmApi = {
     return request<GatewayOrder[]>(`/orders${query ? `?${query}` : ''}`, {}, token);
   },
   getProducts(token: string) { return request<{ products: GatewayProduct[]; total: number }>('/products', {}, token); },
+  getSuppliers(token: string, filters?: { search?: string; status?: number; page?: number; limit?: number }) {
+    const params = new URLSearchParams();
+    Object.entries(filters || {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') params.set(key, String(value));
+    });
+    return request<{ items: Supplier[]; total: number; page: number; limit: number }>(`/suppliers?${params}`, {}, token);
+  },
+  getSupplier(token: string, id: number) { return request<Supplier>(`/suppliers/${id}`, {}, token); },
+  createSupplier(token: string, data: Omit<Supplier, 'id' | 'status' | 'createdAt' | 'updatedAt'>) {
+    return request<Supplier>('/suppliers', { method: 'POST', body: JSON.stringify(data) }, token);
+  },
+  updateSupplier(token: string, id: number, data: Partial<Pick<Supplier, 'name' | 'phone' | 'email' | 'address' | 'taxCode' | 'note'>>) {
+    return request<Supplier>(`/suppliers/${id}`, { method: 'PATCH', body: JSON.stringify(data) }, token);
+  },
+  setSupplierStatus(token: string, id: number, status: number) {
+    return request<Supplier>(`/suppliers/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }, token);
+  },
+  getProductCostSummary(token: string) {
+    return request<{ totalImports: number; totalValue: number; productsWithCost: number }>('/product-costs/summary', {}, token);
+  },
+  getProductCosts(token: string, filters?: { productId?: number; supplierId?: number; search?: string; from?: string; to?: string; page?: number; limit?: number }) {
+    const params = new URLSearchParams();
+    Object.entries(filters || {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') params.set(key, String(value));
+    });
+    return request<{ items: ProductCost[]; total: number; page: number; limit: number }>(`/product-costs?${params}`, {}, token);
+  },
+  getProductCost(token: string, id: string) { return request<ProductCost>(`/product-costs/${encodeURIComponent(id)}`, {}, token); },
+  getProductCostHistory(token: string, productId: number, page = 1, limit = 20) {
+    return request<{ items: ProductCost[]; total: number; page: number; limit: number }>(`/product-costs/product/${productId}?page=${page}&limit=${limit}`, {}, token);
+  },
+  getLatestProductCost(token: string, productId: number) {
+    return request<{ item: ProductCost | null }>(`/product-costs/product/${productId}/latest`, {}, token);
+  },
+  createProductCost(token: string, data: { productId: number; supplierId?: number | null; importPrice: number; quantity: number; shippingFee: number; otherFee: number; importDate: string; note?: string }) {
+    return request<ProductCost>('/product-costs', { method: 'POST', body: JSON.stringify(data) }, token);
+  },
+  updateProductCost(token: string, id: string, data: { productId: number; supplierId?: number | null; importPrice: number; quantity: number; shippingFee: number; otherFee: number; importDate: string; note?: string }) {
+    return request<ProductCost>(`/product-costs/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify(data) }, token);
+  },
   getInventorySummary(token: string) { return request<InventorySummary>('/inventory/summary', {}, token); },
   getInventory(token: string, filters?: { page?: number; limit?: number; search?: string; category?: string; status?: string }) {
     const params = new URLSearchParams();

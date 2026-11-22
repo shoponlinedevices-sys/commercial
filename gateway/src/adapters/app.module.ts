@@ -16,6 +16,7 @@ import { IdentityModule } from './identity/identity.module';
 import { HistoryLogModule } from './history-log/history-log.module';
 import { ViewEventsModule } from './view-events/view-events.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { SupplierCostsModule } from './supplier-costs/supplier-costs.module';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { InventoryModule } from './inventory/inventory.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    GrpcClientsModule, IdentityModule, CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule, FeatureSettingsModule, HistoryLogModule, ViewEventsModule, InventoryModule,
+    GrpcClientsModule, IdentityModule, CartModule, ProductModule, AuthModule, AdsModule, OrderModule, NotificationModule, UserProfileModule, DeliveryAddressModule, PaymentMethodModule, EmailModule, FeatureSettingsModule, HistoryLogModule, ViewEventsModule, InventoryModule, SupplierCostsModule,
   ],
 })
 export class AppModule {}

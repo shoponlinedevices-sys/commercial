@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { DataSource, In } from 'typeorm';
 import { ProductEntity } from './product.entity';
@@ -6,8 +6,53 @@ import { CategoryEntity } from './category.entity';
 import { HistoryLogEntity } from './history-log.entity';
 import { InventoryEntity } from './inventory.entity';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
+import { ProductCostEntity } from './product-cost.entity';
+import { SupplierEntity } from './supplier.entity';
 import { Id } from '../../../packages/contracts/model/common/common.model';
 import { IProduct, IGetProductsResponse, IFindProducts, IGetProductsGroupedByCategoryResponse, IGetProductsGroupedByCategoryRequest } from '../../../packages/contracts/model/product/product.model';
+
+export interface SupplierInput {
+  name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
+  taxCode?: string | null;
+  note?: string | null;
+}
+
+export interface ProductCostInput {
+  productId?: number;
+  supplierId?: number | null;
+  importPrice?: number;
+  quantity?: number;
+  shippingFee?: number;
+  otherFee?: number;
+  importDate?: Date;
+  note?: string | null;
+}
+
+export interface ProductCostView {
+  id: string;
+  productId: number;
+  productName: string;
+  sku: string | null;
+  salePrice: number;
+  supplierId: number | null;
+  supplierName: string | null;
+  importPrice: number;
+  quantity: number;
+  shippingFee: number;
+  otherFee: number;
+  totalGoods: number;
+  totalFees: number;
+  totalValue: number;
+  unitCost: number;
+  expectedProfit: number;
+  profitMarginPercent: number | null;
+  importDate: Date;
+  note: string | null;
+  createdAt: Date;
+}
 
 @Injectable()
 export class ProductService {
@@ -26,6 +71,240 @@ export class ProductService {
 
   private get inventoryTransactionRepository() {
     return this.dataSource.getRepository(InventoryTransactionEntity);
+  }
+
+  private get supplierRepository() {
+    return this.dataSource.getRepository(SupplierEntity);
+  }
+
+  private get productCostRepository() {
+    return this.dataSource.getRepository(ProductCostEntity);
+  }
+
+  async createSupplier(input: SupplierInput) {
+    if (!input.name?.trim()) throw new BadRequestException('Tên nhà cung cấp là bắt buộc');
+    const supplier = this.supplierRepository.create({
+      name: input.name.trim(),
+      phone: input.phone ?? null,
+      email: input.email ?? null,
+      address: input.address ?? null,
+      taxCode: input.taxCode ?? null,
+      note: input.note ?? null,
+      status: 1,
+    });
+    return this.supplierRepository.save(supplier);
+  }
+
+  async listSuppliers(filters: { search?: string; status?: number; page: number; limit: number }) {
+    const query = this.supplierRepository.createQueryBuilder('supplier');
+    if (filters.search) {
+      query.andWhere('(supplier.name LIKE :search OR supplier.phone LIKE :search)', {
+        search: `%${filters.search}%`,
+      });
+    }
+    if (filters.status !== undefined) query.andWhere('supplier.status = :status', { status: filters.status });
+    const [items, total] = await query
+      .orderBy('supplier.id', 'DESC')
+      .skip((filters.page - 1) * filters.limit)
+      .take(filters.limit)
+      .getManyAndCount();
+    return { items, total, page: filters.page, limit: filters.limit };
+  }
+
+  getSupplier(id: number) {
+    return this.supplierRepository.findOne({ where: { id } });
+  }
+
+  async updateSupplier(id: number, input: SupplierInput) {
+    const supplier = await this.getSupplier(id);
+    if (!supplier) throw new NotFoundException('Nhà cung cấp không tồn tại');
+    if (input.name !== undefined) {
+      if (!input.name?.trim()) throw new BadRequestException('Tên nhà cung cấp là bắt buộc');
+      supplier.name = input.name.trim();
+    }
+    if (input.phone !== undefined) supplier.phone = input.phone;
+    if (input.email !== undefined) supplier.email = input.email;
+    if (input.address !== undefined) supplier.address = input.address;
+    if (input.taxCode !== undefined) supplier.taxCode = input.taxCode;
+    if (input.note !== undefined) supplier.note = input.note;
+    return this.supplierRepository.save(supplier);
+  }
+
+  async updateSupplierStatus(id: number, status: number) {
+    const supplier = await this.getSupplier(id);
+    if (!supplier) throw new NotFoundException('Nhà cung cấp không tồn tại');
+    supplier.status = status;
+    return this.supplierRepository.save(supplier);
+  }
+
+  async createProductCost(input: ProductCostInput) {
+    if (input.productId === undefined || input.importPrice === undefined) {
+      throw new BadRequestException('Sản phẩm và giá nhập là bắt buộc');
+    }
+    await this.ensureCostProduct(input.productId);
+    await this.ensureCostSupplier(input.supplierId);
+    const cost = this.productCostRepository.create({
+      productId: input.productId,
+      supplierId: input.supplierId ?? null,
+      importPrice: String(input.importPrice),
+      quantity: input.quantity ?? 1,
+      shippingFee: String(input.shippingFee ?? 0),
+      otherFee: String(input.otherFee ?? 0),
+      importDate: input.importDate,
+      note: input.note ?? null,
+    });
+    return this.productCostResponse(await this.productCostRepository.save(cost));
+  }
+
+  async updateProductCost(id: string, input: ProductCostInput) {
+    const cost = await this.productCostRepository.findOne({ where: { id } });
+    if (!cost) throw new NotFoundException('Lần nhập không tồn tại');
+    if (Object.keys(input).length === 0) throw new BadRequestException('Cần có ít nhất một trường để cập nhật');
+    if (input.productId !== undefined) {
+      await this.ensureCostProduct(input.productId);
+      cost.productId = input.productId;
+    }
+    if (input.supplierId !== undefined) {
+      if (input.supplierId !== cost.supplierId) {
+        await this.ensureCostSupplier(input.supplierId);
+        cost.supplierId = input.supplierId;
+      }
+    }
+    if (input.importPrice !== undefined) cost.importPrice = String(input.importPrice);
+    if (input.quantity !== undefined) cost.quantity = input.quantity;
+    if (input.shippingFee !== undefined) cost.shippingFee = String(input.shippingFee);
+    if (input.otherFee !== undefined) cost.otherFee = String(input.otherFee);
+    if (input.importDate !== undefined) cost.importDate = input.importDate;
+    if (input.note !== undefined) cost.note = input.note;
+    return this.productCostResponse(await this.productCostRepository.save(cost));
+  }
+
+  async listProductCosts(filters: {
+    productId?: number;
+    supplierId?: number;
+    search?: string;
+    from?: Date;
+    to?: Date;
+    page: number;
+    limit: number;
+  }) {
+    const query = this.productCostRepository
+      .createQueryBuilder('cost')
+      .leftJoinAndSelect('cost.product', 'product')
+      .leftJoinAndSelect('cost.supplier', 'supplier');
+    if (filters.productId !== undefined) query.andWhere('cost.productId = :productId', { productId: filters.productId });
+    if (filters.supplierId !== undefined) query.andWhere('cost.supplierId = :supplierId', { supplierId: filters.supplierId });
+    if (filters.search) {
+      query.andWhere('(product.name LIKE :search OR product.sku LIKE :search)', {
+        search: `%${filters.search}%`,
+      });
+    }
+    if (filters.from) query.andWhere('cost.importDate >= :from', { from: filters.from });
+    if (filters.to) query.andWhere('cost.importDate <= :to', { to: filters.to });
+    const [items, total] = await query
+      .orderBy('cost.importDate', 'DESC')
+      .addOrderBy('cost.id', 'DESC')
+      .skip((filters.page - 1) * filters.limit)
+      .take(filters.limit)
+      .getManyAndCount();
+    return {
+      items: await Promise.all(items.map((item) => this.productCostResponse(item))),
+      total,
+      page: filters.page,
+      limit: filters.limit,
+    };
+  }
+
+  async getProductCost(id: string) {
+    const cost = await this.productCostRepository.findOne({
+      where: { id },
+      relations: ['product', 'supplier'],
+    });
+    return cost ? this.productCostResponse(cost) : null;
+  }
+
+  async getLatestProductCost(productId: number) {
+    await this.ensureCostProduct(productId);
+    const cost = await this.productCostRepository.findOne({
+      where: { productId },
+      relations: ['product', 'supplier'],
+      order: { importDate: 'DESC', id: 'DESC' },
+    });
+    return cost ? this.productCostResponse(cost) : null;
+  }
+
+  async getProductCostSummary() {
+    const row = await this.productCostRepository
+      .createQueryBuilder('cost')
+      .select('COUNT(*)', 'totalImports')
+      .addSelect('COALESCE(SUM(cost.import_price * cost.quantity + cost.shipping_fee + cost.other_fee), 0)', 'totalValue')
+      .addSelect('COUNT(DISTINCT cost.product_id)', 'productsWithCost')
+      .getRawOne();
+    return {
+      totalImports: Number(row?.totalImports || 0),
+      totalValue: Number(row?.totalValue || 0),
+      productsWithCost: Number(row?.productsWithCost || 0),
+    };
+  }
+
+  private async ensureCostProduct(productId: number) {
+    const product = await this.productRepository.findOne({ where: { id: productId } });
+    if (!product) throw new NotFoundException('Sản phẩm không tồn tại');
+    return product;
+  }
+
+  private async ensureCostSupplier(supplierId?: number | null) {
+    if (supplierId == null) return null;
+    const supplier = await this.getSupplier(supplierId);
+    if (!supplier) throw new NotFoundException('Nhà cung cấp không tồn tại');
+    if (supplier.status !== 1) throw new BadRequestException('Nhà cung cấp đã bị khóa');
+    return supplier;
+  }
+
+  private async productCostResponse(cost: ProductCostEntity): Promise<ProductCostView> {
+    const product = cost.product || await this.ensureCostProduct(cost.productId);
+    const supplier = cost.supplierId == null
+      ? null
+      : cost.supplier || await this.getSupplier(cost.supplierId);
+    const importPrice = Number(cost.importPrice);
+    const shippingFee = Number(cost.shippingFee);
+    const otherFee = Number(cost.otherFee);
+    const totalGoodsCents = this.moneyToCents(cost.importPrice) * BigInt(cost.quantity);
+    const totalFeesCents = this.moneyToCents(cost.shippingFee) + this.moneyToCents(cost.otherFee);
+    const totalCostCents = totalGoodsCents + totalFeesCents;
+    const totalGoods = Number(totalGoodsCents) / 100;
+    const totalFees = Number(totalFeesCents) / 100;
+    const totalCost = Number(totalCostCents) / 100;
+    const unitCost = cost.quantity > 0 ? totalCost / cost.quantity : 0;
+    const salePrice = Number(product.price || 0);
+    const expectedProfit = salePrice - unitCost;
+    return {
+      id: cost.id,
+      productId: cost.productId,
+      productName: product.name,
+      sku: product.sku,
+      salePrice,
+      supplierId: cost.supplierId,
+      supplierName: supplier?.name ?? null,
+      importPrice,
+      quantity: cost.quantity,
+      shippingFee,
+      otherFee,
+      totalGoods,
+      totalFees,
+      totalValue: totalCost,
+      unitCost,
+      expectedProfit,
+      profitMarginPercent: unitCost > 0 ? expectedProfit / unitCost * 100 : null,
+      importDate: cost.importDate,
+      note: cost.note,
+      createdAt: cost.createdAt,
+    };
+  }
+
+  private moneyToCents(value: string): bigint {
+    const [whole, fraction = ''] = String(value).split('.');
+    return BigInt(whole) * 100n + BigInt(fraction.padEnd(2, '0'));
   }
 
   private async addAvailableQuantity<T extends { id: number }>(

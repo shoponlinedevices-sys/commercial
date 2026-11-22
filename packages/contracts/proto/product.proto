@@ -12,6 +12,162 @@ service ProductService {
   rpc SaleStock (ProductSaleStock) returns (SaleInventory);
   rpc FindOne (GetProductRequest) returns (Product);
   rpc FindAll (FindProducts) returns (GetProductsResponse);
+  rpc CreateSupplier (SupplierMutation) returns (SupplierRecord);
+  rpc ListSuppliers (ListSuppliersRequest) returns (ListSuppliersResponse);
+  rpc GetSupplier (GetSupplierRequest) returns (SupplierRecord);
+  rpc UpdateSupplier (SupplierMutation) returns (SupplierRecord);
+  rpc UpdateSupplierStatus (UpdateSupplierStatusRequest) returns (SupplierRecord);
+  rpc CreateProductCost (ProductCostMutation) returns (ProductCostRecord);
+  rpc ListProductCosts (ListProductCostsRequest) returns (ListProductCostsResponse);
+  rpc GetProductCost (GetProductCostRequest) returns (ProductCostRecord);
+  rpc UpdateProductCost (ProductCostMutation) returns (ProductCostRecord);
+  rpc ListProductCostHistory (ListProductCostHistoryRequest) returns (ListProductCostsResponse);
+  rpc GetLatestProductCost (GetLatestProductCostRequest) returns (GetLatestProductCostResponse);
+  rpc GetProductCostSummary (Empty) returns (ProductCostSummary);
+}
+
+message Empty {}
+
+message SupplierRecord {
+  int32 id = 1;
+  string name = 2;
+  string phone = 3;
+  string email = 4;
+  string address = 5;
+  string taxCode = 6;
+  string note = 7;
+  int32 status = 8;
+  string createdAt = 9;
+  string updatedAt = 10;
+}
+
+message SupplierMutation {
+  int32 id = 1;
+  string name = 2;
+  string phone = 3;
+  string email = 4;
+  string address = 5;
+  string taxCode = 6;
+  string note = 7;
+  bool hasName = 8;
+  bool hasPhone = 9;
+  bool hasEmail = 10;
+  bool hasAddress = 11;
+  bool hasTaxCode = 12;
+  bool hasNote = 13;
+}
+
+message ListSuppliersRequest {
+  string search = 1;
+  int32 status = 2;
+  bool hasStatus = 3;
+  int32 page = 4;
+  int32 limit = 5;
+}
+
+message ListSuppliersResponse {
+  repeated SupplierRecord items = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message GetSupplierRequest {
+  int32 id = 1;
+}
+
+message UpdateSupplierStatusRequest {
+  int32 id = 1;
+  int32 status = 2;
+}
+
+message ProductCostRecord {
+  string id = 1;
+  int32 productId = 2;
+  string productName = 3;
+  string sku = 4;
+  string salePrice = 5;
+  int32 supplierId = 6;
+  string supplierName = 7;
+  string importPrice = 8;
+  int32 quantity = 9;
+  string shippingFee = 10;
+  string otherFee = 11;
+  string totalGoods = 12;
+  string totalFees = 13;
+  string totalValue = 14;
+  string unitCost = 15;
+  string expectedProfit = 16;
+  string profitMarginPercent = 17;
+  bool hasProfitMargin = 18;
+  string importDate = 19;
+  string note = 20;
+  string createdAt = 21;
+  bool hasSupplier = 22;
+}
+
+message ProductCostMutation {
+  string id = 1;
+  int32 productId = 2;
+  int32 supplierId = 3;
+  string importPrice = 4;
+  int32 quantity = 5;
+  string shippingFee = 6;
+  string otherFee = 7;
+  string importDate = 8;
+  string note = 9;
+  bool hasProductId = 10;
+  bool hasSupplierId = 11;
+  bool hasImportPrice = 12;
+  bool hasQuantity = 13;
+  bool hasShippingFee = 14;
+  bool hasOtherFee = 15;
+  bool hasImportDate = 16;
+  bool hasNote = 17;
+}
+
+message ListProductCostsRequest {
+  int32 productId = 1;
+  int32 supplierId = 2;
+  string search = 3;
+  string from = 4;
+  string to = 5;
+  int32 page = 6;
+  int32 limit = 7;
+  bool hasProductId = 8;
+  bool hasSupplierId = 9;
+}
+
+message ListProductCostHistoryRequest {
+  int32 productId = 1;
+  int32 page = 2;
+  int32 limit = 3;
+}
+
+message GetProductCostRequest {
+  string id = 1;
+}
+
+message GetLatestProductCostRequest {
+  int32 productId = 1;
+}
+
+message GetLatestProductCostResponse {
+  bool found = 1;
+  ProductCostRecord item = 2;
+}
+
+message ListProductCostsResponse {
+  repeated ProductCostRecord items = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message ProductCostSummary {
+  string totalImports = 1;
+  string totalValue = 2;
+  string productsWithCost = 3;
 }
 
 message FindProducts {
