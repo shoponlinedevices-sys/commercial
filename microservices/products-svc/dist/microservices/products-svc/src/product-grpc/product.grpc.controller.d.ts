@@ -24,6 +24,7 @@ export declare class ProductGrpcController {
         })[];
         total: number;
     }>;
+    getFeaturedProducts(): Promise<IGetProductsResponse>;
     getProductsGroupedByCategory(filters?: IGetProductsGroupedByCategoryRequest): Promise<IGetProductsGroupedByCategoryResponse>;
     getProduct(request: {
         id: number;

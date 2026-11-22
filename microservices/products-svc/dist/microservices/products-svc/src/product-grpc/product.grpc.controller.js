@@ -34,6 +34,9 @@ let ProductGrpcController = class ProductGrpcController {
         const result = await this.productService.getProducts(query);
         return result;
     }
+    async getFeaturedProducts() {
+        return this.productService.getFeaturedProducts();
+    }
     async getProductsGroupedByCategory(filters) {
         const result = await this.productService.getProductsGroupedByCategory(filters);
         return result;
@@ -65,6 +68,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductGrpcController.prototype, "getProducts", null);
+__decorate([
+    (0, microservices_1.GrpcMethod)('ProductService', 'GetFeaturedProducts'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductGrpcController.prototype, "getFeaturedProducts", null);
 __decorate([
     (0, microservices_1.GrpcMethod)('ProductService', 'GetProductsGroupedByCategory'),
     __metadata("design:type", Function),

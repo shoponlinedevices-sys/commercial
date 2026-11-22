@@ -8,6 +8,7 @@ export interface IGrpcProductService {
         logs: any[];
     }>;
     getProducts(input?: IGetProductsRequest, metadata?: Metadata): Observable<IGetProductsResponse>;
+    getFeaturedProducts(input: Record<string, never>): Observable<IGetProductsResponse>;
     getProductsGroupedByCategory(input?: IGetProductsGroupedByCategoryRequest): Observable<IGetProductsGroupedByCategoryResponse>;
     getProduct(input?: IGetProductRequest, metadata?: Metadata): Observable<IGetProductResponse>;
     createProduct(input: ICreateProductRequest, metadata?: Metadata): Observable<ICreateProductResponse>;

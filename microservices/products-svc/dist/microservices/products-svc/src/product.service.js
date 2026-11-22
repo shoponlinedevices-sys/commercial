@@ -93,6 +93,19 @@ let ProductService = class ProductService {
             total,
         };
     }
+    async getFeaturedProducts() {
+        const products = await this.productRepository
+            .createQueryBuilder('product')
+            .where('product.isFeatured = :isFeatured', { isFeatured: 1 })
+            .andWhere('product.image IS NOT NULL')
+            .andWhere("product.image <> ''")
+            .orderBy('product.id', 'DESC')
+            .getMany();
+        return {
+            products: await this.addAvailableQuantity(products),
+            total: products.length,
+        };
+    }
     async getProduct(id) {
         const product = await this.productRepository.findOne({
             where: { id },

@@ -58,6 +58,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "categoryId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'is_featured', type: 'tinyint', default: 0 }),
+    __metadata("design:type", Boolean)
+], ProductEntity.prototype, "isFeatured", void 0);
 exports.ProductEntity = ProductEntity = __decorate([
     (0, typeorm_1.Entity)('tbl_product')
 ], ProductEntity);

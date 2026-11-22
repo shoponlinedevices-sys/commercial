@@ -24,6 +24,7 @@ export declare class ProductService {
         })[];
         total: number;
     }>;
+    getFeaturedProducts(): Promise<IGetProductsResponse>;
     getProduct(id: number): Promise<{
         product: ProductEntity;
     }>;
