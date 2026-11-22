@@ -82,7 +82,7 @@ test('samples online presence periodically and retains only the hourly maximum',
   service.onModuleDestroy();
 
   assert.match(calls[0].sql, /INSERT INTO tbl_online_presence_hourly/);
-  assert.match(calls[0].sql, /GREATEST\(active_visitors, VALUES\(active_visitors\)\)/);
+  assert.match(calls[0].sql, /GREATEST\(tbl_online_presence_hourly\.active_visitors, VALUES\(active_visitors\)\)/);
 });
 
 test('records an existing entity using parameterized values', async () => {

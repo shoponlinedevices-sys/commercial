@@ -132,7 +132,7 @@ export class CmsService implements OnModuleInit, OnModuleDestroy {
            DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '+07:00'), '%Y-%m-%d %H:00:00') AS hour_bucket,
            (SELECT COUNT(*) FROM tbl_online_presence WHERE last_seen >= NOW() - INTERVAL 2 MINUTE) AS active_visitors
        ) AS current_sample
-       ON DUPLICATE KEY UPDATE active_visitors = GREATEST(active_visitors, VALUES(active_visitors))`,
+       ON DUPLICATE KEY UPDATE active_visitors = GREATEST(tbl_online_presence_hourly.active_visitors, VALUES(active_visitors))`,
     );
   }
 
