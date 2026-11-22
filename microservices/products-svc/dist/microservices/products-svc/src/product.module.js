@@ -15,6 +15,9 @@ const inventory_controller_1 = require("./inventory.controller");
 const product_entity_1 = require("./product.entity");
 const inventory_entity_1 = require("./inventory.entity");
 const inventory_transaction_entity_1 = require("./inventory-transaction.entity");
+const product_cost_entity_1 = require("./product-cost.entity");
+const supplier_entity_1 = require("./supplier.entity");
+const supplier_product_cost_grpc_controller_1 = require("./product-grpc/supplier-product-cost.grpc.controller");
 const app_module_1 = require("./app.module");
 const product_grpc_controller_1 = require("./product-grpc/product.grpc.controller");
 const inventory_grpc_controller_1 = require("./inventory-grpc/inventory.grpc.controller");
@@ -26,9 +29,21 @@ exports.ProductModule = ProductModule = __decorate([
     (0, common_1.Module)({
         imports: [
             (0, common_1.forwardRef)(() => app_module_1.AppModule),
-            typeorm_1.TypeOrmModule.forFeature([product_entity_1.ProductEntity, inventory_entity_1.InventoryEntity, inventory_transaction_entity_1.InventoryTransactionEntity]),
+            typeorm_1.TypeOrmModule.forFeature([
+                product_entity_1.ProductEntity,
+                inventory_entity_1.InventoryEntity,
+                inventory_transaction_entity_1.InventoryTransactionEntity,
+                supplier_entity_1.SupplierEntity,
+                product_cost_entity_1.ProductCostEntity,
+            ]),
         ],
-        controllers: [product_controller_1.ProductController, inventory_controller_1.InventoryController, product_grpc_controller_1.ProductGrpcController, inventory_grpc_controller_1.InventoryGrpcController],
+        controllers: [
+            product_controller_1.ProductController,
+            supplier_product_cost_grpc_controller_1.SupplierProductCostGrpcController,
+            inventory_controller_1.InventoryController,
+            product_grpc_controller_1.ProductGrpcController,
+            inventory_grpc_controller_1.InventoryGrpcController,
+        ],
         providers: [product_service_1.ProductService, product_service_2.OriginProductService],
         exports: [product_service_1.ProductService],
     })

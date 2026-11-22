@@ -3,14 +3,99 @@ import { ProductEntity } from './product.entity';
 import { HistoryLogEntity } from './history-log.entity';
 import { InventoryEntity } from './inventory.entity';
 import { InventoryTransactionEntity } from './inventory-transaction.entity';
+import { SupplierEntity } from './supplier.entity';
 import { Id } from '../../../packages/contracts/model/common/common.model';
 import { IProduct, IGetProductsResponse, IFindProducts, IGetProductsGroupedByCategoryResponse, IGetProductsGroupedByCategoryRequest } from '../../../packages/contracts/model/product/product.model';
+export interface SupplierInput {
+    name?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    address?: string | null;
+    taxCode?: string | null;
+    note?: string | null;
+}
+export interface ProductCostInput {
+    productId?: number;
+    supplierId?: number | null;
+    importPrice?: number;
+    quantity?: number;
+    shippingFee?: number;
+    otherFee?: number;
+    importDate?: Date;
+    note?: string | null;
+}
+export interface ProductCostView {
+    id: string;
+    productId: number;
+    productName: string;
+    sku: string | null;
+    salePrice: number;
+    supplierId: number | null;
+    supplierName: string | null;
+    importPrice: number;
+    quantity: number;
+    shippingFee: number;
+    otherFee: number;
+    totalGoods: number;
+    totalFees: number;
+    totalValue: number;
+    unitCost: number;
+    expectedProfit: number;
+    profitMarginPercent: number | null;
+    importDate: Date;
+    note: string | null;
+    createdAt: Date;
+}
 export declare class ProductService {
     private readonly dataSource;
     constructor(dataSource: DataSource);
     private get productRepository();
     private get inventoryRepository();
     private get inventoryTransactionRepository();
+    private get supplierRepository();
+    private get productCostRepository();
+    createSupplier(input: SupplierInput): Promise<SupplierEntity>;
+    listSuppliers(filters: {
+        search?: string;
+        status?: number;
+        page: number;
+        limit: number;
+    }): Promise<{
+        items: SupplierEntity[];
+        total: number;
+        page: number;
+        limit: number;
+    }>;
+    getSupplier(id: number): Promise<SupplierEntity>;
+    updateSupplier(id: number, input: SupplierInput): Promise<SupplierEntity>;
+    updateSupplierStatus(id: number, status: number): Promise<SupplierEntity>;
+    createProductCost(input: ProductCostInput): Promise<ProductCostView>;
+    updateProductCost(id: string, input: ProductCostInput): Promise<ProductCostView>;
+    listProductCosts(filters: {
+        productId?: number;
+        supplierId?: number;
+        search?: string;
+        from?: Date;
+        to?: Date;
+        page: number;
+        limit: number;
+    }): Promise<{
+        items: ProductCostView[];
+        total: number;
+        page: number;
+        limit: number;
+    }>;
+    getProductCost(id: string): Promise<ProductCostView>;
+    getLatestProductCost(productId: number): Promise<ProductCostView>;
+    getProductCostSummary(): Promise<{
+        totalImports: number;
+        totalValue: number;
+        productsWithCost: number;
+    }>;
+    private ensureCostProduct;
+    private ensureCostSupplier;
+    private productCostResponse;
+    private moneyToCents;
     private addAvailableQuantity;
     getHistoryLogs(limit?: number): Promise<HistoryLogEntity[]>;
     getProducts(filters?: {
