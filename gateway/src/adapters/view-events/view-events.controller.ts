@@ -32,6 +32,12 @@ interface CmsGrpcService {
   listViewEventEntityTotals(request: ViewEventEntityTotalsRequest): Observable<ViewEventEntityTotalsResponse>;
   recordPresenceHeartbeat(request: { visitorId: string }): Observable<{ recorded: boolean }>;
   getOnlinePresence(request: Record<string, never>): Observable<{ activeVisitors: number }>;
+  getHourlyPresence(request: { date: string }): Observable<HourlyPresenceResponse>;
+}
+
+interface HourlyPresenceResponse {
+  date: string;
+  samples: Array<{ hour: number; activeVisitors: number }>;
 }
 
 interface RecordViewEventRequest {
@@ -170,6 +176,17 @@ export class ViewEventsController implements OnModuleInit {
   @ApiResponse({ status: 200, description: 'Number of active website visitors' })
   async onlinePresence() {
     return this.execute(() => this.cms.getOnlinePresence({}));
+  }
+
+  @Get('/presence/hourly')
+  @UseGuards(JwtAuthGuard, ViewEventsAdminGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get hourly online-presence snapshots for one Vietnam local date' })
+  @ApiQuery({ name: 'date', required: true, description: 'Date in YYYY-MM-DD format (Asia/Ho_Chi_Minh)' })
+  @ApiResponse({ status: 200, description: 'Hourly online-presence snapshots' })
+  async hourlyPresence(@Query() query: QueryParams) {
+    const date = this.queryString(query.date, 'date');
+    return this.execute(() => this.cms.getHourlyPresence({ date }));
   }
 
   @Get()

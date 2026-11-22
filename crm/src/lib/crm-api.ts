@@ -116,6 +116,11 @@ export type ViewEventStats = {
   dailyViews: Array<{ date: string; views: string }>;
 };
 
+export type HourlyPresenceSample = {
+  hour: number;
+  activeVisitors: number;
+};
+
 async function request<T>(endpoint: string, options: RequestInit = {}, token?: string): Promise<T> {
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
@@ -215,6 +220,10 @@ export const crmApi = {
   },
   getOnlinePresence(token: string) {
     return request<{ activeVisitors: number }>('/view-events/presence/online', {}, token);
+  },
+  getHourlyPresence(token: string, date: string) {
+    const params = new URLSearchParams({ date });
+    return request<{ date: string; samples: HourlyPresenceSample[] }>(`/view-events/presence/hourly?${params}`, {}, token);
   },
   async getViewEventStats(filters: Pick<ViewEventFilters, 'entityType' | 'from' | 'to'>, token: string) {
     const params = new URLSearchParams();

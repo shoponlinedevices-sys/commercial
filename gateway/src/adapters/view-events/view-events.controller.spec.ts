@@ -8,7 +8,7 @@ import { ViewEventsAdminGuard } from './view-events-admin.guard';
 import { ViewEventsController } from './view-events.controller';
 
 test('analytics routes require JWT authentication and the administrator guard', () => {
-  for (const method of ['list', 'stats', 'entityTotals', 'onlinePresence']) {
+  for (const method of ['list', 'stats', 'entityTotals', 'onlinePresence', 'hourlyPresence']) {
     const guards = Reflect.getMetadata(
       GUARDS_METADATA,
       ViewEventsController.prototype[method as keyof ViewEventsController],

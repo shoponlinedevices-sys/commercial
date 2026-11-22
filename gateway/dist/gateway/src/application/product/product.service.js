@@ -21,6 +21,9 @@ let ProductService = class ProductService {
     async findAll(input) {
         return this.productService.findAll(input);
     }
+    async getFeaturedProducts() {
+        return this.productService.getFeaturedProducts();
+    }
     async findOne(id) {
         return this.productService.findOne(id);
     }

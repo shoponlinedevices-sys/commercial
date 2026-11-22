@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { status } from '@grpc/grpc-js';
 import { DataSource } from 'typeorm';
@@ -38,6 +38,11 @@ interface InsertResult {
   insertId: string | number;
 }
 
+interface HourlyPresenceRow {
+  hour: string | number;
+  activeVisitors: string | number;
+}
+
 const ENTITY_EXISTS_SQL: Record<ViewEntityType, string> = {
   category: 'SELECT 1 FROM tbl_category WHERE id = ? LIMIT 1',
   brand: 'SELECT 1 FROM tbl_brands WHERE brand_id = ? AND deleted_at IS NULL LIMIT 1',
@@ -52,8 +57,23 @@ const CATALOG_JOINS = `
 const ENTITY_NAME = "COALESCE(p.name, c.name, b.name, CONCAT(e.entity_type, ' #', e.entity_id))";
 
 @Injectable()
-export class CmsService {
+export class CmsService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(CmsService.name);
+  private presenceSnapshotTimer?: NodeJS.Timeout;
+  private presenceSnapshotInProgress = false;
+
   constructor(private readonly dataSource: DataSource) {}
+
+  onModuleInit() {
+    void this.captureHourlyPresenceSnapshot();
+    this.presenceSnapshotTimer = setInterval(() => {
+      void this.captureHourlyPresenceSnapshot();
+    }, 30_000);
+  }
+
+  onModuleDestroy() {
+    if (this.presenceSnapshotTimer) clearInterval(this.presenceSnapshotTimer);
+  }
 
   async recordPresenceHeartbeat(visitorId: string) {
     const validatedVisitorId = validatePresenceVisitorId(visitorId);
@@ -79,6 +99,56 @@ export class CmsService {
        WHERE last_seen >= NOW() - INTERVAL 2 MINUTE`,
     );
     return { activeVisitors: Number(rows[0]?.activeVisitors ?? 0) };
+  }
+
+  async getHourlyPresence(date: string) {
+    const parsedDate = new Date(`${date}T00:00:00.000Z`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== date) {
+      throw new RpcException({ code: status.INVALID_ARGUMENT, message: 'date must be a valid YYYY-MM-DD date' });
+    }
+
+    const rows: HourlyPresenceRow[] = await this.dataSource.query(
+      `SELECT snapshot_hour AS hour, active_visitors AS activeVisitors
+       FROM tbl_online_presence_hourly
+       WHERE snapshot_date = ?
+       ORDER BY snapshot_hour`,
+      [date],
+    );
+    return {
+      date,
+      samples: rows.map((row) => ({
+        hour: Number(row.hour),
+        activeVisitors: Number(row.activeVisitors),
+      })),
+    };
+  }
+
+  private async recordHourlyPresenceSnapshot() {
+    await this.dataSource.query(
+      `INSERT INTO tbl_online_presence_hourly (snapshot_date, snapshot_hour, active_visitors)
+       SELECT DATE(current_sample.hour_bucket), HOUR(current_sample.hour_bucket), current_sample.active_visitors
+       FROM (
+         SELECT
+           DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '+07:00'), '%Y-%m-%d %H:00:00') AS hour_bucket,
+           (SELECT COUNT(*) FROM tbl_online_presence WHERE last_seen >= NOW() - INTERVAL 2 MINUTE) AS active_visitors
+       ) AS current_sample
+       ON DUPLICATE KEY UPDATE active_visitors = GREATEST(active_visitors, VALUES(active_visitors))`,
+    );
+  }
+
+  private async captureHourlyPresenceSnapshot() {
+    if (this.presenceSnapshotInProgress) return;
+    this.presenceSnapshotInProgress = true;
+    try {
+      await this.recordHourlyPresenceSnapshot();
+    } catch (error) {
+      this.logger.error(
+        'Failed to record the hourly online-presence snapshot',
+        error instanceof Error ? error.stack : String(error),
+      );
+    } finally {
+      this.presenceSnapshotInProgress = false;
+    }
   }
 
   async recordViewEvent(input: Parameters<typeof validateRecordViewEvent>[0]) {

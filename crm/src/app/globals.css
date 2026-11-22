@@ -37,3 +37,17 @@
 .form-error { margin:0; color:#b84646; font-size:12px; line-height:1.5; }
 .login-footer { margin:26px 0 0; padding-top:18px; border-top:1px solid #edf1ef; color:#9aa5a1; font-size:11px; text-align:center; }
 @media (max-width:480px) { .login-screen { padding:20px 16px; }.login-panel { padding:30px 24px; border-radius:13px; }.login-brand-row { margin-bottom:35px; }.login-heading h1 { font-size:25px; }.login-gateway { font-size:8px; } }
+.online-presence-history { margin-bottom:30px; }
+.online-presence-history .section-heading { align-items:center; }
+.presence-date { display:grid; gap:5px; color:var(--muted); font-size:11px; }
+.presence-date input { height:36px; border:1px solid var(--line); border-radius:6px; padding:0 9px; color:var(--ink); background:#fff; }
+.presence-peak,.presence-history-message { color:var(--muted); font-size:12px; }
+.presence-peak strong { color:var(--green); }
+.presence-hour-chart-scroll { width:100%; overflow-x:auto; }
+.presence-hour-chart { display:grid; grid-template-columns:repeat(24,minmax(0,1fr)); gap:5px; align-items:end; min-width:540px; padding-top:10px; }
+.presence-hour { display:grid; grid-template-rows:16px 140px 16px; justify-items:center; gap:5px; min-width:0; }
+.presence-hour-value,.presence-hour-label { color:var(--muted); font-size:9px; }
+.presence-hour-track { display:flex; align-items:flex-end; width:100%; height:100%; border-bottom:1px solid var(--line); }
+.presence-hour-bar { width:100%; min-height:2px; border-radius:3px 3px 0 0; background:#6ca88c; }
+.presence-hour-bar.missing { background:#edf1ef; }
+@media (max-width:640px) { .online-presence-history .section-heading { flex-direction:row; } }

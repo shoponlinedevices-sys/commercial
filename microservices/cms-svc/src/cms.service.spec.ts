@@ -47,6 +47,44 @@ test('counts only recent active visitors and prunes old presence records', async
   assert.match(calls[1].sql, /last_seen >= NOW\(\) - INTERVAL 2 MINUTE/);
 });
 
+test('returns hourly presence samples for a validated Vietnam calendar date', async () => {
+  const calls: QueryCall[] = [];
+  const service = createCmsService(async () => [
+    { hour: '8', activeVisitors: '3' },
+    { hour: '9', activeVisitors: '7' },
+  ], calls);
+
+  assert.deepEqual(await service.getHourlyPresence('2026-11-22'), {
+    date: '2026-11-22',
+    samples: [
+      { hour: 8, activeVisitors: 3 },
+      { hour: 9, activeVisitors: 7 },
+    ],
+  });
+  assert.match(calls[0].sql, /WHERE snapshot_date = \?/);
+  assert.deepEqual(calls[0].parameters, ['2026-11-22']);
+});
+
+test('rejects invalid hourly presence dates before querying the database', async () => {
+  const calls: QueryCall[] = [];
+  const service = createCmsService(async () => [], calls);
+
+  await assert.rejects(service.getHourlyPresence('2026-02-30'));
+  assert.equal(calls.length, 0);
+});
+
+test('samples online presence periodically and retains only the hourly maximum', async () => {
+  const calls: QueryCall[] = [];
+  const service = createCmsService(async () => [], calls);
+
+  service.onModuleInit();
+  await new Promise<void>((resolve) => setImmediate(resolve));
+  service.onModuleDestroy();
+
+  assert.match(calls[0].sql, /INSERT INTO tbl_online_presence_hourly/);
+  assert.match(calls[0].sql, /GREATEST\(active_visitors, VALUES\(active_visitors\)\)/);
+});
+
 test('records an existing entity using parameterized values', async () => {
   const calls: QueryCall[] = [];
   const service = createCmsService(async (sql) => {

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { crmApi, FeatureSetting, GatewayOrder, GatewayProduct, HistoryLog, InventoryItem, InventorySummary, UserProfile } from '@/lib/crm-api';
 import ViewEventsPanel from '@/components/ViewEventsPanel';
+import OnlinePresenceHistoryPanel from '@/components/OnlinePresenceHistoryPanel';
 
 type Status = 'Mới' | 'Đang xử lý' | 'Đã giao' | 'Đã hủy';
 type Order = { id: string; userId: string | number; customer: string; email: string; items: number; total: number; status: Status; createdAt: string; date: string; initials: string; tone: string };
@@ -442,6 +443,7 @@ export default function Dashboard() {
             <>
               <div className="intro"><div><p className="eyebrow">{new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase()}</p><h1>Chào buổi sáng, {user?.username || 'Thảo'} <span>✦</span></h1><p className="subtitle">Đây là những gì đang diễn ra với cửa hàng hôm nay.</p></div><button className="primary-button" onClick={() => setShowForm(true)}><Plus size={18} /> Tạo đơn hàng</button></div>
               <div className="stats-grid"><Stat icon={<TrendingUp size={19} />} label="Doanh thu tháng này" value={formatVnd(stats.revenue)} trend={stats.revenue > 0 ? stats.monthlyRevenueOrders + ' đơn đã giao' : '—'} hint="đơn đã giao hoặc hoàn thành" tone="orange" /><Stat icon={<ClipboardList size={19} />} label="Tổng đơn hàng" value={String(stats.totalOrders)} trend={stats.totalOrders > 0 ? '+' + stats.monthlyRevenueOrders : '0'} hint="từ dữ liệu thực" tone="blue" /><Stat icon={<Clock3 size={19} />} label="Chờ xử lý" value={String(stats.pending).padStart(2, '0')} trend={stats.pending > 0 ? 'Cần chú ý' : 'Không có'} hint={stats.pending > 0 ? 'đơn hàng mới' : 'tất cả đã xử lý'} tone={stats.pending > 0 ? 'yellow' : 'green'} /><Stat icon={<Users size={19} />} label="Khách hàng riêng biệt" value={String(new Set(orders.map(o => o.customer)).size)} trend={stats.totalOrders > 0 ? 'Có dữ liệu' : '—'} hint="từ đơn hàng" tone="green" /><Stat icon={<Users size={19} />} label="Đang online" value={onlineVisitors === null ? '—' : onlineVisitors.toLocaleString('vi-VN')} trend={onlinePresenceError ? 'Không khả dụng' : onlineVisitors === null ? 'Đang tải' : 'Trực tiếp'} hint={onlinePresenceError || (onlinePresenceCheckedAt ? `Cập nhật ${onlinePresenceCheckedAt}` : 'Trình duyệt hoạt động trong 2 phút')} tone="green" /></div>
+              {token && <OnlinePresenceHistoryPanel token={token} />}
             </>
           )}
 

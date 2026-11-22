@@ -33,6 +33,9 @@ let ProductController = class ProductController {
         const products = await this.productService.findAll(input);
         return Object.assign({}, products);
     }
+    async getFeaturedProducts() {
+        return this.productService.getFeaturedProducts();
+    }
     async groupedByCategory(query) {
         const filters = {
             search: query.search,
@@ -69,6 +72,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductController.prototype, "findAll", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('featured-images'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get featured products with images' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Featured products retrieved successfully' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProductController.prototype, "getFeaturedProducts", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
