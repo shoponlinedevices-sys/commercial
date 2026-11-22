@@ -33,6 +33,11 @@ export class ProductGrpcController {
     return result;
   }
 
+  @GrpcMethod('ProductService', 'GetFeaturedProducts')
+  async getFeaturedProducts() {
+    return this.productService.getFeaturedProducts();
+  }
+
   @GrpcMethod('ProductService', 'GetProductsGroupedByCategory')
   async getProductsGroupedByCategory(filters?: IGetProductsGroupedByCategoryRequest): Promise<IGetProductsGroupedByCategoryResponse> {
     const result =

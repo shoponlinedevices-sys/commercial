@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
-import { Truck, Shield, Headphones, ArrowRight, Wrench, Zap, Cog, HardHat, Package } from 'lucide-react';
+import { Truck, Shield, Headphones, ArrowRight, Wrench } from 'lucide-react';
 import { Product, ProductCategory } from '@/types';
 import { productService } from '@/services/product.service';
 import { featureSettingsService, FeatureSetting } from '@/services/feature-settings.service';
@@ -33,8 +33,6 @@ const serviceFeatures = [
   },
 ];
 
-const categoryIcons = [Wrench, Zap, Cog, HardHat];
-
 function groupProductsByCategory(products: Product[]): ProductCategory[] {
   const groups = new Map<string, Product[]>();
 
@@ -59,16 +57,17 @@ export default function HomePage() {
   const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [featuredImages, setFeaturedImages] = useState<Product[]>([]);
   const [productCategories, setProductCategories] = useState<ProductCategory[]>([]);
   const [flashSale, setFlashSale] = useState<FeatureSetting | null>(null);
   const [promotion, setPromotion] = useState<FeatureSetting | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
+  const [featuredImagesLoadError, setFeaturedImagesLoadError] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesLoadError, setCategoriesLoadError] = useState(false);
 
   useEffect(() => {
     loadProducts();
+    loadFeaturedProductImages();
     loadProductCategories();
     loadPromotions();
   }, []);
@@ -89,15 +88,20 @@ export default function HomePage() {
 
   const loadProducts = async () => {
     try {
-      setLoading(true);
-      setLoadError(false);
       const data = await productService.getProducts();
       setProducts(data);
     } catch (error) {
       console.error('Error loading products:', error);
-      setLoadError(true);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const loadFeaturedProductImages = async () => {
+    try {
+      setFeaturedImagesLoadError(false);
+      setFeaturedImages(await productService.getFeaturedProductImages());
+    } catch (error) {
+      console.error('Error loading featured product images:', error);
+      setFeaturedImagesLoadError(true);
     }
   };
 
@@ -136,9 +140,8 @@ export default function HomePage() {
     setPromotion(promotionSetting);
   };
 
-  const categoriesWithProducts = productCategories.filter((category) => category.products?.length);
-  const featuredProducts = products.slice(0, 4);
-  const heroProducts = products.slice(0, 3);
+  const categoriesWithProducts = productCategories.filter((category) => category.products.length > 0);
+  const heroProducts = featuredImages.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background">
@@ -179,6 +182,10 @@ export default function HomePage() {
                         ) : null
                       ))}
                     </div>
+                  </div>
+                ) : featuredImagesLoadError ? (
+                  <div className="absolute inset-0 flex items-center justify-center px-5 text-center text-sm text-muted-foreground">
+                    Không thể tải ảnh sản phẩm nổi bật.
                   </div>
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-primary/50">
@@ -227,71 +234,41 @@ export default function HomePage() {
           <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Khám phá cửa hàng</p>
-              <h2 className="mt-1 text-2xl font-bold tracking-tight">Sản phẩm nổi bật</h2>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight">Sản phẩm nổi bật theo danh mục</h2>
             </div>
             <Button variant="link" className="h-auto p-0 text-xs text-muted-foreground" onClick={() => router.push('/products')}>Tất cả sản phẩm <ArrowRight className="ml-2 h-3 w-3" /></Button>
           </div>
-          {loading ? (
-            <p className="py-10 text-center text-sm text-muted-foreground">Đang tải sản phẩm...</p>
-          ) : loadError ? (
-            <div className="rounded-2xl border border-dashed p-10 text-center">
-              <p className="font-semibold">Không thể tải sản phẩm lúc này</p>
-              <p className="mt-1 text-sm text-muted-foreground">Vui lòng thử lại sau ít phút.</p>
-              <Button variant="outline" className="mt-4" onClick={loadProducts}>Thử lại</Button>
-            </div>
-          ) : featuredProducts.length === 0 ? (
-            <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">Chưa có sản phẩm nổi bật để hiển thị.</div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              {featuredProducts.map((product) => <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />)}
-            </div>
-          )}
-        </section>
-
-        <section className="mx-auto max-w-6xl px-3 pb-10 sm:px-6">
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Tìm nhanh theo nhu cầu</p>
-              <h2 className="mt-1 text-xl font-bold tracking-tight">Danh mục sản phẩm</h2>
-            </div>
-            <Button variant="link" className="h-auto p-0 text-xs text-muted-foreground" onClick={() => router.push('/products')}>Xem tất cả <ArrowRight className="ml-2 h-3 w-3" /></Button>
-          </div>
           {categoriesLoading ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">Đang tải danh mục...</p>
+            <p className="py-10 text-center text-sm text-muted-foreground">Đang tải danh mục sản phẩm...</p>
           ) : categoriesLoadError ? (
-            <div className="rounded-xl border border-dashed p-8 text-center">
-              <p className="text-sm font-semibold">Không thể tải danh mục lúc này</p>
-              <Button variant="outline" className="mt-3" size="sm" onClick={loadProductCategories}>Thử lại</Button>
+            <div className="rounded-2xl border border-dashed p-10 text-center">
+              <p className="font-semibold">Không thể tải danh mục sản phẩm lúc này</p>
+              <p className="mt-1 text-sm text-muted-foreground">Vui lòng thử lại sau ít phút.</p>
+              <Button variant="outline" className="mt-4" onClick={loadProductCategories}>Thử lại</Button>
             </div>
           ) : categoriesWithProducts.length === 0 ? (
             <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">Chưa có danh mục sản phẩm để hiển thị.</div>
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {categoriesWithProducts.map((category, index) => {
-                const Icon = categoryIcons[index % categoryIcons.length];
-                const product = category.products[0];
-                return (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() => router.push(`/products?category=${encodeURIComponent(category.name)}`)}
-                    className="group flex min-h-[88px] items-center gap-3 overflow-hidden rounded-xl border border-border/70 bg-card p-3 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
-                  >
-                    <span className="shrink-0 rounded-xl bg-primary/10 p-2.5 text-primary"><Icon className="h-5 w-5" /></span>
-                    <span className="min-w-0 flex-1">
-                      <span className="line-clamp-2 break-words text-sm font-semibold leading-5">{getCategoryDisplayName(category.name)}</span>
-                      <span className="mt-1 block text-[11px] text-muted-foreground">{category.products.length} sản phẩm</span>
-                    </span>
-                    {product?.image ? (
-                      <span className="relative h-14 w-16 shrink-0">
-                        <Image src={product.image} alt="" fill sizes="64px" className="object-contain transition-transform group-hover:scale-110" />
-                      </span>
-                    ) : (
-                      <Package className="mr-1 h-8 w-8 shrink-0 text-primary/30" />
-                    )}
-                  </button>
-                );
-              })}
+            <div className="space-y-8">
+              {categoriesWithProducts.map((category) => (
+                <section key={category.id} aria-label={`Sản phẩm ${getCategoryDisplayName(category.name)}`}>
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <h3 className="text-lg font-semibold">{getCategoryDisplayName(category.name)}</h3>
+                    <Button
+                      variant="link"
+                      className="h-auto shrink-0 p-0 text-xs text-muted-foreground"
+                      onClick={() => router.push(`/products?category=${encodeURIComponent(category.name)}`)}
+                    >
+                      Xem danh mục <ArrowRight className="ml-1 h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                    {category.products.slice(0, 5).map((product) => (
+                      <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
           )}
         </section>

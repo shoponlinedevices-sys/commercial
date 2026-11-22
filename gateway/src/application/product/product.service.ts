@@ -15,6 +15,10 @@ export class ProductService {
     return this.productService.findAll(input);
   }
 
+  async getFeaturedProducts(): Promise<IGetProductsResponse> {
+    return this.productService.getFeaturedProducts();
+  }
+
   async findOne(id: number): Promise<Product | null> {
     return this.productService.findOne(id);
   }

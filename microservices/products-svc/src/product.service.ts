@@ -111,6 +111,21 @@ export class ProductService {
     };
   }
 
+  async getFeaturedProducts(): Promise<IGetProductsResponse> {
+    const products = await this.productRepository
+      .createQueryBuilder('product')
+      .where('product.isFeatured = :isFeatured', { isFeatured: 1 })
+      .andWhere('product.image IS NOT NULL')
+      .andWhere("product.image <> ''")
+      .orderBy('product.id', 'DESC')
+      .getMany();
+
+    return {
+      products: await this.addAvailableQuantity(products),
+      total: products.length,
+    };
+  }
+
   async getProduct(id: number) {
     const product = await this.productRepository.findOne({
       where: { id },

@@ -5,6 +5,7 @@ package product;
 service ProductService {
   rpc GetHistoryLogs (GetHistoryLogsRequest) returns (GetHistoryLogsResponse);
   rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+  rpc GetFeaturedProducts (GetFeaturedProductsRequest) returns (GetProductsResponse);
   rpc GetProductsGroupedByCategory (GetProductsGroupedByCategoryRequest) returns (GetProductsGroupedByCategoryResponse);
   rpc GetProduct (GetProductRequest) returns (GetProductResponse);
   rpc CreateProduct (CreateProductRequest) returns (CreateProductResponse);
@@ -29,6 +30,8 @@ message GetProductsResponse {
   repeated Product products = 1;
   int32 total = 2;
 }
+
+message GetFeaturedProductsRequest {}
 
 message GetProductsGroupedByCategoryRequest {
   string search = 1;

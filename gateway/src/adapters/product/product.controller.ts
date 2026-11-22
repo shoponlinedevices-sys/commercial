@@ -32,6 +32,15 @@ export class ProductController {
 
   @Public()
   @UseGuards(JwtAuthGuard)
+  @Get('featured-images')
+  @ApiOperation({ summary: 'Get featured products with images' })
+  @ApiResponse({ status: 200, description: 'Featured products retrieved successfully' })
+  async getFeaturedProducts() {
+    return this.productService.getFeaturedProducts();
+  }
+
+  @Public()
+  @UseGuards(JwtAuthGuard)
   @Get('grouped-by-category')
   @ApiOperation({ summary: 'Get products grouped by category' })
   @ApiResponse({ status: 200, description: 'Grouped products retrieved successfully' })

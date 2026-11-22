@@ -9,6 +9,15 @@ export const productService = {
     return response.products || [];
   },
 
+  async getFeaturedProductImages(): Promise<Product[]> {
+    const response = await apiClient.get<{ products: Product[]; total: number }>('/products/featured-images', GATEWAY_URL);
+    if (!Array.isArray(response?.products)) {
+      throw new Error('Invalid response while loading featured product images');
+    }
+
+    return response.products;
+  },
+
   async getProductsGroupedByCategory(): Promise<ProductCategory[]> {
     const response = await apiClient.get<ProductCategory[] | { categories: ProductCategory[] }>('/products/grouped-by-category', GATEWAY_URL);
     const categories = Array.isArray(response) ? response : response?.categories;

@@ -74,6 +74,10 @@ export class ProductGrpcClient implements OnModuleInit {
     return response;
   }
 
+  async getFeaturedProducts(): Promise<IGetProductsResponse> {
+    return firstValueFrom(this.productService.getFeaturedProducts({}));
+  }
+
   async groupedByCategory(input?: IGetProductsGroupedByCategoryRequest): Promise<IGetProductsGroupedByCategoryResponse> {
     const response = await firstValueFrom(this.productService.getProductsGroupedByCategory(input));
     return response;
