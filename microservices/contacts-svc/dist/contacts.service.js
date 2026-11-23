@@ -51,7 +51,10 @@ let ContactsService = class ContactsService {
         });
         const user = await this.userRepository.findOne({ where: { id: userId } });
         if (!user) {
-            throw new Error('User profile not found');
+            throw new microservices_1.RpcException({
+                code: grpc_js_1.status.NOT_FOUND,
+                message: 'User profile not found',
+            });
         }
         return {
             userProfile: {

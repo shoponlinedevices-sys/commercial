@@ -20,7 +20,16 @@ let UserProfileController = class UserProfileController {
         this.contactsClient = contactsClient;
     }
     async getProfile(userId) {
-        const response = await this.contactsClient.getUserProfile({ userId: parseInt(userId) });
+        let response;
+        try {
+            response = await this.contactsClient.getUserProfile({ userId: parseInt(userId) });
+        }
+        catch (error) {
+            if (typeof error === 'object' && error !== null && 'code' in error && Number(error.code) === 5) {
+                throw new common_1.NotFoundException('User profile not found');
+            }
+            throw error;
+        }
         return {
             id: response.userProfile.id,
             username: response.userProfile.username,
