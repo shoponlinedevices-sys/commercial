@@ -43,6 +43,10 @@ interface HourlyPresenceRow {
   activeVisitors: string | number;
 }
 
+interface HourlyPresenceRangeRow extends HourlyPresenceRow {
+  date: string;
+}
+
 const ENTITY_EXISTS_SQL: Record<ViewEntityType, string> = {
   category: 'SELECT 1 FROM tbl_category WHERE id = ? LIMIT 1',
   brand: 'SELECT 1 FROM tbl_brands WHERE brand_id = ? AND deleted_at IS NULL LIMIT 1',
@@ -102,10 +106,7 @@ export class CmsService implements OnModuleInit, OnModuleDestroy {
   }
 
   async getHourlyPresence(date: string) {
-    const parsedDate = new Date(`${date}T00:00:00.000Z`);
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== date) {
-      throw new RpcException({ code: status.INVALID_ARGUMENT, message: 'date must be a valid YYYY-MM-DD date' });
-    }
+    this.validatePresenceDate(date);
 
     const rows: HourlyPresenceRow[] = await this.dataSource.query(
       `SELECT snapshot_hour AS hour, active_visitors AS activeVisitors
@@ -121,6 +122,38 @@ export class CmsService implements OnModuleInit, OnModuleDestroy {
         activeVisitors: Number(row.activeVisitors),
       })),
     };
+  }
+
+  async getHourlyPresenceRange(from: string, to: string) {
+    this.validatePresenceDate(from, 'from');
+    this.validatePresenceDate(to, 'to');
+    if (from > to) {
+      throw new RpcException({ code: status.INVALID_ARGUMENT, message: 'from must be earlier than or equal to to' });
+    }
+
+    const rows: HourlyPresenceRangeRow[] = await this.dataSource.query(
+      `SELECT DATE_FORMAT(snapshot_date, '%Y-%m-%d') AS date, snapshot_hour AS hour, active_visitors AS activeVisitors
+       FROM tbl_online_presence_hourly
+       WHERE snapshot_date BETWEEN ? AND ?
+       ORDER BY snapshot_date, snapshot_hour`,
+      [from, to],
+    );
+    return {
+      from,
+      to,
+      samples: rows.map((row) => ({
+        date: row.date,
+        hour: Number(row.hour),
+        activeVisitors: Number(row.activeVisitors),
+      })),
+    };
+  }
+
+  private validatePresenceDate(date: string, fieldName = 'date') {
+    const parsedDate = new Date(`${date}T00:00:00.000Z`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== date) {
+      throw new RpcException({ code: status.INVALID_ARGUMENT, message: `${fieldName} must be a valid YYYY-MM-DD date` });
+    }
   }
 
   private async recordHourlyPresenceSnapshot() {

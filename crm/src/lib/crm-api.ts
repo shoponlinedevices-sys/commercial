@@ -157,6 +157,10 @@ export type HourlyPresenceSample = {
   activeVisitors: number;
 };
 
+export type HourlyPresenceRangeSample = HourlyPresenceSample & {
+  date: string;
+};
+
 async function request<T>(endpoint: string, options: RequestInit = {}, token?: string): Promise<T> {
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
@@ -300,6 +304,10 @@ export const crmApi = {
   getHourlyPresence(token: string, date: string) {
     const params = new URLSearchParams({ date });
     return request<{ date: string; samples: HourlyPresenceSample[] }>(`/view-events/presence/hourly?${params}`, {}, token);
+  },
+  getHourlyPresenceRange(token: string, from: string, to: string) {
+    const params = new URLSearchParams({ from, to });
+    return request<{ from: string; to: string; samples: HourlyPresenceRangeSample[] }>(`/view-events/presence/hourly/range?${params}`, {}, token);
   },
   async getViewEventStats(filters: Pick<ViewEventFilters, 'entityType' | 'from' | 'to'>, token: string) {
     const params = new URLSearchParams();

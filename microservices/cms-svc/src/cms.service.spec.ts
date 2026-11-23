@@ -73,6 +73,34 @@ test('rejects invalid hourly presence dates before querying the database', async
   assert.equal(calls.length, 0);
 });
 
+test('returns hourly presence samples across a validated date range', async () => {
+  const calls: QueryCall[] = [];
+  const service = createCmsService(async () => [
+    { date: '2026-11-22', hour: '8', activeVisitors: '3' },
+    { date: '2026-11-23', hour: '9', activeVisitors: '7' },
+  ], calls);
+
+  assert.deepEqual(await service.getHourlyPresenceRange('2026-11-22', '2026-11-23'), {
+    from: '2026-11-22',
+    to: '2026-11-23',
+    samples: [
+      { date: '2026-11-22', hour: 8, activeVisitors: 3 },
+      { date: '2026-11-23', hour: 9, activeVisitors: 7 },
+    ],
+  });
+  assert.match(calls[0].sql, /snapshot_date BETWEEN \? AND \?/);
+  assert.deepEqual(calls[0].parameters, ['2026-11-22', '2026-11-23']);
+});
+
+test('rejects invalid and reversed hourly presence ranges before querying', async () => {
+  const calls: QueryCall[] = [];
+  const service = createCmsService(async () => [], calls);
+
+  await assert.rejects(service.getHourlyPresenceRange('2026-02-30', '2026-03-01'));
+  await assert.rejects(service.getHourlyPresenceRange('2026-03-01', '2026-02-28'));
+  assert.equal(calls.length, 0);
+});
+
 test('samples online presence periodically and retains only the hourly maximum', async () => {
   const calls: QueryCall[] = [];
   const service = createCmsService(async () => [], calls);

@@ -10,6 +10,7 @@ service CmsService {
   rpc RecordPresenceHeartbeat (PresenceHeartbeatRequest) returns (PresenceHeartbeatResponse);
   rpc GetOnlinePresence (OnlinePresenceRequest) returns (OnlinePresenceResponse);
   rpc GetHourlyPresence (HourlyPresenceRequest) returns (HourlyPresenceResponse);
+  rpc GetHourlyPresenceRange (HourlyPresenceRangeRequest) returns (HourlyPresenceRangeResponse);
 }
 
 message RecordViewEventRequest {
@@ -126,4 +127,21 @@ message HourlyPresenceSample {
 message HourlyPresenceResponse {
   string date = 1;
   repeated HourlyPresenceSample samples = 2;
+}
+
+message HourlyPresenceRangeRequest {
+  string from = 1;
+  string to = 2;
+}
+
+message HourlyPresenceRangeSample {
+  string date = 1;
+  int32 hour = 2;
+  int32 activeVisitors = 3;
+}
+
+message HourlyPresenceRangeResponse {
+  string from = 1;
+  string to = 2;
+  repeated HourlyPresenceRangeSample samples = 3;
 }

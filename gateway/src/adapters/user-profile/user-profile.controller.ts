@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { UserProfileService, UserProfile } from '../../application/user-profile/user-profile.service';
 import { ContactsGrpcClient } from '../../infrastructure/grpc/contacts-grpc.client';
 
@@ -8,7 +8,16 @@ export class UserProfileController {
 
   @Get(':userId')
   async getProfile(@Param('userId') userId: string): Promise<UserProfile> {
-    const response: any = await this.contactsClient.getUserProfile({ userId: parseInt(userId) });
+    let response: any;
+    try {
+      response = await this.contactsClient.getUserProfile({ userId: parseInt(userId) });
+    } catch (error) {
+      if (typeof error === 'object' && error !== null && 'code' in error && Number(error.code) === 5) {
+        throw new NotFoundException('User profile not found');
+      }
+      throw error;
+    }
+
     return {
       id: response.userProfile.id,
       username: response.userProfile.username,

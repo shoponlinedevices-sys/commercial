@@ -33,11 +33,18 @@ interface CmsGrpcService {
   recordPresenceHeartbeat(request: { visitorId: string }): Observable<{ recorded: boolean }>;
   getOnlinePresence(request: Record<string, never>): Observable<{ activeVisitors: number }>;
   getHourlyPresence(request: { date: string }): Observable<HourlyPresenceResponse>;
+  getHourlyPresenceRange(request: { from: string; to: string }): Observable<HourlyPresenceRangeResponse>;
 }
 
 interface HourlyPresenceResponse {
   date: string;
   samples: Array<{ hour: number; activeVisitors: number }>;
+}
+
+interface HourlyPresenceRangeResponse {
+  from: string;
+  to: string;
+  samples: Array<{ date: string; hour: number; activeVisitors: number }>;
 }
 
 interface RecordViewEventRequest {
@@ -187,6 +194,19 @@ export class ViewEventsController implements OnModuleInit {
   async hourlyPresence(@Query() query: QueryParams) {
     const date = this.queryString(query.date, 'date');
     return this.execute(() => this.cms.getHourlyPresence({ date }));
+  }
+
+  @Get('/presence/hourly/range')
+  @UseGuards(JwtAuthGuard, ViewEventsAdminGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get hourly online-presence snapshots for a Vietnam local date range' })
+  @ApiQuery({ name: 'from', required: true, description: 'Start date in YYYY-MM-DD format (Asia/Ho_Chi_Minh)' })
+  @ApiQuery({ name: 'to', required: true, description: 'End date in YYYY-MM-DD format (Asia/Ho_Chi_Minh)' })
+  @ApiResponse({ status: 200, description: 'Hourly online-presence snapshots for each date in the range' })
+  async hourlyPresenceRange(@Query() query: QueryParams) {
+    const from = this.queryString(query.from, 'from');
+    const to = this.queryString(query.to, 'to');
+    return this.execute(() => this.cms.getHourlyPresenceRange({ from, to }));
   }
 
   @Get()

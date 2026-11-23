@@ -51,6 +51,13 @@
 .presence-hour-bar { width:100%; min-height:2px; border-radius:3px 3px 0 0; background:#6ca88c; }
 .presence-hour-bar.missing { background:#edf1ef; }
 @media (max-width:640px) { .online-presence-history .section-heading { flex-direction:row; } }
+.presence-export { display:flex; align-items:flex-end; flex-wrap:wrap; gap:10px; margin:0 0 8px; }
+.presence-export label { display:grid; gap:5px; color:var(--muted); font-size:11px; }
+.presence-export input { height:36px; border:1px solid var(--line); border-radius:6px; padding:0 9px; color:var(--ink); background:#fff; }
+.presence-export .primary-button { min-height:36px; padding:9px 13px; box-shadow:none; }
+.presence-export .primary-button:disabled { cursor:not-allowed; opacity:.6; }
+.presence-export-note,.presence-export-message { color:var(--muted); font-size:11px; }
+.presence-export-message { color:var(--green); }
 
 .cost-summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:0 0 22px; }
 .cost-summary-card { display:grid; gap:8px; padding:19px 20px; border:1px solid var(--line); border-radius:8px; background:#fff; }

@@ -65,4 +65,9 @@ export class CmsGrpcController {
   getHourlyPresence(request: { date: string }) {
     return this.cmsService.getHourlyPresence(request.date);
   }
+
+  @GrpcMethod('CmsService', 'GetHourlyPresenceRange')
+  getHourlyPresenceRange(request: { from: string; to: string }) {
+    return this.cmsService.getHourlyPresenceRange(request.from, request.to);
+  }
 }
