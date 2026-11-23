@@ -8,12 +8,32 @@ import { CartProvider } from "@/context/CartContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import Footer from "@/components/Footer";
 import PresenceTracker from "@/components/PresenceTracker";
+import { getSiteUrl, SITE_NAME } from "@/lib/site-config";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Commercial | Thiết bị và dụng cụ chất lượng",
+  metadataBase: new URL(getSiteUrl()),
+  title: {
+    default: `${SITE_NAME} | Thiết bị và dụng cụ chất lượng`,
+    template: `%s | ${SITE_NAME}`,
+  },
   description: "Mua sắm thiết bị, dụng cụ và sản phẩm công nghiệp tại Commercial.",
+  applicationName: SITE_NAME,
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'vi_VN',
+    url: '/',
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} | Thiết bị và dụng cụ chất lượng`,
+    description: "Mua sắm thiết bị, dụng cụ và sản phẩm công nghiệp tại Commercial.",
+  },
+  twitter: {
+    card: 'summary',
+  },
   icons: {
     icon: "/logo.png",
   },
