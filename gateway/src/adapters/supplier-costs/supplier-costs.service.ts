@@ -34,7 +34,7 @@ export class SupplierCostsService implements OnModuleInit {
       page: this.integer(query.page, 1, 'page', 1, 1000000),
       limit: this.integer(query.limit, 20, 'limit', 1, 100),
     }));
-    return { ...result, items: result.items.map((item) => this.mapSupplier(item)) };
+    return { ...result, items: this.listItems(result).map((item) => this.mapSupplier(item)) };
   }
 
   getSupplier(id: string) {
@@ -75,7 +75,7 @@ export class SupplierCostsService implements OnModuleInit {
       page: this.integer(query.page, 1, 'page', 1, 1000000),
       limit: this.integer(query.limit, 20, 'limit', 1, 100),
     }));
-    return { ...result, items: result.items.map((item) => this.mapCost(item)) };
+    return { ...result, items: this.listItems(result).map((item) => this.mapCost(item)) };
   }
 
   async listProductHistory(productId: string, query: Record<string, unknown>) {
@@ -84,7 +84,7 @@ export class SupplierCostsService implements OnModuleInit {
       page: this.integer(query.page, 1, 'page', 1, 1000000),
       limit: this.integer(query.limit, 20, 'limit', 1, 100),
     }));
-    return { ...result, items: result.items.map((item) => this.mapCost(item)) };
+    return { ...result, items: this.listItems(result).map((item) => this.mapCost(item)) };
   }
 
   async getLatestProductCost(productId: string) {
@@ -197,6 +197,10 @@ export class SupplierCostsService implements OnModuleInit {
       note: cost.note || null,
       createdAt: cost.createdAt,
     };
+  }
+
+  private listItems<T>(result: { items?: T[] } | null | undefined): T[] {
+    return Array.isArray(result?.items) ? result.items : [];
   }
 
   private async execute<T>(request: () => Observable<T>): Promise<T> {
