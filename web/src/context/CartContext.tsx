@@ -12,7 +12,8 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const countCartProductTypes = (productIds: number[]) => new Set(productIds).size;
+const countCartItems = (cartLines: { quantity: number }[]) =>
+  cartLines.reduce((count, line) => count + line.quantity, 0);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { user, isAuthenticated } = useAuth();
@@ -29,7 +30,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       const cartLines = await cartService.getCartLinesByUserId(user.id);
       if (requestId === cartCountRequestId.current) {
-        setCartCount(countCartProductTypes(cartLines.map((line) => line.productId)));
+        setCartCount(countCartItems(cartLines));
       }
     } catch (error) {
       console.error('Error fetching cart count:', error);
@@ -65,7 +66,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           const cartLines = await cartService.getCartLinesByUserId(user.id);
           const addedLine = cartLines.find((line) => line.productId === productId);
           if (addedLine && addedLine.quantity >= previousQuantity + quantity) {
-            setCartCount(countCartProductTypes(cartLines.map((line) => line.productId)));
+            setCartCount(countCartItems(cartLines));
             return;
           }
         } catch (verificationError) {
