@@ -42,22 +42,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
       throw new Error('User not authenticated');
     }
 
+    let existingCartLineId: number | undefined;
     let previousQuantity: number | undefined;
     try {
       const cartLines = await cartService.getCartLinesByUserId(user.id);
-      previousQuantity = cartLines.find((line) => line.productId === productId)?.quantity ?? 0;
+      const existingLine = cartLines.find((line) => line.productId === productId);
+      if (existingLine) {
+        existingCartLineId = existingLine.id;
+        previousQuantity = Number(existingLine.quantity);
+      } else {
+        previousQuantity = 0;
+      }
     } catch (error) {
       console.error('Error checking cart before adding product:', error);
     }
 
     try {
       ++cartCountRequestId.current;
-      await cartService.addToCart({
-        userId: user.id,
-        productId,
-        quantity,
-        image
-      });
+      if (existingCartLineId !== undefined && previousQuantity !== undefined) {
+        await cartService.updateCartLineQuantity(existingCartLineId, previousQuantity + quantity);
+      } else {
+        await cartService.addToCart({
+          userId: user.id,
+          productId,
+          quantity,
+          image
+        });
+      }
       await refreshCartCount();
     } catch (error) {
       console.error('Error adding to cart:', error);

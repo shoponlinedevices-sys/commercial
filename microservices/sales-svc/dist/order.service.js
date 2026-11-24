@@ -213,6 +213,10 @@ let OrderService = class OrderService {
     }
     async addToCart(data) {
         try {
+            const quantity = Number(data.quantity);
+            if (!Number.isInteger(quantity) || quantity < 1) {
+                throw new common_1.BadRequestException('quantity must be a positive integer');
+            }
             const product = await this.productRepository.findOne({
                 where: { id: data.productId },
             });
@@ -235,25 +239,23 @@ let OrderService = class OrderService {
                 where: { cartId: cart.id, productId: data.productId },
             });
             if (cartLine) {
-                const newQuantity = cartLine.quantity + (data.quantity || 0);
-                cartLine.quantity = isNaN(newQuantity) ? cartLine.quantity : newQuantity;
+                await this.cartLineRepository.increment({ id: cartLine.id }, 'quantity', quantity);
                 if (data.image) {
-                    cartLine.image = data.image;
+                    await this.cartLineRepository.update(cartLine.id, { image: data.image });
                 }
             }
             else {
-                const validQuantity = data.quantity || 1;
                 cartLine = this.cartLineRepository.create({
                     cartId: cart.id,
                     productId: data.productId,
-                    quantity: isNaN(validQuantity) ? 1 : validQuantity,
+                    quantity,
                     unitPrice: product.price,
                     status: 1,
                     name: data.cartLines?.[0]?.name || 'Sản phẩm',
                     image: data.image || data.cartLines?.[0]?.image || 'https://via.placeholder.com/150',
                 });
+                await this.cartLineRepository.save(cartLine);
             }
-            await this.cartLineRepository.save(cartLine);
             const cartLines = await this.cartLineRepository.find({
                 where: { cartId: cart.id },
             });

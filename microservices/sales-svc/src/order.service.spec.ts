@@ -1,5 +1,7 @@
 import { OrderService } from './order.service';
+import { CartEntity } from './cart.entity';
 import { CartLineEntity } from './cart-line.entity';
+import { ProductEntity } from './product.entity';
 
 describe('OrderService.createOrder email dispatch', () => {
   const order = {
@@ -141,5 +143,51 @@ describe('OrderService.updateCartLineQuantity', () => {
     );
 
     expect(getRepository).not.toHaveBeenCalled();
+  });
+});
+
+describe('OrderService.addToCart', () => {
+  it('increments an existing cart line and recalculates the cart total', async () => {
+    const cart = { id: 3, userId: 4, totalPrice: '50' };
+    const cartLine = {
+      id: 7,
+      cartId: 3,
+      productId: 8,
+      quantity: 2,
+      unitPrice: '25',
+    };
+    const productRepository = {
+      findOne: jest.fn().mockResolvedValue({ price: '25' }),
+    };
+    const cartRepository = {
+      findOne: jest.fn()
+        .mockResolvedValueOnce(cart)
+        .mockResolvedValueOnce({ ...cart, cartLines: [cartLine] }),
+      save: jest.fn().mockResolvedValue(cart),
+    };
+    const cartLineRepository = {
+      findOne: jest.fn().mockResolvedValue(cartLine),
+      increment: jest.fn().mockImplementation(async (_criteria, _property, quantity) => {
+        cartLine.quantity += quantity;
+      }),
+      update: jest.fn(),
+      save: jest.fn(),
+      find: jest.fn().mockResolvedValue([cartLine]),
+    };
+    const dataSource = {
+      getRepository: jest.fn((entity) => {
+        if (entity === ProductEntity) return productRepository;
+        if (entity === CartEntity) return cartRepository;
+        return cartLineRepository;
+      }),
+    };
+    const service = new OrderService(dataSource as any, {} as any);
+
+    await service.addToCart({ userId: 4, productId: 8, quantity: 1 });
+
+    expect(cartLineRepository.increment).toHaveBeenCalledWith({ id: 7 }, 'quantity', 1);
+    expect(cartLineRepository.save).not.toHaveBeenCalled();
+    expect(cartLine.quantity).toBe(3);
+    expect(cart.totalPrice).toBe('75');
   });
 });
