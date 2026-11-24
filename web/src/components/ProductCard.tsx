@@ -13,9 +13,10 @@ interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void | Promise<void>;
   compact?: boolean;
+  showAvailability?: boolean;
 }
 
-export default function ProductCard({ product, onAddToCart, compact = false }: ProductCardProps) {
+export default function ProductCard({ product, onAddToCart, compact = false, showAvailability = false }: ProductCardProps) {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const handleAddToCart = async () => {
@@ -66,7 +67,7 @@ export default function ProductCard({ product, onAddToCart, compact = false }: P
               {product.moq && `Số lượng đặt tối thiểu: ${product.moq}`}
             </p>
           )}
-          {product.quantityAvailable !== undefined && (
+          {showAvailability && product.quantityAvailable !== undefined && (
             <p className={`mt-1 text-xs ${product.quantityAvailable > 0 ? 'text-muted-foreground' : 'text-destructive'}`}>
               Có sẵn: {product.quantityAvailable.toLocaleString('vi-VN')}
             </p>

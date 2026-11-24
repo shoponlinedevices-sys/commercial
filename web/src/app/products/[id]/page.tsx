@@ -126,6 +126,8 @@ export default function ProductDetailPage() {
                   src={product.image}
                   alt={product.name}
                   fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 512px"
                   className="object-contain p-4 sm:p-8"
                 />
               ) : (
