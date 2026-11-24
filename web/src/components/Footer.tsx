@@ -51,7 +51,7 @@ export default function Footer() {
           <div>
             <h2 className="mb-4 text-sm font-semibold text-foreground">Liên hệ</h2>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-center gap-3"><Phone className="h-4 w-4 flex-shrink-0 text-primary" /><a href="tel:0396828842" className="transition-colors hover:text-primary">0396 828 842</a></li>
+              <li className="flex items-center gap-3"><Phone className="h-4 w-4 flex-shrink-0 text-primary" /><a href="tel:0396828842" className="transition-colors hover:text-primary">0937805612</a></li>
               <li className="flex items-center gap-3"><Mail className="h-4 w-4 flex-shrink-0 text-primary" /><a href="mailto:shoponlinedevices@gmail.com" className="break-all transition-colors hover:text-primary">shoponlinedevices@gmail.com</a></li>
             </ul>
           </div>
