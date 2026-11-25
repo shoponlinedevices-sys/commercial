@@ -1,7 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { GrpcMethod, Payload } from '@nestjs/microservices';
 import { OriginProductService } from 'src/services/product.service';
-import { IProductSaleStock, ISaleInventory } from '../../../../packages/contracts/model/product/product.model';
+import { IProductSaleStock } from '../../../../packages/contracts/model/product/product.model';
 import { IInventorySummary } from '../../../../packages/contracts/model/inventory/inventory.model';
 
 @Controller()
@@ -31,14 +31,39 @@ export class InventoryGrpcController {
     return { ...body, createdBy: undefined };
   }
 
+  private toProtoTimestamp(value: Date | string | undefined): string {
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+    return value || '';
+  }
+
+  private serializeInventoryResult<T extends {
+    item: { createdAt?: Date | string; updatedAt?: Date | string };
+    transaction: { createdAt?: Date | string };
+  }>(result: T) {
+    return {
+      ...result,
+      item: {
+        ...result.item,
+        createdAt: this.toProtoTimestamp(result.item.createdAt),
+        updatedAt: this.toProtoTimestamp(result.item.updatedAt),
+      },
+      transaction: {
+        ...result.transaction,
+        createdAt: this.toProtoTimestamp(result.transaction.createdAt),
+      },
+    };
+  }
+
   @GrpcMethod('InventoryService', 'SaleStock')
-   async saleStock(@Payload() body: IProductSaleStock): Promise<ISaleInventory> {
-      return this.productService.saleInventory(this.normalizeCreatedBy(body));
+   async saleStock(@Payload() body: IProductSaleStock) {
+      return this.serializeInventoryResult(await this.productService.saleInventory(this.normalizeCreatedBy(body)));
     }
 
   @GrpcMethod('InventoryService', 'ReturnInventory')
-   async returnInventory(@Payload() body: IProductSaleStock): Promise<ISaleInventory> {
-      return this.productService.returnInventory(this.normalizeCreatedBy(body));
+   async returnInventory(@Payload() body: IProductSaleStock) {
+      return this.serializeInventoryResult(await this.productService.returnInventory(this.normalizeCreatedBy(body)));
     }
 
   @GrpcMethod('InventoryService', 'Summary')
@@ -48,7 +73,14 @@ export class InventoryGrpcController {
 
   @GrpcMethod('InventoryService', 'GetItems')
   async getItems(@Payload() data: any) {
-     return this.productService.getInventoryList(data);
+     const response = await this.productService.getInventoryList(data);
+     return {
+       ...response,
+       items: response.items.map((item) => ({
+         ...item,
+         updatedAt: this.toProtoTimestamp(item.updatedAt),
+       })),
+     };
   }
 
   @GrpcMethod('InventoryService', 'GetItem')
@@ -58,36 +90,52 @@ export class InventoryGrpcController {
        return { item: null };
      }
      const item = (detail as any).item ?? detail as any;
-     return { item: { ...item, productId: item.productId, productName: item.productName ?? item.product?.name ?? '', sku: item.sku ?? item.product?.sku ?? '', quantityAvailable: item.quantityAvailable } };
+     return {
+       item: {
+         ...item,
+         productId: item.productId,
+         productName: item.productName ?? item.product?.name ?? '',
+         sku: item.sku ?? item.product?.sku ?? '',
+         quantityAvailable: item.quantityAvailable,
+         updatedAt: this.toProtoTimestamp(item.updatedAt),
+       },
+     };
   }
 
   @GrpcMethod('InventoryService', 'GetTransactions')
   async getTransactions(@Payload() data: any) {
-     return this.productService.getInventoryTransactions({
+     const response = await this.productService.getInventoryTransactions({
        page: Number(data.page) || 1,
        limit: Number(data.limit) || 20,
        productId: Number(data.productId) || undefined,
        type: data.type || undefined,
      });
+     return {
+       ...response,
+       items: response.items.map((item) => ({
+         ...item,
+         createdAt: this.toProtoTimestamp(item.createdAt),
+       })),
+     };
   }
 
   @GrpcMethod('InventoryService', 'ImportStock')
   async importStock(@Payload() data: any) {
-     return this.productService.importInventory(this.normalizeCreatedBy(data));
+     return this.serializeInventoryResult(await this.productService.importInventory(this.normalizeCreatedBy(data)));
   }
 
   @GrpcMethod('InventoryService', 'ReserveStock')
   async reserveStock(@Payload() data: IProductSaleStock) {
-     return this.productService.reserveInventory(this.normalizeCreatedBy(data));
+     return this.serializeInventoryResult(await this.productService.reserveInventory(this.normalizeCreatedBy(data)));
   }
 
   @GrpcMethod('InventoryService', 'ReleaseStock')
   async releaseStock(@Payload() data: IProductSaleStock) {
-     return this.productService.releaseInventory(this.normalizeCreatedBy(data));
+     return this.serializeInventoryResult(await this.productService.releaseInventory(this.normalizeCreatedBy(data)));
   }
 
   @GrpcMethod('InventoryService', 'AdjustStock')
   async adjustStock(@Payload() data: any) {
-     return this.productService.adjustInventory(this.normalizeCreatedBy(data));
+     return this.serializeInventoryResult(await this.productService.adjustInventory(this.normalizeCreatedBy(data)));
   }
 }

@@ -38,17 +38,44 @@ let InventoryGrpcController = InventoryGrpcController_1 = class InventoryGrpcCon
         this.logger.warn(`Ignoring non-numeric inventory createdBy value: ${String(rawCreatedBy)}`);
         return { ...body, createdBy: undefined };
     }
+    toProtoTimestamp(value) {
+        if (value instanceof Date) {
+            return value.toISOString();
+        }
+        return value || '';
+    }
+    serializeInventoryResult(result) {
+        return {
+            ...result,
+            item: {
+                ...result.item,
+                createdAt: this.toProtoTimestamp(result.item.createdAt),
+                updatedAt: this.toProtoTimestamp(result.item.updatedAt),
+            },
+            transaction: {
+                ...result.transaction,
+                createdAt: this.toProtoTimestamp(result.transaction.createdAt),
+            },
+        };
+    }
     async saleStock(body) {
-        return this.productService.saleInventory(this.normalizeCreatedBy(body));
+        return this.serializeInventoryResult(await this.productService.saleInventory(this.normalizeCreatedBy(body)));
     }
     async returnInventory(body) {
-        return this.productService.returnInventory(this.normalizeCreatedBy(body));
+        return this.serializeInventoryResult(await this.productService.returnInventory(this.normalizeCreatedBy(body)));
     }
     async summary() {
         return this.productService.getInventorySummary();
     }
     async getItems(data) {
-        return this.productService.getInventoryList(data);
+        const response = await this.productService.getInventoryList(data);
+        return {
+            ...response,
+            items: response.items.map((item) => ({
+                ...item,
+                updatedAt: this.toProtoTimestamp(item.updatedAt),
+            })),
+        };
     }
     async getItem(data) {
         const detail = await this.productService.getInventoryDetail(Number(data.productId));
@@ -56,27 +83,43 @@ let InventoryGrpcController = InventoryGrpcController_1 = class InventoryGrpcCon
             return { item: null };
         }
         const item = detail.item ?? detail;
-        return { item: { ...item, productId: item.productId, productName: item.productName ?? item.product?.name ?? '', sku: item.sku ?? item.product?.sku ?? '', quantityAvailable: item.quantityAvailable } };
+        return {
+            item: {
+                ...item,
+                productId: item.productId,
+                productName: item.productName ?? item.product?.name ?? '',
+                sku: item.sku ?? item.product?.sku ?? '',
+                quantityAvailable: item.quantityAvailable,
+                updatedAt: this.toProtoTimestamp(item.updatedAt),
+            },
+        };
     }
     async getTransactions(data) {
-        return this.productService.getInventoryTransactions({
+        const response = await this.productService.getInventoryTransactions({
             page: Number(data.page) || 1,
             limit: Number(data.limit) || 20,
             productId: Number(data.productId) || undefined,
             type: data.type || undefined,
         });
+        return {
+            ...response,
+            items: response.items.map((item) => ({
+                ...item,
+                createdAt: this.toProtoTimestamp(item.createdAt),
+            })),
+        };
     }
     async importStock(data) {
-        return this.productService.importInventory(this.normalizeCreatedBy(data));
+        return this.serializeInventoryResult(await this.productService.importInventory(this.normalizeCreatedBy(data)));
     }
     async reserveStock(data) {
-        return this.productService.reserveInventory(this.normalizeCreatedBy(data));
+        return this.serializeInventoryResult(await this.productService.reserveInventory(this.normalizeCreatedBy(data)));
     }
     async releaseStock(data) {
-        return this.productService.releaseInventory(this.normalizeCreatedBy(data));
+        return this.serializeInventoryResult(await this.productService.releaseInventory(this.normalizeCreatedBy(data)));
     }
     async adjustStock(data) {
-        return this.productService.adjustInventory(this.normalizeCreatedBy(data));
+        return this.serializeInventoryResult(await this.productService.adjustInventory(this.normalizeCreatedBy(data)));
     }
 };
 exports.InventoryGrpcController = InventoryGrpcController;
