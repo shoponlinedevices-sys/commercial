@@ -295,7 +295,9 @@ let ProductService = class ProductService {
         });
     }
     async getProducts(filters) {
-        const queryBuilder = this.productRepository.createQueryBuilder('product');
+        const queryBuilder = this.productRepository
+            .createQueryBuilder('product')
+            .where('product.status = :status', { status: 1 });
         if (filters?.search) {
             queryBuilder.andWhere('product.name LIKE :search', {
                 search: `%${filters.search}%`,
@@ -334,6 +336,7 @@ let ProductService = class ProductService {
         const products = await this.productRepository
             .createQueryBuilder('product')
             .where('product.isFeatured = :isFeatured', { isFeatured: 1 })
+            .andWhere('product.status = :status', { status: 1 })
             .andWhere('product.image IS NOT NULL')
             .andWhere("product.image <> ''")
             .orderBy('product.id', 'DESC')
@@ -345,7 +348,7 @@ let ProductService = class ProductService {
     }
     async getProduct(id) {
         const product = await this.productRepository.findOne({
-            where: { id },
+            where: { id, status: 1 },
         });
         if (!product) {
             throw new Error('Product not found');
@@ -380,7 +383,7 @@ let ProductService = class ProductService {
         const categoryRepository = this.dataSource.getRepository(category_entity_1.CategoryEntity);
         const queryBuilder = categoryRepository
             .createQueryBuilder('category')
-            .leftJoinAndMapMany('category.products', product_entity_1.ProductEntity, 'product', 'product.categoryId = category.id');
+            .leftJoinAndMapMany('category.products', product_entity_1.ProductEntity, 'product', 'product.categoryId = category.id AND product.status = 1');
         if (filters?.search) {
             queryBuilder.andWhere('product.name LIKE :search', {
                 search: `%${filters.search}%`,
@@ -791,7 +794,7 @@ let ProductService = class ProductService {
         return { item: savedInventory, transaction };
     }
     async findOne(id) {
-        const product = await this.productRepository.findOne({ where: { id: id.id } });
+        const product = await this.productRepository.findOne({ where: { id: id.id, status: 1 } });
         if (!product) {
             throw new Error('Product not found');
         }
@@ -799,7 +802,7 @@ let ProductService = class ProductService {
     }
     async findAll(input) {
         const products = await this.productRepository.find({
-            where: input.categoryId ? { categoryId: input.categoryId } : {},
+            where: input.categoryId ? { categoryId: input.categoryId, status: 1 } : { status: 1 },
         });
         return {
             products: products.map(product => ({ ...product })),

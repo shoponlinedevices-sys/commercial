@@ -60,6 +60,7 @@ export declare class OriginProductService {
             unit: string;
             moq: string;
             categoryId: number;
+            status: number;
             isFeatured: boolean;
         }[];
         id: number;

@@ -59,6 +59,10 @@ __decorate([
     __metadata("design:type", Number)
 ], ProductEntity.prototype, "categoryId", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'tinyint', default: 1 }),
+    __metadata("design:type", Number)
+], ProductEntity.prototype, "status", void 0);
+__decorate([
     (0, typeorm_1.Column)({ name: 'is_featured', type: 'tinyint', default: 0 }),
     __metadata("design:type", Boolean)
 ], ProductEntity.prototype, "isFeatured", void 0);

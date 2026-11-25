@@ -10,5 +10,6 @@ export declare class ProductEntity {
     unit: string;
     moq: string;
     categoryId: number;
+    status: number;
     isFeatured: boolean;
 }

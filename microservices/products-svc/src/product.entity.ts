@@ -35,6 +35,9 @@ export class ProductEntity {
   @Column({ nullable: true })
   categoryId: number;
 
+  @Column({ type: 'tinyint', default: 1 })
+  status: number;
+
   @Column({ name: 'is_featured', type: 'tinyint', default: 0 })
   isFeatured: boolean;
 }

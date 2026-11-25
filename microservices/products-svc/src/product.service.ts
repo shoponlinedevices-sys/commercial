@@ -346,7 +346,9 @@ export class ProductService {
     limit?: number;
     offset?: number;
   }) {
-    const queryBuilder = this.productRepository.createQueryBuilder('product');
+    const queryBuilder = this.productRepository
+      .createQueryBuilder('product')
+      .where('product.status = :status', { status: 1 });
 
     if (filters?.search) {
       queryBuilder.andWhere('product.name LIKE :search', {
@@ -394,6 +396,7 @@ export class ProductService {
     const products = await this.productRepository
       .createQueryBuilder('product')
       .where('product.isFeatured = :isFeatured', { isFeatured: 1 })
+      .andWhere('product.status = :status', { status: 1 })
       .andWhere('product.image IS NOT NULL')
       .andWhere("product.image <> ''")
       .orderBy('product.id', 'DESC')
@@ -407,7 +410,7 @@ export class ProductService {
 
   async getProduct(id: number) {
     const product = await this.productRepository.findOne({
-      where: { id },
+      where: { id, status: 1 },
     });
 
     if (!product) {
@@ -463,7 +466,7 @@ export class ProductService {
         'category.products',
         ProductEntity,
         'product',
-        'product.categoryId = category.id',
+        'product.categoryId = category.id AND product.status = 1',
       )
 
     if (filters?.search) {
@@ -1004,7 +1007,7 @@ export class ProductService {
   }
 
   async findOne(id: Id): Promise<IProduct> {
-    const product = await this.productRepository.findOne({ where: { id: id.id } });
+    const product = await this.productRepository.findOne({ where: { id: id.id, status: 1 } });
     if (!product) {
       throw new Error('Product not found');
     }
@@ -1013,7 +1016,7 @@ export class ProductService {
 
   async findAll(input: IFindProducts): Promise<IGetProductsResponse> {
     const products = await this.productRepository.find({
-      where: input.categoryId ? { categoryId: input.categoryId } : {},
+      where: input.categoryId ? { categoryId: input.categoryId, status: 1 } : { status: 1 },
     });
     return {
       products: products.map(product => ({ ...product })),
