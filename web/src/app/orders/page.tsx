@@ -29,8 +29,27 @@ const statusFilters: { value: OrderStatus; label: string }[] = [
   { value: 'cancelled', label: 'Đã hủy' },
 ];
 
-const getStatusLabel = (status: string) => {
+const normalizeOrderStatus = (status: string): OrderStatus => {
   switch (status.toLowerCase()) {
+    case 'processing':
+    case 'confirmed':
+    case 'shipped':
+      return 'processing';
+    case 'completed':
+    case 'delivered':
+    case 'fulfilled':
+      return 'completed';
+    case 'cancelled':
+    case 'canceled':
+    case 'rejected':
+      return 'cancelled';
+    default:
+      return 'pending';
+  }
+};
+
+const getStatusLabel = (status: string) => {
+  switch (normalizeOrderStatus(status)) {
     case 'pending':
       return 'Đang chờ xử lý';
     case 'completed':
@@ -52,7 +71,7 @@ const getStatusStyle = (status: string) => {
     cancelled: 'border-rose-200 bg-rose-50 text-rose-700',
   };
 
-  return styles[status.toLowerCase()] || 'border-slate-200 bg-slate-50 text-slate-600';
+  return styles[normalizeOrderStatus(status)];
 };
 
 const getOrderTotal = (order: Order) => {
@@ -95,7 +114,7 @@ export default function OrdersPage() {
     const query = searchQuery.trim().toLowerCase();
     const orderQuery = query.replace(/^#/, '');
     return orders.filter((order) => {
-      const matchesStatus = activeStatus === 'all' || order.status.toLowerCase() === activeStatus;
+      const matchesStatus = activeStatus === 'all' || normalizeOrderStatus(order.status) === activeStatus;
       const matchesSearch = !query
         || (orderQuery !== '' && String(order.id).toLowerCase().includes(orderQuery))
         || (order.shippingAddress || '').toLowerCase().includes(query);
@@ -103,8 +122,8 @@ export default function OrdersPage() {
     });
   }, [activeStatus, orders, searchQuery]);
 
-  const pendingCount = orders.filter((order) => ['pending', 'processing'].includes(order.status.toLowerCase())).length;
-  const completedCount = orders.filter((order) => order.status.toLowerCase() === 'completed').length;
+  const pendingCount = orders.filter((order) => ['pending', 'processing'].includes(normalizeOrderStatus(order.status))).length;
+  const completedCount = orders.filter((order) => normalizeOrderStatus(order.status) === 'completed').length;
   const pageColors = {
     background: 'bg-slate-50 text-slate-900',
     muted: 'text-slate-500',
@@ -248,7 +267,7 @@ export default function OrdersPage() {
                 {statusFilters.map((filter) => {
                   const count = filter.value === 'all'
                     ? orders.length
-                    : orders.filter((order) => order.status.toLowerCase() === filter.value).length;
+                    : orders.filter((order) => normalizeOrderStatus(order.status) === filter.value).length;
                   const isActive = activeStatus === filter.value;
                   return (
                     <button
