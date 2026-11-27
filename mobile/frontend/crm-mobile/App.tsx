@@ -730,7 +730,7 @@ function CrmApp() {
         <Pressable onPress={() => void onRefresh()} style={styles.iconButton}><Ionicons name="refresh-outline" size={21} color="#167a62" /></Pressable>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabs}>
-        {visibleScreens.map((item) => <Pressable key={item.name} onPress={() => { setScreen(item.name); setQuery(''); if (item.name === 'Lượt xem') void loadViews(1, appliedViewFilters); }} style={[styles.tab, screen === item.name && styles.tabActive]}><Ionicons name={item.icon} size={16} color={screen === item.name ? '#fff' : '#56716a'} /><Text style={[styles.tabText, screen === item.name && styles.tabTextActive]}>{item.name}</Text></Pressable>)}
+        {visibleScreens.map((item) => <Pressable key={item.name} hitSlop={{ top: 5, bottom: 5 }} accessibilityLabel={item.name} onPress={() => { setScreen(item.name); setQuery(''); if (item.name === 'Lượt xem') void loadViews(1, appliedViewFilters); }} style={[styles.tab, screen === item.name && styles.tabActive]}><Ionicons name={item.icon} size={12} color={screen === item.name ? '#fff' : '#56716a'} /><Text style={[styles.tabText, screen === item.name && styles.tabTextActive]}>{item.name}</Text></Pressable>)}
       </ScrollView>
       <ScrollView
         style={styles.body}
@@ -822,10 +822,10 @@ const styles = StyleSheet.create({
   topTitle: { color: '#167a62', fontWeight: '900', fontSize: 21, letterSpacing: 0.4 },
   topSubtitle: { color: '#71847c', fontSize: 11, marginTop: 1 },
   iconButton: { width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: '#eef7f3' },
-  tabs: { paddingHorizontal: 12, paddingVertical: 11, gap: 8, backgroundColor: '#fff' },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 9, paddingHorizontal: 12, borderRadius: 13, backgroundColor: '#f4f7f5' },
+  tabs: { paddingHorizontal: 10, paddingVertical: 2, gap: 6, backgroundColor: '#fff' },
+  tab: { minHeight: 22, flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 2, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#f4f7f5' },
   tabActive: { backgroundColor: '#167a62' },
-  tabText: { color: '#56716a', fontWeight: '600', fontSize: 12 },
+  tabText: { color: '#56716a', fontWeight: '600', fontSize: 11 },
   tabTextActive: { color: '#fff' },
   body: { flex: 1 },
   bodyContent: { padding: 16, paddingBottom: 38, gap: 14 },
