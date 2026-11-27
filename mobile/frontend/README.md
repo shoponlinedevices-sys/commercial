@@ -2,6 +2,8 @@
 
 Đây là dự án frontend mobile sử dụng React Native với TypeScript, nằm trong thư mục `mobile/frontend`.
 
+CRM trên mobile là ứng dụng Expo độc lập tại [`crm-mobile`](./crm-mobile/README.md); app hiện tại tại thư mục này vẫn là ứng dụng mua sắm.
+
 ## Khởi động dự án
 
 1. Cài đặt dependencies:
