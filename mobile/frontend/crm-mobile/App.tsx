@@ -729,7 +729,7 @@ function CrmApp() {
         <View><Text style={styles.topTitle}>CRM</Text><Text style={styles.topSubtitle}>{user.username}{isAdmin ? ' · Admin' : ''}</Text></View>
         <Pressable onPress={() => void onRefresh()} style={styles.iconButton}><Ionicons name="refresh-outline" size={21} color="#167a62" /></Pressable>
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabs}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabBar} contentContainerStyle={styles.tabs}>
         {visibleScreens.map((item) => <Pressable key={item.name} hitSlop={{ top: 5, bottom: 5 }} accessibilityLabel={item.name} onPress={() => { setScreen(item.name); setQuery(''); if (item.name === 'Lượt xem') void loadViews(1, appliedViewFilters); }} style={[styles.tab, screen === item.name && styles.tabActive]}><Ionicons name={item.icon} size={12} color={screen === item.name ? '#fff' : '#56716a'} /><Text style={[styles.tabText, screen === item.name && styles.tabTextActive]}>{item.name}</Text></Pressable>)}
       </ScrollView>
       <ScrollView
@@ -822,7 +822,8 @@ const styles = StyleSheet.create({
   topTitle: { color: '#167a62', fontWeight: '900', fontSize: 21, letterSpacing: 0.4 },
   topSubtitle: { color: '#71847c', fontSize: 11, marginTop: 1 },
   iconButton: { width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: '#eef7f3' },
-  tabs: { paddingHorizontal: 10, paddingVertical: 2, gap: 6, backgroundColor: '#fff' },
+  tabBar: { height: 32, flexGrow: 0, flexShrink: 0, backgroundColor: '#fff' },
+  tabs: { paddingHorizontal: 10, gap: 6, alignItems: 'center', backgroundColor: '#fff' },
   tab: { minHeight: 22, flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 2, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#f4f7f5' },
   tabActive: { backgroundColor: '#167a62' },
   tabText: { color: '#56716a', fontWeight: '600', fontSize: 11 },
