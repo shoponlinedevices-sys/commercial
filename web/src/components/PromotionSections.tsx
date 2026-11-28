@@ -11,9 +11,9 @@ interface PromotionSectionsProps {
   products: Product[];
   flashSale?: FeatureSetting | null;
   promotion?: FeatureSetting | null;
-  onAddToCart: (product: Product) => void;
+  onAddToCart: (product: Product) => boolean | void | Promise<boolean | void>;
   cartQuantities: Record<number, number>;
-  onDecreaseCartQuantity: (product: Product, quantity: number) => void | Promise<void>;
+  onDecreaseCartQuantity: (product: Product, quantity: number) => boolean | void | Promise<boolean | void>;
 }
 
 function getConfigNumber(setting: FeatureSetting | null | undefined, key: string, fallback: number) {

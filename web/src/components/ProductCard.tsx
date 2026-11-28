@@ -3,16 +3,18 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Loader2, Minus, Plus, ShoppingCart, Package } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Product } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatVnd } from '@/lib/formatters';
 
+type CartActionResult = boolean | void | Promise<boolean | void>;
+
 interface ProductCardProps {
   product: Product;
-  onAddToCart?: (product: Product) => void | Promise<void>;
-  onDecreaseCartQuantity?: (product: Product, quantity: number) => void | Promise<void>;
+  onAddToCart?: (product: Product) => CartActionResult;
+  onDecreaseCartQuantity?: (product: Product, quantity: number) => CartActionResult;
   cartQuantity?: number;
   compact?: boolean;
   showAvailability?: boolean;
@@ -27,13 +29,22 @@ export default function ProductCard({
   showAvailability = false,
 }: ProductCardProps) {
   const [isUpdatingCart, setIsUpdatingCart] = useState(false);
+  const [cartQuantityOverride, setCartQuantityOverride] = useState<number | null>(null);
+  const displayedCartQuantity = cartQuantityOverride ?? cartQuantity;
+
+  useEffect(() => {
+    setCartQuantityOverride(null);
+  }, [cartQuantity]);
 
   const handleAddToCart = async () => {
     if (!onAddToCart || isUpdatingCart) return;
 
     setIsUpdatingCart(true);
     try {
-      await onAddToCart(product);
+      const succeeded = await onAddToCart(product);
+      if (succeeded !== false) {
+        setCartQuantityOverride((currentQuantity) => (currentQuantity ?? displayedCartQuantity) + 1);
+      }
     } finally {
       setIsUpdatingCart(false);
     }
@@ -44,7 +55,11 @@ export default function ProductCard({
 
     setIsUpdatingCart(true);
     try {
-      await onDecreaseCartQuantity(product, cartQuantity - 1);
+      const nextQuantity = displayedCartQuantity - 1;
+      const succeeded = await onDecreaseCartQuantity(product, nextQuantity);
+      if (succeeded !== false) {
+        setCartQuantityOverride(nextQuantity);
+      }
     } finally {
       setIsUpdatingCart(false);
     }
@@ -93,7 +108,7 @@ export default function ProductCard({
             </p>
           )}
           {onAddToCart && (
-            cartQuantity > 0 ? (
+            displayedCartQuantity > 0 ? (
               <div className={`${compact ? 'mt-2' : 'mt-3'} flex h-10 items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-1`}>
                 <Button
                   type="button"
@@ -106,8 +121,8 @@ export default function ProductCard({
                 >
                   {isUpdatingCart ? <Loader2 className="h-4 w-4 animate-spin" /> : <Minus className="h-4 w-4" />}
                 </Button>
-                <span aria-live="polite" aria-label={`${cartQuantity} sản phẩm trong giỏ`} className="text-sm font-semibold tabular-nums text-primary">
-                  {cartQuantity}
+                <span aria-live="polite" aria-label={`${displayedCartQuantity} sản phẩm trong giỏ`} className="text-sm font-semibold tabular-nums text-primary">
+                  {displayedCartQuantity}
                 </span>
                 <Button
                   type="button"

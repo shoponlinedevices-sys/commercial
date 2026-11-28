@@ -75,27 +75,30 @@ export default function HomePage() {
   const handleAddToCart = async (product: Product) => {
     if (!isAuthenticated) {
       router.push('/login?redirect=/products');
-      return;
+      return false;
     }
     try {
       await addToCart(product.id, 1, product.image);
-      alert('Đã thêm sản phẩm vào giỏ hàng!');
+      return true;
     } catch (error) {
       console.error('Error adding to cart:', error);
       alert('Không thể thêm sản phẩm vào giỏ hàng');
+      return false;
     }
   };
 
   const handleDecreaseCartQuantity = async (product: Product, quantity: number) => {
     if (!isAuthenticated) {
       router.push('/login?redirect=/products');
-      return;
+      return false;
     }
     try {
       await setCartQuantity(product.id, quantity, product.image);
+      return true;
     } catch (error) {
       console.error('Error updating cart quantity:', error);
       alert('Không thể cập nhật số lượng sản phẩm trong giỏ hàng');
+      return false;
     }
   };
 
