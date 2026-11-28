@@ -53,7 +53,7 @@ function groupProductsByCategory(products: Product[]): ProductCategory[] {
 
 export default function HomePage() {
   const { isAuthenticated } = useAuth();
-  const { addToCart } = useCart();
+  const { addToCart, cartQuantities, setCartQuantity } = useCart();
   const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -83,6 +83,19 @@ export default function HomePage() {
     } catch (error) {
       console.error('Error adding to cart:', error);
       alert('Không thể thêm sản phẩm vào giỏ hàng');
+    }
+  };
+
+  const handleDecreaseCartQuantity = async (product: Product, quantity: number) => {
+    if (!isAuthenticated) {
+      router.push('/login?redirect=/products');
+      return;
+    }
+    try {
+      await setCartQuantity(product.id, quantity, product.image);
+    } catch (error) {
+      console.error('Error updating cart quantity:', error);
+      alert('Không thể cập nhật số lượng sản phẩm trong giỏ hàng');
     }
   };
 
@@ -228,7 +241,14 @@ export default function HomePage() {
           </div>
         </section>
 
-        <PromotionSections products={products} flashSale={flashSale} promotion={promotion} onAddToCart={handleAddToCart} />
+        <PromotionSections
+          products={products}
+          flashSale={flashSale}
+          promotion={promotion}
+          onAddToCart={handleAddToCart}
+          cartQuantities={cartQuantities}
+          onDecreaseCartQuantity={handleDecreaseCartQuantity}
+        />
 
         <section className="mx-auto max-w-6xl px-4 pb-8 pt-5 sm:px-6" id="featured-products">
           <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
@@ -264,7 +284,14 @@ export default function HomePage() {
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                     {category.products.slice(0, 5).map((product) => (
-                      <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} compact />
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onAddToCart={handleAddToCart}
+                        onDecreaseCartQuantity={handleDecreaseCartQuantity}
+                        cartQuantity={cartQuantities[product.id] ?? 0}
+                        compact
+                      />
                     ))}
                   </div>
                 </section>

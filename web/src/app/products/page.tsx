@@ -19,7 +19,11 @@ export default function ProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated } = useAuth();
-  const { addToCart: addProductToCart } = useCart();
+  const {
+    addToCart: addProductToCart,
+    cartQuantities,
+    setCartQuantity,
+  } = useCart();
   const [productCategories, setProductCategories] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -106,6 +110,19 @@ export default function ProductsPage() {
     } catch (error) {
       console.error('Error adding to cart:', error);
       alert('Không thể thêm sản phẩm vào giỏ hàng');
+    }
+  };
+
+  const decreaseCartQuantity = async (product: Product, quantity: number) => {
+    if (!isAuthenticated) {
+      router.push('/login?redirect=/products');
+      return;
+    }
+    try {
+      await setCartQuantity(product.id, quantity, product.image);
+    } catch (error) {
+      console.error('Error updating cart quantity:', error);
+      alert('Không thể cập nhật số lượng sản phẩm trong giỏ hàng');
     }
   };
 
@@ -237,7 +254,16 @@ export default function ProductsPage() {
                     <span className="text-xs font-medium text-muted-foreground sm:text-sm">{category.products.length} sản phẩm</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5">
-                    {category.products.map((product) => <ProductCard key={product.id} product={{ ...product, category: getCategoryDisplayName(category.name) }} onAddToCart={addToCart} compact />)}
+                    {category.products.map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={{ ...product, category: getCategoryDisplayName(category.name) }}
+                        onAddToCart={addToCart}
+                        onDecreaseCartQuantity={decreaseCartQuantity}
+                        cartQuantity={cartQuantities[product.id] ?? 0}
+                        compact
+                      />
+                    ))}
                   </div>
                 </section>
               ))}

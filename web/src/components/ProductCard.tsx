@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader2, ShoppingCart, Package } from 'lucide-react';
+import { Loader2, Minus, Plus, ShoppingCart, Package } from 'lucide-react';
 import { useState } from 'react';
 import { Product } from '@/types';
 import { Badge } from '@/components/ui/badge';
@@ -12,21 +12,41 @@ import { formatVnd } from '@/lib/formatters';
 interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void | Promise<void>;
+  onDecreaseCartQuantity?: (product: Product, quantity: number) => void | Promise<void>;
+  cartQuantity?: number;
   compact?: boolean;
   showAvailability?: boolean;
 }
 
-export default function ProductCard({ product, onAddToCart, compact = false, showAvailability = false }: ProductCardProps) {
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
+export default function ProductCard({
+  product,
+  onAddToCart,
+  onDecreaseCartQuantity,
+  cartQuantity = 0,
+  compact = false,
+  showAvailability = false,
+}: ProductCardProps) {
+  const [isUpdatingCart, setIsUpdatingCart] = useState(false);
 
   const handleAddToCart = async () => {
-    if (!onAddToCart || isAddingToCart) return;
+    if (!onAddToCart || isUpdatingCart) return;
 
-    setIsAddingToCart(true);
+    setIsUpdatingCart(true);
     try {
       await onAddToCart(product);
     } finally {
-      setIsAddingToCart(false);
+      setIsUpdatingCart(false);
+    }
+  };
+
+  const handleDecreaseCartQuantity = async () => {
+    if (!onDecreaseCartQuantity || isUpdatingCart) return;
+
+    setIsUpdatingCart(true);
+    try {
+      await onDecreaseCartQuantity(product, cartQuantity - 1);
+    } finally {
+      setIsUpdatingCart(false);
     }
   };
 
@@ -73,16 +93,46 @@ export default function ProductCard({ product, onAddToCart, compact = false, sho
             </p>
           )}
           {onAddToCart && (
-            <Button
-              onClick={() => { void handleAddToCart(); }}
-              className={`${compact ? 'mt-2 min-h-10 px-2 text-xs sm:text-sm' : 'mt-3'} w-full`}
-              size="sm"
-              disabled={isAddingToCart}
-              aria-busy={isAddingToCart}
-            >
-              {isAddingToCart ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShoppingCart className="mr-2 h-4 w-4" />}
-              {isAddingToCart ? 'Đang thêm...' : 'Thêm vào giỏ'}
-            </Button>
+            cartQuantity > 0 ? (
+              <div className={`${compact ? 'mt-2' : 'mt-3'} flex h-10 items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-1`}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Giảm số lượng ${product.name} trong giỏ`}
+                  onClick={() => { void handleDecreaseCartQuantity(); }}
+                  disabled={isUpdatingCart || !onDecreaseCartQuantity}
+                  className="h-8 w-8 text-primary hover:bg-primary/10"
+                >
+                  {isUpdatingCart ? <Loader2 className="h-4 w-4 animate-spin" /> : <Minus className="h-4 w-4" />}
+                </Button>
+                <span aria-live="polite" aria-label={`${cartQuantity} sản phẩm trong giỏ`} className="text-sm font-semibold tabular-nums text-primary">
+                  {cartQuantity}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  aria-label={`Tăng số lượng ${product.name} trong giỏ`}
+                  onClick={() => { void handleAddToCart(); }}
+                  disabled={isUpdatingCart}
+                  className="h-8 w-8 text-primary hover:bg-primary/10"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => { void handleAddToCart(); }}
+                className={`${compact ? 'mt-2 min-h-10 px-2 text-xs sm:text-sm' : 'mt-3'} w-full`}
+                size="sm"
+                disabled={isUpdatingCart}
+                aria-busy={isUpdatingCart}
+              >
+                {isUpdatingCart ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShoppingCart className="mr-2 h-4 w-4" />}
+                {isUpdatingCart ? 'Đang thêm...' : 'Thêm vào giỏ'}
+              </Button>
+            )
           )}
         </div>
       </div>

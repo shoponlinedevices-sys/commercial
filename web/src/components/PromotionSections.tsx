@@ -12,6 +12,8 @@ interface PromotionSectionsProps {
   flashSale?: FeatureSetting | null;
   promotion?: FeatureSetting | null;
   onAddToCart: (product: Product) => void;
+  cartQuantities: Record<number, number>;
+  onDecreaseCartQuantity: (product: Product, quantity: number) => void | Promise<void>;
 }
 
 function getConfigNumber(setting: FeatureSetting | null | undefined, key: string, fallback: number) {
@@ -46,7 +48,14 @@ function Countdown({ endTime }: { endTime?: string }) {
   return <span className="inline-flex items-center gap-1 font-mono text-sm font-bold"><Clock className="h-4 w-4" /> {formatTime(secondsLeft)}</span>;
 }
 
-export default function PromotionSections({ products, flashSale, promotion, onAddToCart }: PromotionSectionsProps) {
+export default function PromotionSections({
+  products,
+  flashSale,
+  promotion,
+  onAddToCart,
+  cartQuantities,
+  onDecreaseCartQuantity,
+}: PromotionSectionsProps) {
   const router = useRouter();
   const discountedProducts = products.filter((product) => product.oldPrice && product.oldPrice > product.price);
   const flashProducts = discountedProducts.slice(0, getConfigNumber(flashSale, 'max_products', 8));
@@ -78,7 +87,16 @@ export default function PromotionSections({ products, flashSale, promotion, onAd
             <Countdown endTime={flashSale?.endTime} />
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {flashProducts.map((product) => <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} compact />)}
+            {flashProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={onAddToCart}
+                onDecreaseCartQuantity={onDecreaseCartQuantity}
+                cartQuantity={cartQuantities[product.id] ?? 0}
+                compact
+              />
+            ))}
           </div>
         </div>
       )}
